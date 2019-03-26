@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  react_material_keyboard:
+    build: 
+      context: ./docker
+    volumes:
+      - .:/home/app
+    user: "node:node"
+    stdin_open: true
+    tty: true
