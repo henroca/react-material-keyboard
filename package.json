@@ -1,10 +1,10 @@
 {
-  "name": "app",
+  "name": "react-material-keyboard",
   "version": "1.0.0",
-  "description": "",
-  "author": "",
+  "description": "Material keyboard to react",
+  "author": "Jefferson Henrique Ramos",
   "license": "MIT",
-  "repository": "/app",
+  "repository": "/react-material-keyboard",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -12,8 +12,20 @@
     "node": ">=8",
     "npm": ">=5"
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/dist/",
+      "!<rootDir>/example/",
+      "!<rootDir>/docker/"
+    ],
+    "coverageReporters": [
+      "lcov"
+    ]
+  },
   "scripts": {
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
+    "test": "cross-env CI=1 react-scripts test --env=jsdom --coverage",
     "test:watch": "react-scripts test --env=jsdom",
     "build": "rollup -c",
     "start": "rollup -c -w",
