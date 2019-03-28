@@ -1,13 +1,16 @@
-# app
+# react-material-keyboard
 
-> 
+>
 
-[![NPM](https://img.shields.io/npm/v/app.svg)](https://www.npmjs.com/package/app) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Build Status](https://travis-ci.org/henroca/react-material-keyboard.svg?branch=master)](https://travis-ci.org/henroca/react-material-keyboard)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a52e61e0c3a5b9764de8/test_coverage)](https://codeclimate.com/github/henroca/react-material-keyboard/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a52e61e0c3a5b9764de8/maintainability)](https://codeclimate.com/github/henroca/react-material-keyboard/maintainability)
+
 
 ## Install
 
 ```bash
-npm install --save app
+npm install --save react-material-keyboard
 ```
 
 ## Usage
