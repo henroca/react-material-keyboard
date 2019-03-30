@@ -1,7 +1,7 @@
-import ExampleComponent from "./";
+import React from "react";
+import { shallow } from "enzyme";
+import App from "./index";
 
-describe("ExampleComponent", () => {
-    it("is truthy", () => {
-        expect(ExampleComponent).toBeTruthy();
-    });
+it("renders without crashing", () => {
+    shallow(<App text="test"/>);
 });
