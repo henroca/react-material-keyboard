@@ -41,6 +41,7 @@
     "react-dom": "^16.8.5"
   },
   "devDependencies": {
+    "@material-ui/core": "^3.9.3",
     "@svgr/rollup": "^2.4.1",
     "babel-core": "^6.26.3",
     "babel-eslint": "9.0.0",
