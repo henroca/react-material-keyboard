@@ -3,18 +3,20 @@ env:
     - CC_TEST_REPORTER_ID=e2220ef94527729b2b8f7abc78813200073e6aecdad595496afbdf6ef86f5bf0
 language: node_js
 node_js:
-  - 8
+  - 10
 cache:
   directories:
     - node_modules
 install:
-  - npm install -q --no-color --no-progress
+  - npm install -g npm@latest
+  - npm install -g yarn
+  - yarn install
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - npm run test
-  - npm run lint
+  - yarn run test
+  - yarn run lint
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

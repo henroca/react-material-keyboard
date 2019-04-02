@@ -85,34 +85,34 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var ExampleComponent = function (_Component) {
-  inherits(ExampleComponent, _Component);
+var App = function (_Component) {
+    inherits(App, _Component);
 
-  function ExampleComponent() {
-    classCallCheck(this, ExampleComponent);
-    return possibleConstructorReturn(this, (ExampleComponent.__proto__ || Object.getPrototypeOf(ExampleComponent)).apply(this, arguments));
-  }
-
-  createClass(ExampleComponent, [{
-    key: 'render',
-    value: function render() {
-      var text = this.props.text;
-
-
-      return React__default.createElement(
-        'div',
-        { className: styles.test },
-        'Example Component: ',
-        text
-      );
+    function App() {
+        classCallCheck(this, App);
+        return possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
     }
-  }]);
-  return ExampleComponent;
+
+    createClass(App, [{
+        key: "render",
+        value: function render() {
+            var text = this.props.text;
+
+
+            return React__default.createElement(
+                "div",
+                { className: styles.test },
+                "Example Component: ",
+                text
+            );
+        }
+    }]);
+    return App;
 }(React.Component);
 
-ExampleComponent.propTypes = {
-  text: PropTypes.string
+App.propTypes = {
+    text: PropTypes.string
 };
 
-module.exports = ExampleComponent;
+module.exports = App;
 //# sourceMappingURL=index.js.map
