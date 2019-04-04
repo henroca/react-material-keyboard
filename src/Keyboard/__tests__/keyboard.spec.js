@@ -5,6 +5,7 @@ import { expect } from "chai";
 
 import Keyboard, { defaultKeyboard } from "../Keyboard";
 import Component from "../Component";
+import MapKeys from "../MapKeys";
 
 describe("<Keyboard />", () => {
     let wrapper = null;
@@ -37,6 +38,13 @@ describe("<Keyboard />", () => {
             expect(keyboard).to.be.ofSize(2);
             expect(keyboard[0]).to.be.equalTo(["1", "2", "3", "+"]);
             expect(keyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
+        });
+
+        it("sets the props with MapKeys", () => {
+            wrapper = mount(<Keyboard />);
+            let mapKeys = wrapper.find(Component).props().mapKeys;
+
+            expect(mapKeys).to.be.an.instanceof(MapKeys);
         });
     });
 

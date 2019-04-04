@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import Keyboard from "./Component";
+import MapKeys from "./MapKeys";
 
 export const defaultKeyboard = [
     ["1", "2", "3", "+"],
@@ -10,14 +11,17 @@ export const defaultKeyboard = [
     [",", "0", "=", "/"],
 ];
 
-function withKeyboard(WrappedComponent, keyboard) {
+const mapKeys = new MapKeys();
+
+function withKeyboard(WrappedComponent, keyboard, mapKeys) {
     return class WithKeyboard extends Component {
         static propTypes = {
             keyboard: PropTypes.array,
+            mapKeys: PropTypes.objectOf(MapKeys),
         };
 
         render() {
-            let props = {keyboard, ...this.props};
+            let props = {keyboard, mapKeys, ...this.props};
 
             return (
                 <WrappedComponent {...props} />
@@ -26,4 +30,4 @@ function withKeyboard(WrappedComponent, keyboard) {
     };
 }
 
-export default withKeyboard(Keyboard, defaultKeyboard);
+export default withKeyboard(Keyboard, defaultKeyboard, mapKeys);
