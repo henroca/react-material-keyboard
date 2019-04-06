@@ -1,5 +1,5 @@
 import { withStyles } from "@material-ui/core/styles";
-import Key from "./Component";
+import Component from "./Component";
 
 const styles = theme => ({
     button: {
@@ -10,4 +10,4 @@ const styles = theme => ({
     },
 });
 
-export default withStyles(styles)(Key);
+export default withStyles(styles)(Component);

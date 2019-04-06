@@ -5,37 +5,8 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var React = require('react');
 var React__default = _interopDefault(React);
 var PropTypes = _interopDefault(require('prop-types'));
-
-function styleInject(css, ref) {
-  if ( ref === void 0 ) ref = {};
-  var insertAt = ref.insertAt;
-
-  if (!css || typeof document === 'undefined') { return; }
-
-  var head = document.head || document.getElementsByTagName('head')[0];
-  var style = document.createElement('style');
-  style.type = 'text/css';
-
-  if (insertAt === 'top') {
-    if (head.firstChild) {
-      head.insertBefore(style, head.firstChild);
-    } else {
-      head.appendChild(style);
-    }
-  } else {
-    head.appendChild(style);
-  }
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-}
-
-var css = "/* add css styles here (optional) */\n\n.styles_test__32Qsm {\n  display: inline-block;\n  margin: 2em auto;\n  border: 2px solid #000;\n  font-size: 2em;\n}\n";
-var styles = { "test": "styles_test__32Qsm" };
-styleInject(css);
+var Button = _interopDefault(require('@material-ui/core/Button'));
+var styles = require('@material-ui/core/styles');
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -61,6 +32,20 @@ var createClass = function () {
   };
 }();
 
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
 var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
@@ -85,34 +70,164 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var App = function (_Component) {
-    inherits(App, _Component);
+var Component = function (_ReactComponet) {
+    inherits(Component, _ReactComponet);
 
-    function App() {
-        classCallCheck(this, App);
-        return possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+    function Component() {
+        classCallCheck(this, Component);
+        return possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).apply(this, arguments));
     }
 
-    createClass(App, [{
+    createClass(Component, [{
         key: "render",
         value: function render() {
-            var text = this.props.text;
+            return React__default.createElement("div", null);
+        }
+    }]);
+    return Component;
+}(React.Component);
+
+Component.propTypes = {
+    keyboard: PropTypes.array.isRequired,
+    mapKeys: PropTypes.object.isRequired
+};
+
+var Component$1 = function (_ReactComponent) {
+    inherits(Component, _ReactComponent);
+
+    function Component(props) {
+        classCallCheck(this, Component);
+
+        var _this = possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, props));
+
+        _this.handleClick = _this.handleClick.bind(_this);
+        return _this;
+    }
+
+    createClass(Component, [{
+        key: "handleClick",
+        value: function handleClick() {
+            var _props = this.props,
+                onClick = _props.onClick,
+                value = _props.value;
+
+            onClick(value);
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props2 = this.props,
+                text = _props2.text,
+                classes = _props2.classes;
 
 
             return React__default.createElement(
-                "div",
-                { className: styles.test },
-                "Example Component: ",
+                Button,
+                { className: classes.button, onClick: this.handleClick },
                 text
             );
         }
     }]);
-    return App;
+    return Component;
 }(React.Component);
 
-App.propTypes = {
-    text: PropTypes.string
+Component$1.propTypes = {
+    text: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+    value: PropTypes.string.isRequired,
+    classes: PropTypes.object.isRequired
 };
 
-module.exports = App;
+var styles$1 = function styles$$1(theme) {
+    return {
+        button: {
+            margin: theme.spacing.unit
+        },
+        input: {
+            display: "none"
+        }
+    };
+};
+
+var Key = styles.withStyles(styles$1)(Component$1);
+
+var MapKeys = function () {
+    function MapKeys(callback) {
+        classCallCheck(this, MapKeys);
+
+        this.callback = callback;
+        this.map = new Map();
+        this.setMap();
+    }
+
+    createClass(MapKeys, [{
+        key: "get",
+        value: function get$$1(key) {
+            return this.map.get(key);
+        }
+    }, {
+        key: "set",
+        value: function set$$1(key, val) {
+            return this.map.set(key, val);
+        }
+    }, {
+        key: "getComponent",
+        value: function getComponent(text, value) {
+            return React__default.createElement(Key, { key: text + value, text: text, value: value, onClick: this.callback });
+        }
+    }, {
+        key: "setMap",
+        value: function setMap() {
+            this.setNumbersButtons();
+            this.set("=", this.getComponent("=", "="));
+            this.set(",", this.getComponent(",", ","));
+            this.set("+", this.getComponent("+", "+"));
+            this.set("-", this.getComponent("-", "-"));
+            this.set("*", this.getComponent("*", "*"));
+            this.set("/", this.getComponent("/", "/"));
+        }
+    }, {
+        key: "setNumbersButtons",
+        value: function setNumbersButtons() {
+            for (var index = 0; index <= 9; index++) {
+                this.set(index.toString(), this.getComponent(index.toString(), index.toString()));
+            }
+        }
+    }]);
+    return MapKeys;
+}();
+
+var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"]];
+
+var mapKeys = new MapKeys();
+
+function withKeyboard(WrappedComponent, keyboard, mapKeys) {
+    var _class, _temp;
+
+    return _temp = _class = function (_ReactComponent) {
+        inherits(WithKeyboard, _ReactComponent);
+
+        function WithKeyboard() {
+            classCallCheck(this, WithKeyboard);
+            return possibleConstructorReturn(this, (WithKeyboard.__proto__ || Object.getPrototypeOf(WithKeyboard)).apply(this, arguments));
+        }
+
+        createClass(WithKeyboard, [{
+            key: "render",
+            value: function render() {
+                var props = _extends({ keyboard: keyboard, mapKeys: mapKeys }, this.props);
+
+                return React__default.createElement(WrappedComponent, props);
+            }
+        }]);
+        return WithKeyboard;
+    }(React.Component), _class.propTypes = {
+        keyboard: PropTypes.array,
+        mapKeys: PropTypes.object
+    }, _temp;
+}
+
+var Keyboard = withKeyboard(Component, defaultKeyboard, mapKeys);
+
+module.exports = Keyboard;
 //# sourceMappingURL=index.js.map

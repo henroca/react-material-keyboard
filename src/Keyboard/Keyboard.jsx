@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, { Component as ReactComponent } from "react";
 import PropTypes from "prop-types";
 
-import Keyboard from "./Component";
+import Component from "./Component";
 import MapKeys from "./MapKeys";
 
 export const defaultKeyboard = [
@@ -14,7 +14,7 @@ export const defaultKeyboard = [
 const mapKeys = new MapKeys();
 
 function withKeyboard(WrappedComponent, keyboard, mapKeys) {
-    return class WithKeyboard extends Component {
+    return class WithKeyboard extends ReactComponent {
         static propTypes = {
             keyboard: PropTypes.array,
             mapKeys: PropTypes.object,
@@ -30,4 +30,4 @@ function withKeyboard(WrappedComponent, keyboard, mapKeys) {
     };
 }
 
-export default withKeyboard(Keyboard, defaultKeyboard, mapKeys);
+export default withKeyboard(Component, defaultKeyboard, mapKeys);
