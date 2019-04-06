@@ -17,7 +17,7 @@ function withKeyboard(WrappedComponent, keyboard, mapKeys) {
     return class WithKeyboard extends Component {
         static propTypes = {
             keyboard: PropTypes.array,
-            mapKeys: PropTypes.objectOf(MapKeys),
+            mapKeys: PropTypes.object,
         };
 
         render() {
