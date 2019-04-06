@@ -3,9 +3,10 @@ import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { expect } from "chai";
 
-import Keyboard, { defaultKeyboard } from "../Keyboard";
+import { defaultKeyboard } from "../keyboards";
+import Keyboard from "../Keyboard";
 import Component from "../Component";
-import MapKeys from "../MapKeys";
+import { MapKeys } from "../MapKeys";
 
 describe("<Keyboard />", () => {
     let wrapper = null;

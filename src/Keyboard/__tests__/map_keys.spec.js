@@ -2,12 +2,13 @@ import context from "jest-plugin-context";
 import { shallow } from "enzyme";
 import { expect } from "chai";
 
-import MapKeys from "../MapKeys";
+import mapKeys from "../MapKeys";
 
 describe("MapKeys", () => {
     context("when create the instance", () => {
         let callback = () => {};
-        let mapKeys = new MapKeys(callback);
+        mapKeys.setCallback(callback);
+        mapKeys.setMap();
 
         const buttonAssertion = (btn, val) => {
             let component = mapKeys.get(btn);

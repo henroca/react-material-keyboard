@@ -1,11 +1,13 @@
 import React from "react";
 import Key from "../Key";
 
-export default class MapKeys {
-    constructor(callback) {
-        this.callback = callback;
+export class MapKeys {
+    constructor() {
         this.map = new Map();
-        this.setMap();
+    }
+
+    setCallback(callback) {
+        this.callback = callback;
     }
 
     get(key) {
@@ -41,3 +43,5 @@ export default class MapKeys {
         }
     }
 }
+
+export default new MapKeys();

@@ -1,12 +1,16 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var React = require('react');
 var React__default = _interopDefault(React);
 var PropTypes = _interopDefault(require('prop-types'));
-var Button = _interopDefault(require('@material-ui/core/Button'));
 var styles = require('@material-ui/core/styles');
+var Paper = _interopDefault(require('@material-ui/core/Paper'));
+var Grid = _interopDefault(require('@material-ui/core/Grid'));
+var Button = _interopDefault(require('@material-ui/core/Button'));
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -81,7 +85,14 @@ var Component = function (_ReactComponet) {
     createClass(Component, [{
         key: "render",
         value: function render() {
-            return React__default.createElement("div", null);
+            var classes = this.props.classes;
+
+
+            return React__default.createElement(
+                Paper,
+                { className: classes.paper },
+                React__default.createElement(Grid, { container: true, spacing: 0 })
+            );
         }
     }]);
     return Component;
@@ -89,10 +100,14 @@ var Component = function (_ReactComponet) {
 
 Component.propTypes = {
     keyboard: PropTypes.array.isRequired,
-    mapKeys: PropTypes.object.isRequired
+    mapKeys: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
 };
 
-var Component$1 = function (_ReactComponent) {
+
+var Component$1 = styles.withStyles({})(Component);
+
+var Component$2 = function (_ReactComponent) {
     inherits(Component, _ReactComponent);
 
     function Component(props) {
@@ -131,7 +146,7 @@ var Component$1 = function (_ReactComponent) {
     return Component;
 }(React.Component);
 
-Component$1.propTypes = {
+Component$2.propTypes = {
     text: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
@@ -149,18 +164,21 @@ var styles$1 = function styles$$1(theme) {
     };
 };
 
-var Key = styles.withStyles(styles$1)(Component$1);
+var Key = styles.withStyles(styles$1)(Component$2);
 
 var MapKeys = function () {
-    function MapKeys(callback) {
+    function MapKeys() {
         classCallCheck(this, MapKeys);
 
-        this.callback = callback;
         this.map = new Map();
-        this.setMap();
     }
 
     createClass(MapKeys, [{
+        key: "setCallback",
+        value: function setCallback(callback) {
+            this.callback = callback;
+        }
+    }, {
         key: "get",
         value: function get$$1(key) {
             return this.map.get(key);
@@ -197,37 +215,48 @@ var MapKeys = function () {
     return MapKeys;
 }();
 
+var defaultMapKeys = new MapKeys();
+
 var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"]];
 
-var mapKeys = new MapKeys();
+var withKeyboard = (function (keyboard, mapKeys) {
+    mapKeys = mapKeys || defaultMapKeys;
+    keyboard = keyboard || defaultKeyboard;
 
-function withKeyboard(WrappedComponent, keyboard, mapKeys) {
-    var _class, _temp;
+    mapKeys.setMap();
 
-    return _temp = _class = function (_ReactComponent) {
-        inherits(WithKeyboard, _ReactComponent);
+    return function (WrappedComponent) {
+        var _class, _temp;
 
-        function WithKeyboard() {
-            classCallCheck(this, WithKeyboard);
-            return possibleConstructorReturn(this, (WithKeyboard.__proto__ || Object.getPrototypeOf(WithKeyboard)).apply(this, arguments));
-        }
+        return _temp = _class = function (_ReactComponent) {
+            inherits(WithKeyboard, _ReactComponent);
 
-        createClass(WithKeyboard, [{
-            key: "render",
-            value: function render() {
-                var props = _extends({ keyboard: keyboard, mapKeys: mapKeys }, this.props);
-
-                return React__default.createElement(WrappedComponent, props);
+            function WithKeyboard() {
+                classCallCheck(this, WithKeyboard);
+                return possibleConstructorReturn(this, (WithKeyboard.__proto__ || Object.getPrototypeOf(WithKeyboard)).apply(this, arguments));
             }
-        }]);
-        return WithKeyboard;
-    }(React.Component), _class.propTypes = {
-        keyboard: PropTypes.array,
-        mapKeys: PropTypes.object
-    }, _temp;
-}
 
-var Keyboard = withKeyboard(Component, defaultKeyboard, mapKeys);
+            createClass(WithKeyboard, [{
+                key: "render",
+                value: function render() {
+                    var props = _extends({ keyboard: keyboard, mapKeys: mapKeys }, this.props);
 
-module.exports = Keyboard;
+                    props.mapKeys.setCallback(function (val) {
+                        return console.log(val);
+                    });
+
+                    return React__default.createElement(WrappedComponent, props);
+                }
+            }]);
+            return WithKeyboard;
+        }(React.Component), _class.propTypes = {
+            keyboard: PropTypes.array,
+            mapKeys: PropTypes.object
+        }, _temp;
+    };
+});
+
+var Keyboard = withKeyboard()(Component$1);
+
+exports.Keyboard = Keyboard;
 //# sourceMappingURL=index.js.map
