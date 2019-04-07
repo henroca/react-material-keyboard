@@ -78,13 +78,27 @@ var Component$1 = function (_ReactComponet) {
     createClass(Component$$1, [{
         key: "render",
         value: function render() {
-            var classes = this.props.classes;
+            var _props = this.props,
+                keyboard = _props.keyboard,
+                mapKeys = _props.mapKeys;
 
 
             return React.createElement(
                 Paper,
-                { className: classes.paper },
-                React.createElement(Grid, { container: true, spacing: 0 })
+                null,
+                React.createElement(
+                    Grid,
+                    { container: true, spacing: 0 },
+                    keyboard.map(function (row) {
+                        return row.map(function (btn) {
+                            return React.createElement(
+                                Grid,
+                                { key: btn, item: true, xs: Math.ceil(12 / row.length) },
+                                mapKeys.get(btn)
+                            );
+                        });
+                    })
+                )
             );
         }
     }]);
@@ -146,10 +160,12 @@ Component$3.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
-var styles = function styles(theme) {
+var styles = function styles() {
     return {
         button: {
-            margin: theme.spacing.unit
+            margin: 0,
+            width: "100%",
+            padding: "1vw 9px"
         },
         input: {
             display: "none"
@@ -216,8 +232,6 @@ var withKeyboard = (function (keyboard, mapKeys) {
     mapKeys = mapKeys || defaultMapKeys;
     keyboard = keyboard || defaultKeyboard;
 
-    mapKeys.setMap();
-
     return function (WrappedComponent) {
         var _class, _temp;
 
@@ -237,6 +251,7 @@ var withKeyboard = (function (keyboard, mapKeys) {
                     props.mapKeys.setCallback(function (val) {
                         return console.log(val);
                     });
+                    mapKeys.setMap();
 
                     return React.createElement(WrappedComponent, props);
                 }

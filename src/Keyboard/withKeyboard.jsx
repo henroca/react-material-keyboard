@@ -9,8 +9,6 @@ export default (keyboard, mapKeys) => {
     mapKeys = mapKeys || defaultMapKeys;
     keyboard = keyboard || defaultKeyboard;
 
-    mapKeys.setMap();
-
     return (WrappedComponent) => class WithKeyboard extends ReactComponent {
         static propTypes = {
             keyboard: PropTypes.array,
@@ -20,7 +18,8 @@ export default (keyboard, mapKeys) => {
         render() {
             let props = {keyboard, mapKeys, ...this.props};
 
-            props.mapKeys.setCallback((val) => console.log(val));
+            props.mapKeys.setCallback((val) => val);
+            mapKeys.setMap();
 
             return (
                 <WrappedComponent {...props} />

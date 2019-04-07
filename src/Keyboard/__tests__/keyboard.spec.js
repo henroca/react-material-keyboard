@@ -2,6 +2,7 @@ import React from "react";
 import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { expect } from "chai";
+import Grid from "@material-ui/core/Grid";
 
 import { defaultKeyboard } from "../keyboards";
 import Keyboard from "../Keyboard";
@@ -39,6 +40,27 @@ describe("<Keyboard />", () => {
             expect(keyboard).to.be.ofSize(2);
             expect(keyboard[0]).to.be.equalTo(["1", "2", "3", "+"]);
             expect(keyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
+        });
+
+        it("renders the buttons", () => {
+            let customKeyboard = [["1", "2"], ["3", "+"]];
+            wrapper = mount(<Keyboard keyboard={customKeyboard} />);
+            let keyboard = wrapper.find(Component);
+
+            expect(keyboard.find("button")).to.have.lengthOf(4);
+            expect(keyboard.text()).to.equal("123+");
+        });
+
+        it("renders the grids", () => {
+            let customKeyboard = [["1", "2"], ["3", "+"]];
+            wrapper = mount(<Keyboard keyboard={customKeyboard} />);
+            let keyboard = wrapper.find(Component);
+
+            expect(keyboard.find(Grid).at(0).props()).to.deep.include({container: true, spacing: 0});
+            expect(keyboard.find(Grid).at(1).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(2).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(3).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(4).props()).to.deep.include({item: true, xs: 6});
         });
 
         it("sets the props with MapKeys", () => {

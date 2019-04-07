@@ -12,12 +12,16 @@ class Component extends ReactComponet {
     };
 
     render() {
-        let { classes } = this.props;
+        let { keyboard, mapKeys } = this.props;
 
         return (
-            <Paper className={classes.paper}>
+            <Paper>
                 <Grid container spacing={0}>
-
+                    {keyboard.map(row => row.map(btn => (
+                        <Grid key={btn} item xs={Math.ceil(12/row.length)}>
+                            {mapKeys.get(btn)}
+                        </Grid>
+                    )))}
                 </Grid>
             </Paper>
         );
