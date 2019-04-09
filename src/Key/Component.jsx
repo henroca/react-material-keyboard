@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { Component as ReactComponent } from "react";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 
-export default class Key extends Component {
+export default class Component extends ReactComponent {
     static propTypes = {
         text: PropTypes.string.isRequired,
         onClick: PropTypes.func.isRequired,
