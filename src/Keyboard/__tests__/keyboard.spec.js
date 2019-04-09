@@ -3,6 +3,7 @@ import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { expect } from "chai";
 import Grid from "@material-ui/core/Grid";
+import sinon from "sinon";
 
 import { defaultKeyboard } from "../keyboards";
 import Keyboard from "../Keyboard";
@@ -68,6 +69,15 @@ describe("<Keyboard />", () => {
             let mapKeys = wrapper.find(Component).props().mapKeys;
 
             expect(mapKeys).to.be.an.instanceof(MapKeys);
+        });
+
+        it("call the function clickBuntton", () => {
+            const spy = sinon.spy(Keyboard.prototype, "clickBuntton");
+            wrapper = mount(<Keyboard />);
+            const buttons = wrapper.find("button");
+            buttons.first().simulate("click");
+
+            expect(spy.calledOnce).to.be.true;
         });
     });
 

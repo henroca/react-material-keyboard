@@ -15,10 +15,20 @@ export default (keyboard, mapKeys) => {
             mapKeys: PropTypes.object,
         };
 
+        constructor(props) {
+            super(props);
+
+            this.clickBuntton = this.clickBuntton.bind(this);
+        }
+
+        clickBuntton(val) {
+            val;
+        }
+
         render() {
             let props = {keyboard, mapKeys, ...this.props};
 
-            props.mapKeys.setCallback((val) => val);
+            props.mapKeys.setCallback(this.clickBuntton);
             mapKeys.setMap();
 
             return (
