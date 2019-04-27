@@ -8,8 +8,22 @@ class Component extends ReactComponet {
     static propTypes = {
         keyboard: PropTypes.array.isRequired,
         mapKeys: PropTypes.object.isRequired,
+        mapEvents: PropTypes.object.isRequired,
         classes: PropTypes.object.isRequired,
     };
+
+    constructor(props) {
+        super(props);
+
+        this.clickBuntton = this.clickBuntton.bind(this);
+        this.props.mapKeys.setCallback(this.clickBuntton);
+        this.props.mapKeys.setMap();
+        this.props.mapEvents.setMap();
+    }
+
+    clickBuntton(btn) {
+        return btn;
+    }
 
     render() {
         let { keyboard, mapKeys } = this.props;

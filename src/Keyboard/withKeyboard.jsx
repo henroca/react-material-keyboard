@@ -2,34 +2,24 @@ import React, { Component as ReactComponent } from "react";
 import PropTypes from "prop-types";
 
 import defaultMapKeys from "./MapKeys";
+import defaultMapEvents from "./MapEvents";
 import { defaultKeyboard } from "./keyboards";
 
 
-export default (keyboard, mapKeys) => {
-    mapKeys = mapKeys || defaultMapKeys;
-    keyboard = keyboard || defaultKeyboard;
+export default () => {
+    let mapKeys = defaultMapKeys;
+    let keyboard = defaultKeyboard;
+    let mapEvents = defaultMapEvents;
 
     return (WrappedComponent) => class WithKeyboard extends ReactComponent {
         static propTypes = {
             keyboard: PropTypes.array,
             mapKeys: PropTypes.object,
+            mapEvents: PropTypes.object,
         };
 
-        constructor(props) {
-            super(props);
-
-            this.clickBuntton = this.clickBuntton.bind(this);
-        }
-
-        clickBuntton(val) {
-            val;
-        }
-
         render() {
-            let props = {keyboard, mapKeys, ...this.props};
-
-            props.mapKeys.setCallback(this.clickBuntton);
-            mapKeys.setMap();
+            let props = {keyboard, mapKeys, mapEvents, ...this.props};
 
             return (
                 <WrappedComponent {...props} />

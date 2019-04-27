@@ -5,6 +5,12 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -70,17 +76,49 @@ var possibleConstructorReturn = function (self, call) {
 var Component$1 = function (_ReactComponet) {
     inherits(Component$$1, _ReactComponet);
 
-    function Component$$1() {
+    function Component$$1(props) {
         classCallCheck(this, Component$$1);
-        return possibleConstructorReturn(this, (Component$$1.__proto__ || Object.getPrototypeOf(Component$$1)).apply(this, arguments));
+
+        var _this = possibleConstructorReturn(this, (Component$$1.__proto__ || Object.getPrototypeOf(Component$$1)).call(this, props));
+
+        _this.state = {
+            value: '',
+            values: [''],
+            modifiers: {}
+        };
+
+        _this.clickBuntton = _this.clickBuntton.bind(_this);
+        _this.props.mapKeys.setCallback(_this.clickBuntton);
+        _this.props.mapKeys.setMap();
+        _this.props.mapEvents.setMap();
+        return _this;
     }
 
     createClass(Component$$1, [{
+        key: "clickBuntton",
+        value: function clickBuntton(btn) {
+            var mapEvents = this.props.mapEvents;
+            var _props = this.props,
+                value = _props.value,
+                values = _props.values,
+                modifiers = _props.modifiers;
+
+            var result = mapEvents.get(btn)(value);
+
+            if ((typeof result === "undefined" ? "undefined" : _typeof(result)) == 'object') {
+                result.setValues('', '');
+                modifiers[result.key] = result;
+            }
+
+            values.push(result);
+            this.setState({ value: result, values: values });
+        }
+    }, {
         key: "render",
         value: function render() {
-            var _props = this.props,
-                keyboard = _props.keyboard,
-                mapKeys = _props.mapKeys;
+            var _props2 = this.props,
+                keyboard = _props2.keyboard,
+                mapKeys = _props2.mapKeys;
 
 
             return React.createElement(
@@ -108,6 +146,7 @@ var Component$1 = function (_ReactComponet) {
 Component$1.propTypes = {
     keyboard: PropTypes.array.isRequired,
     mapKeys: PropTypes.object.isRequired,
+    mapEvents: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired
 };
 
@@ -226,11 +265,93 @@ var MapKeys = function () {
 
 var defaultMapKeys = new MapKeys();
 
+var division = function division(accumulator) {
+    var key = new Date().valueOf() + Math.floor(Math.random() * 100);
+    var newAccumulator = accumulator.concat(' x' + key + '/y' + key);
+
+    return {
+        key: key,
+        x: '',
+        y: '',
+        accumulator: newAccumulator,
+
+        setValues: function setValues(x, y) {
+            this.x = x;
+            this.y = y;
+        },
+        getValue: function getValue(accumulator) {
+            accumulator = accumulator || this.accumulator;
+
+            return accumulator.replace('x' + this.key, this.x).replace('y' + this.key, this.y);
+        }
+    };
+};
+
+var MapEvents = function () {
+    function MapEvents() {
+        classCallCheck(this, MapEvents);
+
+        this.map = new Map();
+    }
+
+    createClass(MapEvents, [{
+        key: 'set',
+        value: function set$$1(key, callback) {
+            this.map.set(key, callback);
+        }
+    }, {
+        key: 'get',
+        value: function get$$1(key) {
+            return this.map.get(key);
+        }
+    }, {
+        key: 'setMap',
+        value: function setMap() {
+            this.setNumbersButtons();
+            this.set("=", function (accumulator) {
+                return accumulator.concat(" =");
+            });
+            this.set(",", function (accumulator) {
+                return accumulator.concat(".");
+            });
+            this.set("+", function (accumulator) {
+                return accumulator.concat(" +");
+            });
+            this.set("-", function (accumulator) {
+                return accumulator.concat(" -");
+            });
+            this.set("*", function (accumulator) {
+                return accumulator.concat(" *");
+            });
+            this.set("/", division);
+        }
+    }, {
+        key: 'setNumbersButtons',
+        value: function setNumbersButtons() {
+            var _this = this;
+
+            var _loop = function _loop(index) {
+                _this.set(index.toString(), function (accumulator) {
+                    return accumulator.concat(' ' + index);
+                });
+            };
+
+            for (var index = 0; index <= 9; index++) {
+                _loop(index);
+            }
+        }
+    }]);
+    return MapEvents;
+}();
+
+var defaultMapEvents = new MapEvents();
+
 var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"]];
 
-var withKeyboard = (function (keyboard, mapKeys) {
-    mapKeys = mapKeys || defaultMapKeys;
-    keyboard = keyboard || defaultKeyboard;
+var withKeyboard = (function () {
+    var mapKeys = defaultMapKeys;
+    var keyboard = defaultKeyboard;
+    var mapEvents = defaultMapEvents;
 
     return function (WrappedComponent) {
         var _class, _temp;
@@ -246,12 +367,7 @@ var withKeyboard = (function (keyboard, mapKeys) {
             createClass(WithKeyboard, [{
                 key: "render",
                 value: function render() {
-                    var props = _extends({ keyboard: keyboard, mapKeys: mapKeys }, this.props);
-
-                    props.mapKeys.setCallback(function (val) {
-                        return console.log(val);
-                    });
-                    mapKeys.setMap();
+                    var props = _extends({ keyboard: keyboard, mapKeys: mapKeys, mapEvents: mapEvents }, this.props);
 
                     return React.createElement(WrappedComponent, props);
                 }
@@ -259,7 +375,8 @@ var withKeyboard = (function (keyboard, mapKeys) {
             return WithKeyboard;
         }(Component), _class.propTypes = {
             keyboard: PropTypes.array,
-            mapKeys: PropTypes.object
+            mapKeys: PropTypes.object,
+            mapEvents: PropTypes.object
         }, _temp;
     };
 });
