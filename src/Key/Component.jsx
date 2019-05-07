@@ -1,6 +1,7 @@
 import React, { Component as ReactComponent } from "react";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
+import MathJax from "react-mathjax";
 
 export default class Component extends ReactComponent {
     static propTypes = {
@@ -25,7 +26,7 @@ export default class Component extends ReactComponent {
 
         return (
             <Button className={classes.button} onClick={this.handleClick}>
-                {text}
+                <MathJax.Node formula={text} />
             </Button>
         );
     }

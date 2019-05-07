@@ -5,7 +5,7 @@ const styles = () => ({
     button: {
         margin: 0,
         width: "100%",
-        padding: "1vw 9px",
+        height: "68px",
     },
     input: {
         display: "none",
