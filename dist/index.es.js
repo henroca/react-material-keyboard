@@ -3,13 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import MathJax from 'react-mathjax';
 import Button from '@material-ui/core/Button';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -81,12 +76,6 @@ var Component$1 = function (_ReactComponet) {
 
         var _this = possibleConstructorReturn(this, (Component$$1.__proto__ || Object.getPrototypeOf(Component$$1)).call(this, props));
 
-        _this.state = {
-            value: '',
-            values: [''],
-            modifiers: {}
-        };
-
         _this.clickBuntton = _this.clickBuntton.bind(_this);
         _this.props.mapKeys.setCallback(_this.clickBuntton);
         _this.props.mapKeys.setMap();
@@ -97,45 +86,35 @@ var Component$1 = function (_ReactComponet) {
     createClass(Component$$1, [{
         key: "clickBuntton",
         value: function clickBuntton(btn) {
-            var mapEvents = this.props.mapEvents;
-            var _props = this.props,
-                value = _props.value,
-                values = _props.values,
-                modifiers = _props.modifiers;
-
-            var result = mapEvents.get(btn)(value);
-
-            if ((typeof result === "undefined" ? "undefined" : _typeof(result)) == 'object') {
-                result.setValues('', '');
-                modifiers[result.key] = result;
-            }
-
-            values.push(result);
-            this.setState({ value: result, values: values });
+            return btn;
         }
     }, {
         key: "render",
         value: function render() {
-            var _props2 = this.props,
-                keyboard = _props2.keyboard,
-                mapKeys = _props2.mapKeys;
+            var _props = this.props,
+                keyboard = _props.keyboard,
+                mapKeys = _props.mapKeys;
 
 
             return React.createElement(
                 Paper,
                 null,
                 React.createElement(
-                    Grid,
-                    { container: true, spacing: 0 },
-                    keyboard.map(function (row) {
-                        return row.map(function (btn) {
-                            return React.createElement(
-                                Grid,
-                                { key: btn, item: true, xs: Math.ceil(12 / row.length) },
-                                mapKeys.get(btn)
-                            );
-                        });
-                    })
+                    MathJax.Provider,
+                    null,
+                    React.createElement(
+                        Grid,
+                        { container: true, spacing: 0 },
+                        keyboard.map(function (row) {
+                            return row.map(function (btn) {
+                                return React.createElement(
+                                    Grid,
+                                    { key: btn, item: true, xs: Math.ceil(12 / row.length) },
+                                    mapKeys.get(btn)
+                                );
+                            });
+                        })
+                    )
                 )
             );
         }
@@ -185,7 +164,7 @@ var Component$3 = function (_ReactComponent) {
             return React.createElement(
                 Button,
                 { className: classes.button, onClick: this.handleClick },
-                text
+                React.createElement(MathJax.Node, { formula: text })
             );
         }
     }]);
@@ -204,7 +183,7 @@ var styles = function styles() {
         button: {
             margin: 0,
             width: "100%",
-            padding: "1vw 9px"
+            height: "68px"
         },
         input: {
             display: "none"
@@ -250,7 +229,7 @@ var MapKeys = function () {
             this.set("+", this.getComponent("+", "+"));
             this.set("-", this.getComponent("-", "-"));
             this.set("*", this.getComponent("*", "*"));
-            this.set("/", this.getComponent("/", "/"));
+            this.set("/", this.getComponent("\\frac{x}{y}", "/"));
         }
     }, {
         key: "setNumbersButtons",
@@ -265,27 +244,98 @@ var MapKeys = function () {
 
 var defaultMapKeys = new MapKeys();
 
-var division = function division(accumulator) {
-    var key = new Date().valueOf() + Math.floor(Math.random() * 100);
-    var newAccumulator = accumulator.concat(' x' + key + '/y' + key);
+var Value = function () {
+    function Value(operator, prevValue) {
+        classCallCheck(this, Value);
 
-    return {
-        key: key,
-        x: '',
-        y: '',
-        accumulator: newAccumulator,
+        this.prevValue = prevValue;
+        this.operator = operator;
+    }
 
-        setValues: function setValues(x, y) {
-            this.x = x;
-            this.y = y;
-        },
-        getValue: function getValue(accumulator) {
-            accumulator = accumulator || this.accumulator;
-
-            return accumulator.replace('x' + this.key, this.x).replace('y' + this.key, this.y);
+    createClass(Value, [{
+        key: "value",
+        value: function value() {
+            return " " + this.operator;
         }
-    };
-};
+    }, {
+        key: "getValue",
+        value: function getValue() {
+            if (!this.prevValue) {
+                return this.value().trim();
+            }
+
+            if (this.prevValue.constructor.name == "Dot") {
+                return this.prevValue.getValue() + this.value().trim();
+            }
+
+            return this.prevValue.getValue() + this.value();
+        }
+    }]);
+    return Value;
+}();
+
+var Fraction = function (_Value) {
+    inherits(Fraction, _Value);
+
+    function Fraction(prevValue) {
+        classCallCheck(this, Fraction);
+
+        var _this = possibleConstructorReturn(this, (Fraction.__proto__ || Object.getPrototypeOf(Fraction)).call(this, "/", prevValue));
+
+        _this.divider = "";
+        _this.dividend = "";
+        return _this;
+    }
+
+    createClass(Fraction, [{
+        key: "setDivider",
+        value: function setDivider(divider) {
+            this.divider = this.setParentheses(divider.getValue());
+        }
+    }, {
+        key: "setDividend",
+        value: function setDividend(dividend) {
+            this.dividend = this.setParentheses(dividend.getValue());
+        }
+    }, {
+        key: "setParentheses",
+        value: function setParentheses(value) {
+            return value.length > 1 ? "(" + value + ")" : value;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            return " " + this.dividend + "/" + this.divider;
+        }
+    }]);
+    return Fraction;
+}(Value);
+
+var Dot = function () {
+    function Dot(prevValue) {
+        classCallCheck(this, Dot);
+
+        this.prevValue = prevValue;
+        this.operator = ".";
+    }
+
+    createClass(Dot, [{
+        key: "value",
+        value: function value() {
+            return this.operator;
+        }
+    }, {
+        key: "getValue",
+        value: function getValue() {
+            if (!this.prevValue) {
+                return this.value().trim();
+            }
+
+            return this.prevValue.getValue() + this.value();
+        }
+    }]);
+    return Dot;
+}();
 
 var MapEvents = function () {
     function MapEvents() {
@@ -295,44 +345,46 @@ var MapEvents = function () {
     }
 
     createClass(MapEvents, [{
-        key: 'set',
+        key: "set",
         value: function set$$1(key, callback) {
             this.map.set(key, callback);
         }
     }, {
-        key: 'get',
+        key: "get",
         value: function get$$1(key) {
             return this.map.get(key);
         }
     }, {
-        key: 'setMap',
+        key: "setMap",
         value: function setMap() {
             this.setNumbersButtons();
-            this.set("=", function (accumulator) {
-                return accumulator.concat(" =");
+            this.set("=", function (value) {
+                return new Value("=", value);
             });
-            this.set(",", function (accumulator) {
-                return accumulator.concat(".");
+            this.set(",", function (value) {
+                return new Dot(value);
             });
-            this.set("+", function (accumulator) {
-                return accumulator.concat(" +");
+            this.set("+", function (value) {
+                return new Value("+", value);
             });
-            this.set("-", function (accumulator) {
-                return accumulator.concat(" -");
+            this.set("-", function (value) {
+                return new Value("-", value);
             });
-            this.set("*", function (accumulator) {
-                return accumulator.concat(" *");
+            this.set("*", function (value) {
+                return new Value("*", value);
             });
-            this.set("/", division);
+            this.set("/", function (value) {
+                return new Fraction(value);
+            });
         }
     }, {
-        key: 'setNumbersButtons',
+        key: "setNumbersButtons",
         value: function setNumbersButtons() {
             var _this = this;
 
             var _loop = function _loop(index) {
-                _this.set(index.toString(), function (accumulator) {
-                    return accumulator.concat(' ' + index);
+                _this.set(index.toString(), function (value) {
+                    return new Value(index.toString(), value);
                 });
             };
 

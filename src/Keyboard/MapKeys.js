@@ -31,7 +31,7 @@ export class MapKeys {
         this.set("+", this.getComponent("+", "+"));
         this.set("-", this.getComponent("-", "-"));
         this.set("*", this.getComponent("*", "*"));
-        this.set("/", this.getComponent("/", "/"));
+        this.set("/", this.getComponent("\\frac{x}{y}", "/"));
     }
 
     setNumbersButtons() {

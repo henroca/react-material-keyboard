@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
+import MathJax from "react-mathjax";
 
 class Component extends ReactComponet {
     static propTypes = {
@@ -30,13 +31,15 @@ class Component extends ReactComponet {
 
         return (
             <Paper>
-                <Grid container spacing={0}>
-                    {keyboard.map(row => row.map(btn => (
-                        <Grid key={btn} item xs={Math.ceil(12/row.length)}>
-                            {mapKeys.get(btn)}
-                        </Grid>
-                    )))}
-                </Grid>
+                <MathJax.Provider>
+                    <Grid container spacing={0}>
+                        {keyboard.map(row => row.map(btn => (
+                            <Grid key={btn} item xs={Math.ceil(12/row.length)}>
+                                {mapKeys.get(btn)}
+                            </Grid>
+                        )))}
+                    </Grid>
+                </MathJax.Provider>
             </Paper>
         );
     }

@@ -33,7 +33,7 @@ describe("MapKeys", () => {
         it("get the button +", () => buttonAssertion("+", "+"));
         it("get the button -", () => buttonAssertion("-", "-"));
         it("get the button *", () => buttonAssertion("*", "*"));
-        it("get the button /", () => buttonAssertion("/", "/"));
+        it("get the button /", () => buttonAssertion("/", "\\frac{x}{y}"));
 
     });
 });

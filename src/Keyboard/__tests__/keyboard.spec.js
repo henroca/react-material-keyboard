@@ -42,15 +42,6 @@ describe("<Keyboard />", () => {
             expect(keyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
         });
 
-        it("renders the buttons", () => {
-            let customKeyboard = [["1", "2"], ["3", "+"]];
-            wrapper = mount(<Keyboard keyboard={customKeyboard} />);
-            let keyboard = wrapper.find(Component);
-
-            expect(keyboard.find("button")).to.have.lengthOf(4);
-            expect(keyboard.text()).to.equal("123+");
-        });
-
         it("renders the grids", () => {
             let customKeyboard = [["1", "2"], ["3", "+"]];
             wrapper = mount(<Keyboard keyboard={customKeyboard} />);
