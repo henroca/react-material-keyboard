@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
 import MathJax from 'react-mathjax';
+import Grid from '@material-ui/core/Grid';
+import { Backspace } from '@material-ui/icons';
+import { withStyles } from '@material-ui/core/styles';
+import green from '@material-ui/core/colors/green';
+import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
 var classCallCheck = function (instance, Constructor) {
@@ -68,6 +70,103 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+var Math$1 = function (_React$Component) {
+    inherits(Math, _React$Component);
+
+    function Math() {
+        classCallCheck(this, Math);
+        return possibleConstructorReturn(this, (Math.__proto__ || Object.getPrototypeOf(Math)).apply(this, arguments));
+    }
+
+    createClass(Math, [{
+        key: "render",
+        value: function render() {
+            var value = this.props.value;
+
+
+            return React.createElement(MathJax.Node, { formula: value });
+        }
+    }]);
+    return Math;
+}(React.Component);
+
+Math$1.propTypes = {
+    value: PropTypes.string
+};
+
+var styles = function styles(theme) {
+    return {
+        root: {
+            height: '150px',
+            padding: '1em 2em'
+        },
+        icon: {
+            float: 'right'
+        },
+        screen: {
+            display: 'flex',
+            justifyContent: 'center'
+        }
+    };
+};
+
+var Screen = function (_React$Component) {
+    inherits(Screen, _React$Component);
+
+    function Screen() {
+        classCallCheck(this, Screen);
+        return possibleConstructorReturn(this, (Screen.__proto__ || Object.getPrototypeOf(Screen)).apply(this, arguments));
+    }
+
+    createClass(Screen, [{
+        key: "render",
+        value: function render() {
+            var classes = this.props.classes;
+
+
+            return React.createElement(
+                Grid,
+                { container: true, className: classes.root, spacing: 0 },
+                React.createElement(
+                    Grid,
+                    { item: true, xs: 6 },
+                    React.createElement(
+                        "span",
+                        null,
+                        "LIMPAR"
+                    )
+                ),
+                React.createElement(
+                    Grid,
+                    { item: true, xs: 6 },
+                    React.createElement(Backspace, { className: classes.icon, fontSize: "small" })
+                ),
+                React.createElement(
+                    Grid,
+                    { item: true, xs: 12, className: classes.screen },
+                    React.createElement(Math$1, { value: '2 + 3' })
+                )
+            );
+        }
+    }]);
+    return Screen;
+}(React.Component);
+
+Screen.propTypes = {
+    classes: PropTypes.object.isRequired
+};
+
+
+var Screen$1 = withStyles(styles)(Screen);
+
+var styles$1 = function styles(theme) {
+    return {
+        container: {
+            backgroundColor: green['A200']
+        }
+    };
+};
+
 var Component$1 = function (_ReactComponet) {
     inherits(Component$$1, _ReactComponet);
 
@@ -93,7 +192,8 @@ var Component$1 = function (_ReactComponet) {
         value: function render() {
             var _props = this.props,
                 keyboard = _props.keyboard,
-                mapKeys = _props.mapKeys;
+                mapKeys = _props.mapKeys,
+                classes = _props.classes;
 
 
             return React.createElement(
@@ -102,9 +202,10 @@ var Component$1 = function (_ReactComponet) {
                 React.createElement(
                     MathJax.Provider,
                     null,
+                    React.createElement(Screen$1, null),
                     React.createElement(
                         Grid,
-                        { container: true, spacing: 0 },
+                        { container: true, className: classes.container, spacing: 0 },
                         keyboard.map(function (row) {
                             return row.map(function (btn) {
                                 return React.createElement(
@@ -130,7 +231,7 @@ Component$1.propTypes = {
 };
 
 
-var Component$2 = withStyles({})(Component$1);
+var Component$2 = withStyles(styles$1)(Component$1);
 
 var Component$3 = function (_ReactComponent) {
     inherits(Component$$1, _ReactComponent);
@@ -178,7 +279,7 @@ Component$3.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
-var styles = function styles() {
+var styles$2 = function styles() {
     return {
         button: {
             margin: 0,
@@ -191,7 +292,7 @@ var styles = function styles() {
     };
 };
 
-var Key = withStyles(styles)(Component$3);
+var Key = withStyles(styles$2)(Component$3);
 
 var MapKeys = function () {
     function MapKeys() {
