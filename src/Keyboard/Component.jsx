@@ -1,9 +1,17 @@
 import React, { Component as ReactComponet } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import green from "@material-ui/core/colors/green";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import MathJax from "react-mathjax";
+import Screen from "../Screen";
+
+const styles = () => ({
+    container: {
+        backgroundColor: green["A200"],
+    },
+});
 
 class Component extends ReactComponet {
     static propTypes = {
@@ -27,12 +35,13 @@ class Component extends ReactComponet {
     }
 
     render() {
-        let { keyboard, mapKeys } = this.props;
+        let { keyboard, mapKeys, classes } = this.props;
 
         return (
             <Paper>
                 <MathJax.Provider>
-                    <Grid container spacing={0}>
+                    <Screen />
+                    <Grid container className={classes.container} spacing={0}>
                         {keyboard.map(row => row.map(btn => (
                             <Grid key={btn} item xs={Math.ceil(12/row.length)}>
                                 {mapKeys.get(btn)}
@@ -45,4 +54,4 @@ class Component extends ReactComponet {
     }
 }
 
-export default withStyles({})(Component);
+export default withStyles(styles)(Component);

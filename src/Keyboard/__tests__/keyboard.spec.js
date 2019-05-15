@@ -47,11 +47,11 @@ describe("<Keyboard />", () => {
             wrapper = mount(<Keyboard keyboard={customKeyboard} />);
             let keyboard = wrapper.find(Component);
 
-            expect(keyboard.find(Grid).at(0).props()).to.deep.include({container: true, spacing: 0});
-            expect(keyboard.find(Grid).at(1).props()).to.deep.include({item: true, xs: 6});
-            expect(keyboard.find(Grid).at(2).props()).to.deep.include({item: true, xs: 6});
-            expect(keyboard.find(Grid).at(3).props()).to.deep.include({item: true, xs: 6});
-            expect(keyboard.find(Grid).at(4).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(4).props()).to.deep.include({container: true, spacing: 0});
+            expect(keyboard.find(Grid).at(5).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(6).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(7).props()).to.deep.include({item: true, xs: 6});
+            expect(keyboard.find(Grid).at(8).props()).to.deep.include({item: true, xs: 6});
         });
 
         it("sets the props with MapKeys", () => {
