@@ -8,11 +8,11 @@ export default class Fraction extends Value {
     }
 
     setDivider(divider) {
-        this.divider = this.setParentheses(divider.getValue());
+        this.divider = divider.getValue();
     }
 
     setDividend(dividend) {
-        this.dividend = this.setParentheses(dividend.getValue());
+        this.dividend = dividend.getValue();
     }
 
     setParentheses(value) {
@@ -20,6 +20,13 @@ export default class Fraction extends Value {
     }
 
     value() {
-        return ` ${this.dividend}/${this.divider}`;
+        let dividend = this.setParentheses(this.dividend);
+        let divider = this.setParentheses(this.divider);
+
+        return `${dividend}/${divider}`;
+    }
+
+    valueTeX() {
+        return `\\frac{${this.dividend}}{${this.divider}}`;
     }
 }

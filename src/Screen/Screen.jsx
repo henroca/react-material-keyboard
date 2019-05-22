@@ -22,7 +22,18 @@ const styles = () => ({
 class Screen extends React.Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
+        screenValue: PropTypes.object,
     };
+
+    renderValue() {
+        let { screenValue } = this.props;
+
+        if (screenValue) {
+            return (<Math value={screenValue.getTeX()} />);
+        }
+
+        return (<span>Degite um valor</span>);
+    }
 
     render() {
         let { classes } = this.props;
@@ -36,7 +47,7 @@ class Screen extends React.Component {
                     <Backspace className={classes.icon} fontSize="small"/>
                 </Grid>
                 <Grid item xs={12} className={classes.screen}>
-                    <Math value={"2 + 3"} />
+                    {this.renderValue()}
                 </Grid>
             </Grid>
         );

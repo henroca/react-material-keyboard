@@ -73,18 +73,66 @@ var possibleConstructorReturn = function (self, call) {
 var Math$1 = function (_React$Component) {
     inherits(Math, _React$Component);
 
-    function Math() {
+    function Math(props) {
         classCallCheck(this, Math);
-        return possibleConstructorReturn(this, (Math.__proto__ || Object.getPrototypeOf(Math)).apply(this, arguments));
+
+        var _this = possibleConstructorReturn(this, (Math.__proto__ || Object.getPrototypeOf(Math)).call(this, props));
+
+        _this.state = {
+            load: true,
+            currentValue: ''
+        };
+
+        _this.onRender = _this.onRender.bind(_this);
+        return _this;
     }
 
     createClass(Math, [{
-        key: "render",
-        value: function render() {
+        key: "onRender",
+        value: function onRender() {
             var value = this.props.value;
 
 
-            return React.createElement(MathJax.Node, { formula: value });
+            this.setState({
+                load: false,
+                currentValue: value
+            });
+        }
+    }, {
+        key: "componentWillUpdate",
+        value: function componentWillUpdate(nextProps) {
+            if (nextProps.value != this.props.value) {
+                this.setState({ load: true });
+            }
+        }
+    }, {
+        key: "getStyle",
+        value: function getStyle(load) {
+            return { display: load ? 'none' : 'block' };
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var value = this.props.value;
+            var _state = this.state,
+                currentValue = _state.currentValue,
+                load = _state.load;
+
+
+            return React.createElement(
+                React.Fragment,
+                null,
+                React.createElement(
+                    "div",
+                    { style: this.getStyle(load) },
+                    React.createElement(MathJax.Node, { formula: value, onRender: this.onRender })
+                ),
+                React.createElement(
+                    "div",
+                    { style: this.getStyle(!load) },
+                    React.createElement(MathJax.Node, { formula: currentValue })
+                )
+            );
         }
     }]);
     return Math;
@@ -94,18 +142,18 @@ Math$1.propTypes = {
     value: PropTypes.string
 };
 
-var styles = function styles(theme) {
+var styles = function styles() {
     return {
         root: {
-            height: '150px',
-            padding: '1em 2em'
+            height: "150px",
+            padding: "1em 2em"
         },
         icon: {
-            float: 'right'
+            float: "right"
         },
         screen: {
-            display: 'flex',
-            justifyContent: 'center'
+            display: "flex",
+            justifyContent: "center"
         }
     };
 };
@@ -119,6 +167,22 @@ var Screen = function (_React$Component) {
     }
 
     createClass(Screen, [{
+        key: "renderValue",
+        value: function renderValue() {
+            var screenValue = this.props.screenValue;
+
+
+            if (screenValue) {
+                return React.createElement(Math$1, { value: screenValue.getTeX() });
+            }
+
+            return React.createElement(
+                "span",
+                null,
+                "Degite um valor"
+            );
+        }
+    }, {
         key: "render",
         value: function render() {
             var classes = this.props.classes;
@@ -144,7 +208,7 @@ var Screen = function (_React$Component) {
                 React.createElement(
                     Grid,
                     { item: true, xs: 12, className: classes.screen },
-                    React.createElement(Math$1, { value: '2 + 3' })
+                    this.renderValue()
                 )
             );
         }
@@ -153,16 +217,17 @@ var Screen = function (_React$Component) {
 }(React.Component);
 
 Screen.propTypes = {
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
+    screenValue: PropTypes.object
 };
 
 
 var Screen$1 = withStyles(styles)(Screen);
 
-var styles$1 = function styles(theme) {
+var styles$1 = function styles() {
     return {
         container: {
-            backgroundColor: green['A200']
+            backgroundColor: green["A200"]
         }
     };
 };
@@ -175,6 +240,10 @@ var Component$1 = function (_ReactComponet) {
 
         var _this = possibleConstructorReturn(this, (Component$$1.__proto__ || Object.getPrototypeOf(Component$$1)).call(this, props));
 
+        _this.state = {
+            value: undefined
+        };
+
         _this.clickBuntton = _this.clickBuntton.bind(_this);
         _this.props.mapKeys.setCallback(_this.clickBuntton);
         _this.props.mapKeys.setMap();
@@ -185,7 +254,17 @@ var Component$1 = function (_ReactComponet) {
     createClass(Component$$1, [{
         key: "clickBuntton",
         value: function clickBuntton(btn) {
-            return btn;
+            var mapEvents = this.props.mapEvents;
+
+            var nextValue = mapEvents.get(btn)(this.state.value);
+
+            if (this.state.value) {
+                this.state.value.setNextValue(nextValue);
+            }
+
+            return this.setState({
+                value: nextValue
+            });
         }
     }, {
         key: "render",
@@ -194,6 +273,7 @@ var Component$1 = function (_ReactComponet) {
                 keyboard = _props.keyboard,
                 mapKeys = _props.mapKeys,
                 classes = _props.classes;
+            var value = this.state.value;
 
 
             return React.createElement(
@@ -202,7 +282,7 @@ var Component$1 = function (_ReactComponet) {
                 React.createElement(
                     MathJax.Provider,
                     null,
-                    React.createElement(Screen$1, null),
+                    React.createElement(Screen$1, { screenValue: value }),
                     React.createElement(
                         Grid,
                         { container: true, className: classes.container, spacing: 0 },
@@ -349,27 +429,43 @@ var Value = function () {
     function Value(operator, prevValue) {
         classCallCheck(this, Value);
 
+        this.nextValue = null;
         this.prevValue = prevValue;
         this.operator = operator;
     }
 
     createClass(Value, [{
+        key: "setNextValue",
+        value: function setNextValue(nextValue) {
+            this.nextValue = nextValue;
+        }
+    }, {
         key: "value",
         value: function value() {
-            return " " + this.operator;
+            return this.operator;
+        }
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            return this.value();
         }
     }, {
         key: "getValue",
         value: function getValue() {
             if (!this.prevValue) {
-                return this.value().trim();
-            }
-
-            if (this.prevValue.constructor.name == "Dot") {
-                return this.prevValue.getValue() + this.value().trim();
+                return this.value();
             }
 
             return this.prevValue.getValue() + this.value();
+        }
+    }, {
+        key: "getTeX",
+        value: function getTeX() {
+            if (!this.prevValue) {
+                return this.valueTeX();
+            }
+
+            return this.prevValue.getTeX() + this.valueTeX();
         }
     }]);
     return Value;
@@ -391,12 +487,12 @@ var Fraction = function (_Value) {
     createClass(Fraction, [{
         key: "setDivider",
         value: function setDivider(divider) {
-            this.divider = this.setParentheses(divider.getValue());
+            this.divider = divider.getValue();
         }
     }, {
         key: "setDividend",
         value: function setDividend(dividend) {
-            this.dividend = this.setParentheses(dividend.getValue());
+            this.dividend = dividend.getValue();
         }
     }, {
         key: "setParentheses",
@@ -406,37 +502,71 @@ var Fraction = function (_Value) {
     }, {
         key: "value",
         value: function value() {
-            return " " + this.dividend + "/" + this.divider;
+            var dividend = this.setParentheses(this.dividend);
+            var divider = this.setParentheses(this.divider);
+
+            return dividend + "/" + divider;
+        }
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            return "\\frac{" + this.dividend + "}{" + this.divider + "}";
         }
     }]);
     return Fraction;
 }(Value);
 
-var Dot = function () {
+var Dot = function (_Value) {
+    inherits(Dot, _Value);
+
     function Dot(prevValue) {
         classCallCheck(this, Dot);
-
-        this.prevValue = prevValue;
-        this.operator = ".";
+        return possibleConstructorReturn(this, (Dot.__proto__ || Object.getPrototypeOf(Dot)).call(this, ".", prevValue));
     }
 
     createClass(Dot, [{
+        key: "valueTeX",
+        value: function valueTeX() {
+            return ",";
+        }
+    }]);
+    return Dot;
+}(Value);
+
+var Operator = function (_Value) {
+    inherits(Operator, _Value);
+
+    function Operator() {
+        classCallCheck(this, Operator);
+        return possibleConstructorReturn(this, (Operator.__proto__ || Object.getPrototypeOf(Operator)).apply(this, arguments));
+    }
+
+    createClass(Operator, [{
         key: "value",
         value: function value() {
-            return this.operator;
+            return " " + this.operator;
         }
     }, {
         key: "getValue",
         value: function getValue() {
             if (!this.prevValue) {
-                return this.value().trim();
+                return this.value() + " ";
             }
 
-            return this.prevValue.getValue() + this.value();
+            return this.prevValue.getValue() + this.value() + " ";
+        }
+    }, {
+        key: "getTeX",
+        value: function getTeX() {
+            if (!this.prevValue) {
+                return this.valueTeX() + " ";
+            }
+
+            return this.prevValue.getTeX() + this.valueTeX() + " ";
         }
     }]);
-    return Dot;
-}();
+    return Operator;
+}(Value);
 
 var MapEvents = function () {
     function MapEvents() {
@@ -460,19 +590,19 @@ var MapEvents = function () {
         value: function setMap() {
             this.setNumbersButtons();
             this.set("=", function (value) {
-                return new Value("=", value);
+                return new Operator("=", value);
             });
             this.set(",", function (value) {
                 return new Dot(value);
             });
             this.set("+", function (value) {
-                return new Value("+", value);
+                return new Operator("+", value);
             });
             this.set("-", function (value) {
-                return new Value("-", value);
+                return new Operator("-", value);
             });
             this.set("*", function (value) {
-                return new Value("*", value);
+                return new Operator("*", value);
             });
             this.set("/", function (value) {
                 return new Fraction(value);

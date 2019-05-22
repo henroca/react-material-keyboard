@@ -2,6 +2,7 @@ import context from "jest-plugin-context";
 import { expect } from "chai";
 import mapEvents from "../MapEvents";
 import Value from "../../Value/Value";
+import Operator from "../../Value/Operator";
 import Fraction from "../../Value/Fraction";
 
 describe("MapEvents", () => {
@@ -54,19 +55,19 @@ describe("MapEvents", () => {
         });
 
         it("returns +", () => {
-            expect(mapEvents.get("+")().getValue()).to.eql("+");
+            expect(mapEvents.get("+")().getValue()).to.eql(" + ");
         });
 
         it("returns -", () => {
-            expect(mapEvents.get("-")().getValue()).to.eql("-");
+            expect(mapEvents.get("-")().getValue()).to.eql(" - ");
         });
 
         it("returns =", () => {
-            expect(mapEvents.get("=")().getValue()).to.eql("=");
+            expect(mapEvents.get("=")().getValue()).to.eql(" = ");
         });
 
         it("returns *", () => {
-            expect(mapEvents.get("*")().getValue()).to.eql("*");
+            expect(mapEvents.get("*")().getValue()).to.eql(" * ");
         });
 
         it("returns /", () => {
@@ -78,14 +79,14 @@ describe("MapEvents", () => {
         });
 
         it("returns the correct value", () => {
-            let value = new Value("+", new Value("2"));
+            let value = new Operator("+", new Value("2"));
 
             expect(mapEvents.get("1")(value)).to.be.an.instanceof(Value);
             expect(mapEvents.get("1")(value).getValue()).to.eql("2 + 1");
         });
 
         it("returns the object from division", () => {
-            let value = new Value("+", new Value("2"));
+            let value = new Operator("+", new Value("2"));
             let fraction = mapEvents.get("/")(value);
             fraction.setDivider(new Value("2"));
             fraction.setDividend(new Value("1"));

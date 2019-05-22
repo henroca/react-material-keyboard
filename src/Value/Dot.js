@@ -1,18 +1,11 @@
-export default class Dot {
+import Value from "./Value";
+
+export default class Dot extends Value {
     constructor(prevValue) {
-        this.prevValue = prevValue;
-        this.operator = ".";
+        super(".", prevValue);
     }
 
-    value() {
-        return this.operator;
-    }
-
-    getValue() {
-        if (!this.prevValue) {
-            return this.value().trim();
-        }
-
-        return this.prevValue.getValue() + this.value();
+    valueTeX() {
+        return ",";
     }
 }

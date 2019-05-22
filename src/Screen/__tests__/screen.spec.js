@@ -3,13 +3,13 @@ import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { Backspace } from "@material-ui/icons";
 import { expect } from "chai";
-
 import Screen from "../";
 import Math from "../Math";
+import Value from "../../Value/Value";
 
 describe("<Screen />", () => {
     let wrapper = null;
-    const component = <Screen />;
+    const component = <Screen screenValue={new Value("2")} />;
 
     beforeEach(() => {
         wrapper = mount(component);

@@ -7,11 +7,50 @@ export default class Math extends React.Component {
         value: PropTypes.string,
     };
 
-    render() {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            load: true,
+            currentValue: '',
+        };
+
+        this.onRender = this.onRender.bind(this);
+    }
+
+    onRender() {
         let { value } = this.props;
 
+        this.setState({
+            load: false,
+            currentValue: value,
+        });
+    }
+
+    componentWillUpdate(nextProps) {
+        if (nextProps.value != this.props.value) {
+            this.setState({ load: true });
+        }
+    }
+
+    getStyle(load) {
+        return { display: load ? 'none' : 'block' };
+    }
+
+    render() {
+        let { value } = this.props;
+        let { currentValue, load } = this.state;
+
         return (
-            <MathJax.Node formula={value} />
+            <React.Fragment>
+                <div style={this.getStyle(load)}>
+                    <MathJax.Node formula={value} onRender={this.onRender} />
+                </div>
+
+                <div style={this.getStyle(!load)}>
+                    <MathJax.Node formula={currentValue} />
+                </div>
+            </React.Fragment>
         );
     }
 }

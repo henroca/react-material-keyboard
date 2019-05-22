@@ -24,6 +24,10 @@ class Component extends ReactComponet {
     constructor(props) {
         super(props);
 
+        this.state = {
+            value: undefined,
+        };
+
         this.clickBuntton = this.clickBuntton.bind(this);
         this.props.mapKeys.setCallback(this.clickBuntton);
         this.props.mapKeys.setMap();
@@ -31,16 +35,26 @@ class Component extends ReactComponet {
     }
 
     clickBuntton(btn) {
-        return btn;
+        let { mapEvents } = this.props;
+        let nextValue = mapEvents.get(btn)(this.state.value);
+
+        if (this.state.value) {
+            this.state.value.setNextValue(nextValue);
+        }
+
+        return this.setState({
+            value: nextValue,
+        });
     }
 
     render() {
         let { keyboard, mapKeys, classes } = this.props;
+        let { value } = this.state;
 
         return (
             <Paper>
                 <MathJax.Provider>
-                    <Screen />
+                    <Screen screenValue={value} />
                     <Grid container className={classes.container} spacing={0}>
                         {keyboard.map(row => row.map(btn => (
                             <Grid key={btn} item xs={Math.ceil(12/row.length)}>

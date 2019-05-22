@@ -3,11 +3,13 @@ import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { expect } from "chai";
 import Grid from "@material-ui/core/Grid";
+import Key from "../../Key";
 
 import { defaultKeyboard } from "../keyboards";
 import Keyboard from "../Keyboard";
 import Component from "../Component";
 import { MapKeys } from "../MapKeys";
+import Value from "../../Value/Value";
 
 describe("<Keyboard />", () => {
     let wrapper = null;
@@ -59,6 +61,14 @@ describe("<Keyboard />", () => {
             let mapKeys = wrapper.find(Component).props().mapKeys;
 
             expect(mapKeys).to.be.an.instanceof(MapKeys);
+        });
+    });
+
+    context("when click a button", () => {
+        it("changes the current value", () => {
+            wrapper.find(Key).at(0).find('button').simulate('click');
+            let state = wrapper.find(Component).children().state();
+            expect(state.value).to.deep.equal(new Value('1'));
         });
     });
 

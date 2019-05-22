@@ -1,22 +1,35 @@
 export default class Value {
     constructor(operator, prevValue) {
+        this.nextValue = null;
         this.prevValue = prevValue;
         this.operator = operator;
     }
 
+    setNextValue(nextValue) {
+        this.nextValue = nextValue;
+    }
+
     value() {
-        return " " + this.operator;
+        return this.operator;
+    }
+
+    valueTeX() {
+        return this.value();
     }
 
     getValue() {
         if (!this.prevValue) {
-            return this.value().trim();
-        }
-
-        if (this.prevValue.constructor.name == "Dot") {
-            return this.prevValue.getValue() + this.value().trim();
+            return this.value();
         }
 
         return this.prevValue.getValue() + this.value();
+    }
+
+    getTeX() {
+        if (!this.prevValue) {
+            return this.valueTeX();
+        }
+
+        return this.prevValue.getTeX() + this.valueTeX();
     }
 }
