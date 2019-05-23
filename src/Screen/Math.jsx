@@ -12,13 +12,13 @@ export default class Math extends React.Component {
 
         this.state = {
             load: true,
-            currentValue: '',
+            currentValue: "",
         };
 
-        this.onRender = this.onRender.bind(this);
+        this.handleOnRender = this.handleOnRender.bind(this);
     }
 
-    onRender() {
+    handleOnRender() {
         let { value } = this.props;
 
         this.setState({
@@ -34,7 +34,7 @@ export default class Math extends React.Component {
     }
 
     getStyle(load) {
-        return { display: load ? 'none' : 'block' };
+        return { display: load ? "none" : "block" };
     }
 
     render() {
@@ -44,7 +44,7 @@ export default class Math extends React.Component {
         return (
             <React.Fragment>
                 <div style={this.getStyle(load)}>
-                    <MathJax.Node formula={value} onRender={this.onRender} />
+                    <MathJax.Node formula={value} onRender={this.handleOnRender} />
                 </div>
 
                 <div style={this.getStyle(!load)}>

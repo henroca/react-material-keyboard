@@ -66,9 +66,9 @@ describe("<Keyboard />", () => {
 
     context("when click a button", () => {
         it("changes the current value", () => {
-            wrapper.find(Key).at(0).find('button').simulate('click');
+            wrapper.find(Key).at(0).find("button").simulate("click");
             let state = wrapper.find(Component).children().state();
-            expect(state.value).to.deep.equal(new Value('1'));
+            expect(state.value).to.deep.equal(new Value("1"));
         });
     });
 
