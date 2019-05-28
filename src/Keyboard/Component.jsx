@@ -13,6 +13,22 @@ const styles = () => ({
     },
 });
 
+const mathJaxConfig = {
+    tex2jax: {
+        inlineMath: []
+    },
+    showMathMenu: false,
+    showMathMenuMSIE: false,
+    "fast-preview": {
+        disabled: true
+    },
+    showProcessingMessages: false,
+    styles: {
+        "#MathJax_Message": {display: 'none'},
+        "#MathJax_MSIE_Frame": {display: 'none'}
+    }
+};
+
 class Component extends ReactComponet {
     static propTypes = {
         keyboard: PropTypes.array.isRequired,
@@ -53,7 +69,7 @@ class Component extends ReactComponet {
 
         return (
             <Paper>
-                <MathJax.Provider>
+                <MathJax.Provider options={mathJaxConfig}>
                     <Screen screenValue={value} />
                     <Grid container className={classes.container} spacing={0}>
                         {keyboard.map(row => row.map(btn => (

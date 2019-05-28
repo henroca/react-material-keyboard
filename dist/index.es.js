@@ -80,16 +80,16 @@ var Math$1 = function (_React$Component) {
 
         _this.state = {
             load: true,
-            currentValue: ''
+            currentValue: ""
         };
 
-        _this.onRender = _this.onRender.bind(_this);
+        _this.handleOnRender = _this.handleOnRender.bind(_this);
         return _this;
     }
 
     createClass(Math, [{
-        key: "onRender",
-        value: function onRender() {
+        key: "handleOnRender",
+        value: function handleOnRender() {
             var value = this.props.value;
 
 
@@ -108,7 +108,7 @@ var Math$1 = function (_React$Component) {
     }, {
         key: "getStyle",
         value: function getStyle(load) {
-            return { display: load ? 'none' : 'block' };
+            return { display: load ? "none" : "block" };
         }
     }, {
         key: "render",
@@ -125,7 +125,7 @@ var Math$1 = function (_React$Component) {
                 React.createElement(
                     "div",
                     { style: this.getStyle(load) },
-                    React.createElement(MathJax.Node, { formula: value, onRender: this.onRender })
+                    React.createElement(MathJax.Node, { formula: value, onRender: this.handleOnRender })
                 ),
                 React.createElement(
                     "div",
@@ -232,6 +232,22 @@ var styles$1 = function styles() {
     };
 };
 
+var mathJaxConfig = {
+    tex2jax: {
+        inlineMath: []
+    },
+    showMathMenu: false,
+    showMathMenuMSIE: false,
+    "fast-preview": {
+        disabled: true
+    },
+    showProcessingMessages: false,
+    styles: {
+        "#MathJax_Message": { display: 'none' },
+        "#MathJax_MSIE_Frame": { display: 'none' }
+    }
+};
+
 var Component$1 = function (_ReactComponet) {
     inherits(Component$$1, _ReactComponet);
 
@@ -281,7 +297,7 @@ var Component$1 = function (_ReactComponet) {
                 null,
                 React.createElement(
                     MathJax.Provider,
-                    null,
+                    { options: mathJaxConfig },
                     React.createElement(Screen$1, { screenValue: value }),
                     React.createElement(
                         Grid,
