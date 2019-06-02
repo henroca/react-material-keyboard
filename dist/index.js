@@ -15,6 +15,42 @@ var green = _interopDefault(require('@material-ui/core/colors/green'));
 var Paper = _interopDefault(require('@material-ui/core/Paper'));
 var Button = _interopDefault(require('@material-ui/core/Button'));
 
+function styleInject(css, ref) {
+  if ( ref === void 0 ) ref = {};
+  var insertAt = ref.insertAt;
+
+  if (!css || typeof document === 'undefined') { return; }
+
+  var head = document.head || document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+
+  if (insertAt === 'top') {
+    if (head.firstChild) {
+      head.insertBefore(style, head.firstChild);
+    } else {
+      head.appendChild(style);
+    }
+  } else {
+    head.appendChild(style);
+  }
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+var css = ".styles_cursor__3_aFK {\n    margin: 0 2px;\n    font-size: 1.4em;\n}\n";
+styleInject(css);
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -91,6 +127,7 @@ var Math$1 = function (_React$Component) {
         };
 
         _this.handleOnRender = _this.handleOnRender.bind(_this);
+        _this.timeCursor = null;
         return _this;
     }
 
@@ -113,6 +150,98 @@ var Math$1 = function (_React$Component) {
             }
         }
     }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.setCursor();
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate() {
+            this.setCursor();
+        }
+    }, {
+        key: "setCursor",
+        value: function setCursor() {
+            var _this2 = this;
+
+            if (this.timeCursor) {
+                clearInterval(this.timeCursor);
+            }
+
+            var mathList = document.getElementsByClassName("math");
+
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = mathList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var el = _step.value;
+
+                    var mjxEls = el.getElementsByClassName("mjx-char");
+
+                    var _loop = function _loop(mjx) {
+                        if (mjx.innerHTML == '∣') {
+                            mjx.style.margin = "0 2px";
+                            mjx.style.fontSize = "1.4em";
+
+                            _this2.timeCursor = setInterval(function (el) {
+                                if (mjx.style.visibility == 'hidden') {
+                                    mjx.style.visibility = 'visible';
+                                } else {
+                                    mjx.style.visibility = 'hidden';
+                                }
+                            }, 500);
+
+                            return {
+                                v: void 0
+                            };
+                        }
+                    };
+
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = mjxEls[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var mjx = _step2.value;
+
+                            var _ret = _loop(mjx);
+
+                            if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }, {
         key: "getStyle",
         value: function getStyle(load) {
             return { display: load ? "none" : "block" };
@@ -131,12 +260,12 @@ var Math$1 = function (_React$Component) {
                 null,
                 React__default.createElement(
                     "div",
-                    { style: this.getStyle(load) },
+                    { style: this.getStyle(load), className: "math" },
                     React__default.createElement(MathJax.Node, { formula: value, onRender: this.handleOnRender })
                 ),
                 React__default.createElement(
                     "div",
-                    { style: this.getStyle(!load) },
+                    { style: this.getStyle(!load), className: "math" },
                     React__default.createElement(MathJax.Node, { formula: currentValue })
                 )
             );
@@ -149,7 +278,7 @@ Math$1.propTypes = {
     value: PropTypes.string
 };
 
-var styles$1 = function styles$$1() {
+var styles$2 = function styles$$1() {
     return {
         root: {
             height: "150px",
@@ -229,9 +358,9 @@ Screen.propTypes = {
 };
 
 
-var Screen$1 = styles.withStyles(styles$1)(Screen);
+var Screen$1 = styles.withStyles(styles$2)(Screen);
 
-var styles$2 = function styles$$1() {
+var styles$3 = function styles$$1() {
     return {
         container: {
             backgroundColor: green["A200"]
@@ -283,7 +412,10 @@ var Component = function (_ReactComponet) {
 
             if (this.state.value) {
                 this.state.value.setNextValue(nextValue);
+                this.state.value.toggleCursor();
             }
+
+            nextValue.toggleCursor();
 
             return this.setState({
                 value: nextValue
@@ -334,7 +466,7 @@ Component.propTypes = {
 };
 
 
-var Component$1 = styles.withStyles(styles$2)(Component);
+var Component$1 = styles.withStyles(styles$3)(Component);
 
 var Component$2 = function (_ReactComponent) {
     inherits(Component, _ReactComponent);
@@ -382,7 +514,7 @@ Component$2.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
-var styles$3 = function styles$$1() {
+var styles$4 = function styles$$1() {
     return {
         button: {
             margin: 0,
@@ -395,7 +527,7 @@ var styles$3 = function styles$$1() {
     };
 };
 
-var Key = styles.withStyles(styles$3)(Component$2);
+var Key = styles.withStyles(styles$4)(Component$2);
 
 var MapKeys = function () {
     function MapKeys() {
@@ -455,9 +587,15 @@ var Value = function () {
         this.nextValue = null;
         this.prevValue = prevValue;
         this.operator = operator;
+        this.cursor = false;
     }
 
     createClass(Value, [{
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            this.cursor = !this.cursor;
+        }
+    }, {
         key: "setNextValue",
         value: function setNextValue(nextValue) {
             this.nextValue = nextValue;
@@ -470,6 +608,10 @@ var Value = function () {
     }, {
         key: "valueTeX",
         value: function valueTeX() {
+            if (this.cursor) {
+                return this.value() + "\\mid";
+            }
+
             return this.value();
         }
     }, {

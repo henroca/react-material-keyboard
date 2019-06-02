@@ -56,7 +56,10 @@ class Component extends ReactComponet {
 
         if (this.state.value) {
             this.state.value.setNextValue(nextValue);
+            this.state.value.toggleCursor();
         }
+
+        nextValue.toggleCursor();
 
         return this.setState({
             value: nextValue,

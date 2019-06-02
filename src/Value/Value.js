@@ -3,6 +3,11 @@ export default class Value {
         this.nextValue = null;
         this.prevValue = prevValue;
         this.operator = operator;
+        this.cursor = false;
+    }
+
+    toggleCursor() {
+        this.cursor = !this.cursor;
     }
 
     setNextValue(nextValue) {
@@ -14,6 +19,10 @@ export default class Value {
     }
 
     valueTeX() {
+        if (this.cursor) {
+            return this.value() + "\\mid";
+        }
+
         return this.value();
     }
 
