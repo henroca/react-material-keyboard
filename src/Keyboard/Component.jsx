@@ -6,6 +6,9 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import MathJax from "react-mathjax";
 import Screen from "../Screen";
+import ValueList from "../Screen/ValueList";
+
+import { LEFT, RIGHT } from "../keyConsts";
 
 const styles = () => ({
     container: {
@@ -41,10 +44,11 @@ class Component extends ReactComponet {
         super(props);
 
         this.state = {
-            value: undefined,
+            valueList: null,
         };
 
         this.clickBuntton = this.clickBuntton.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
         this.props.mapKeys.setCallback(this.clickBuntton);
         this.props.mapKeys.setMap();
         this.props.mapEvents.setMap();
@@ -52,28 +56,40 @@ class Component extends ReactComponet {
 
     clickBuntton(btn) {
         let { mapEvents } = this.props;
-        let nextValue = mapEvents.get(btn)(this.state.value);
+        let { valueList } = this.state;
+        let nextValue = mapEvents.get(btn)();
 
-        if (this.state.value) {
-            this.state.value.setNextValue(nextValue);
-            this.state.value.toggleCursor();
+        if (!valueList) {
+            valueList = new ValueList(nextValue);
+        } else {
+            valueList.addValue(nextValue);
         }
 
-        nextValue.toggleCursor();
+        this.setState({ valueList });
+    }
 
-        return this.setState({
-            value: nextValue,
-        });
+    handleKeyUp({ keyCode }) {
+        let { valueList } = this.state;
+
+        if (keyCode == LEFT) {
+            valueList.prevValue();
+        } else if (keyCode == RIGHT) {
+            valueList.nextValue();
+        } else {
+            return;
+        }
+
+        this.setState({ valueList });
     }
 
     render() {
         let { keyboard, mapKeys, classes } = this.props;
-        let { value } = this.state;
+        let { valueList } = this.state;
 
         return (
-            <Paper>
+            <Paper onKeyUp={this.handleKeyUp}>
                 <MathJax.Provider options={mathJaxConfig}>
-                    <Screen screenValue={value} />
+                    <Screen screenValue={valueList} onKeyUp={this.handleKeyUp}/>
                     <Grid container className={classes.container} spacing={0}>
                         {keyboard.map(row => row.map(btn => (
                             <Grid key={btn} item xs={Math.ceil(12/row.length)}>

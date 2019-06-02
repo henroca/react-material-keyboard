@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { mount } from "enzyme";
 import { expect } from "chai";
 import Math from "../Math";
@@ -7,30 +6,33 @@ import MathJax from "react-mathjax";
 import sinon from "sinon";
 
 jest.mock("react-mathjax", () => {
-    const Node = jest.fn(() => {
-        const Component = ({ onRender }) => (
-            <div onClick={() => onRender()}>Fake Node</div>
-        );
+    const PropTypes = require("prop-types");
 
-        Component.propTypes = {
-            onRender: PropTypes.func,
-        };
+    const Node = ({ onRender }) => (
+        <div onClick={() => onRender()}>Fake Node</div>
+    );
 
-        return Component;
-    });
+    Node.propTypes = {
+        onRender: PropTypes.func,
+    }
 
     return { Node };
 });
 
 describe("<Math />", () => {
-    const spy = sinon.spy(Math.prototype, "handleOnRender");
+    const spyOnRender = sinon.spy(Math.prototype, "handleOnRender");
+    const spySetCursor = sinon.spy(Math.prototype, "setCursor");
     let wrapper = null;
 
     beforeEach(() => wrapper = mount(<Math value="2"/>));
 
+    it("calls setCursor", () => {
+        expect(spySetCursor.calledOnce).to.true;
+    });
+
     it("calls handleOnRender", () => {
         wrapper.find(MathJax.Node).first().simulate("click");
-        expect(spy.calledOnce).to.true;
+        expect(spyOnRender.calledOnce).to.true;
     });
 
     it("changes load after called the handleOnRender", () => {

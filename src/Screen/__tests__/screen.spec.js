@@ -6,10 +6,11 @@ import { expect } from "chai";
 import Screen from "../";
 import Math from "../Math";
 import Value from "../../Value/Value";
+import ValueList from "../ValueList";
 
 describe("<Screen />", () => {
     let wrapper = null;
-    const component = <Screen screenValue={new Value("2")} />;
+    const component = <Screen screenValue={new ValueList(new Value("2"))} />;
 
     beforeEach(() => {
         wrapper = mount(component);

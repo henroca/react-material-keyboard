@@ -11,6 +11,10 @@ export default class Value {
     }
 
     setNextValue(nextValue) {
+        if (this.nextValue) {
+            nextValue.setNextValue(this.nextValue);
+        }
+
         this.nextValue = nextValue;
     }
 

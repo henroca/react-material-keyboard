@@ -10,6 +10,7 @@ import Keyboard from "../Keyboard";
 import Component from "../Component";
 import { MapKeys } from "../MapKeys";
 import Value from "../../Value/Value";
+import { LEFT, RIGHT } from "../../keyConsts";
 
 describe("<Keyboard />", () => {
     let wrapper = null;
@@ -67,8 +68,32 @@ describe("<Keyboard />", () => {
     context("when click a button", () => {
         it("changes the current value", () => {
             wrapper.find(Key).at(0).find("button").simulate("click");
-            let state = wrapper.find(Component).children().state();
-            expect(state.value).to.deep.equal(new Value("1"));
+            let valueList = wrapper.find(Component).children().state("valueList");
+            let value = new Value("1");
+            value.toggleCursor();
+
+            expect(valueList.value).to.deep.equal(value);
+        });
+
+        it("change the cursor", () => {
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            wrapper.find(Key).at(1).find("button").simulate("click");
+
+            let valueList = wrapper.find(Component).children().state("valueList");
+
+            expect(valueList.value.cursor).to.be.true;
+            expect(valueList.value.prevValue.cursor).to.be.false;
+        });
+
+        it("set cursor to prevValue", () => {
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            wrapper.find(Key).at(1).find("button").simulate("click");
+            wrapper.simulate("keyup", {keyCode: LEFT});
+
+            let valueList = wrapper.find(Component).children().state("valueList");
+
+            expect(valueList.value.cursor).to.be.true;
+            expect(valueList.value.nextValue.cursor).to.be.false;
         });
     });
 

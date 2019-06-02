@@ -54,9 +54,7 @@ export default class Math extends React.Component {
 
             for (let mjx of mjxEls) {
                 if (mjx.innerHTML == '∣') {
-                    mjx.style.margin = "0 2px";
                     mjx.style.fontSize = "1.4em";
-
                     this.timeCursor = setInterval((el) => {
                         if (mjx.style.visibility == 'hidden') {
                             mjx.style.visibility = 'visible';
@@ -64,9 +62,9 @@ export default class Math extends React.Component {
                             mjx.style.visibility = 'hidden';
                         }
                     }, 500);
-
-                    return;
                 }
+
+                mjx.parentElement.style.marginLeft = "0";
             }
         }
     }

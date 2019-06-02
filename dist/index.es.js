@@ -8,42 +8,6 @@ import green from '@material-ui/core/colors/green';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-function styleInject(css, ref) {
-  if ( ref === void 0 ) ref = {};
-  var insertAt = ref.insertAt;
-
-  if (!css || typeof document === 'undefined') { return; }
-
-  var head = document.head || document.getElementsByTagName('head')[0];
-  var style = document.createElement('style');
-  style.type = 'text/css';
-
-  if (insertAt === 'top') {
-    if (head.firstChild) {
-      head.insertBefore(style, head.firstChild);
-    } else {
-      head.appendChild(style);
-    }
-  } else {
-    head.appendChild(style);
-  }
-
-  if (style.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-}
-
-var css = ".styles_cursor__3_aFK {\n    margin: 0 2px;\n    font-size: 1.4em;\n}\n";
-styleInject(css);
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
-
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -175,9 +139,7 @@ var Math$1 = function (_React$Component) {
 
                     var _loop = function _loop(mjx) {
                         if (mjx.innerHTML == '∣') {
-                            mjx.style.margin = "0 2px";
                             mjx.style.fontSize = "1.4em";
-
                             _this2.timeCursor = setInterval(function (el) {
                                 if (mjx.style.visibility == 'hidden') {
                                     mjx.style.visibility = 'visible';
@@ -185,11 +147,9 @@ var Math$1 = function (_React$Component) {
                                     mjx.style.visibility = 'hidden';
                                 }
                             }, 500);
-
-                            return {
-                                v: void 0
-                            };
                         }
+
+                        mjx.parentElement.style.marginLeft = "0";
                     };
 
                     var _iteratorNormalCompletion2 = true;
@@ -200,9 +160,7 @@ var Math$1 = function (_React$Component) {
                         for (var _iterator2 = mjxEls[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                             var mjx = _step2.value;
 
-                            var _ret = _loop(mjx);
-
-                            if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+                            _loop(mjx);
                         }
                     } catch (err) {
                         _didIteratorError2 = true;
@@ -271,7 +229,7 @@ Math$1.propTypes = {
     value: PropTypes.string
 };
 
-var styles$1 = function styles() {
+var styles = function styles() {
     return {
         root: {
             height: "150px",
@@ -302,7 +260,7 @@ var Screen = function (_React$Component) {
 
 
             if (screenValue) {
-                return React.createElement(Math$1, { value: screenValue.getTeX() });
+                return React.createElement(Math$1, { value: screenValue.last().getTeX() });
             }
 
             return React.createElement(
@@ -314,12 +272,14 @@ var Screen = function (_React$Component) {
     }, {
         key: "render",
         value: function render() {
-            var classes = this.props.classes;
+            var _props = this.props,
+                classes = _props.classes,
+                onKeyUp = _props.onKeyUp;
 
 
             return React.createElement(
                 Grid,
-                { container: true, className: classes.root, spacing: 0 },
+                { container: true, onKeyUp: onKeyUp, className: classes.root, spacing: 0 },
                 React.createElement(
                     Grid,
                     { item: true, xs: 6 },
@@ -351,9 +311,180 @@ Screen.propTypes = {
 };
 
 
-var Screen$1 = withStyles(styles$1)(Screen);
+var Screen$1 = withStyles(styles)(Screen);
 
-var styles$2 = function styles() {
+var Value = function () {
+    function Value(operator, prevValue) {
+        classCallCheck(this, Value);
+
+        this.nextValue = null;
+        this.prevValue = prevValue;
+        this.operator = operator;
+        this.cursor = false;
+    }
+
+    createClass(Value, [{
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            this.cursor = !this.cursor;
+        }
+    }, {
+        key: "setNextValue",
+        value: function setNextValue(nextValue) {
+            if (this.nextValue) {
+                nextValue.setNextValue(this.nextValue);
+            }
+
+            this.nextValue = nextValue;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            return this.operator;
+        }
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            if (this.cursor) {
+                return this.value() + "\\mid";
+            }
+
+            return this.value();
+        }
+    }, {
+        key: "getValue",
+        value: function getValue() {
+            if (!this.prevValue) {
+                return this.value();
+            }
+
+            return this.prevValue.getValue() + this.value();
+        }
+    }, {
+        key: "getTeX",
+        value: function getTeX() {
+            if (!this.prevValue) {
+                return this.valueTeX();
+            }
+
+            return this.prevValue.getTeX() + this.valueTeX();
+        }
+    }]);
+    return Value;
+}();
+
+var ValueList = function () {
+    /**
+     *
+     * @param {Value} value
+     */
+    function ValueList(value) {
+        classCallCheck(this, ValueList);
+
+        this.value = value;
+        this.boot();
+    }
+
+    /**
+     * Boot the instance
+     */
+
+
+    createClass(ValueList, [{
+        key: "boot",
+        value: function boot() {
+            if (!this.value.cursor) {
+                this.value.toggleCursor();
+            }
+        }
+
+        /**
+         * set the current value to next value
+         */
+
+    }, {
+        key: "nextValue",
+        value: function nextValue() {
+            this.setValue("nextValue");
+        }
+
+        /**
+         * set the current value to prev value
+         */
+
+    }, {
+        key: "prevValue",
+        value: function prevValue() {
+            this.setValue("prevValue");
+        }
+
+        /**
+         * set current value
+         *
+         * @param {String} attrName
+         */
+
+    }, {
+        key: "setValue",
+        value: function setValue(attrName) {
+            if (this.value[attrName]) {
+                this.value.toggleCursor();
+                this.value = this.value[attrName];
+                this.value.toggleCursor();
+            }
+        }
+
+        /**
+         *  add value to list
+         *
+         * @param {Value} value
+         */
+
+    }, {
+        key: "addValue",
+        value: function addValue(value) {
+            value.prevValue = this.value;
+
+            if (this.value.nextValue) {
+                value.nextValue = this.value.nextValue;
+                value.nextValue.prevValue = value;
+            }
+
+            this.value.nextValue = value;
+
+            this.value.toggleCursor();
+            value.toggleCursor();
+            this.value = value;
+        }
+
+        /**
+         *  returns the last Value from list
+         *
+         * @returns {Value}
+         */
+
+    }, {
+        key: "last",
+        value: function last() {
+            var value = this.value;
+            var nextValue = null;
+
+            while (nextValue = value.nextValue) {
+                if (nextValue) {
+                    value = nextValue;
+                }
+            }
+
+            return value;
+        }
+    }]);
+    return ValueList;
+}();
+
+var LEFT = 37;
+var RIGHT = 39;
+
+var styles$1 = function styles() {
     return {
         container: {
             backgroundColor: green["A200"]
@@ -386,10 +517,11 @@ var Component$1 = function (_ReactComponet) {
         var _this = possibleConstructorReturn(this, (Component$$1.__proto__ || Object.getPrototypeOf(Component$$1)).call(this, props));
 
         _this.state = {
-            value: undefined
+            valueList: null
         };
 
         _this.clickBuntton = _this.clickBuntton.bind(_this);
+        _this.handleKeyUp = _this.handleKeyUp.bind(_this);
         _this.props.mapKeys.setCallback(_this.clickBuntton);
         _this.props.mapKeys.setMap();
         _this.props.mapEvents.setMap();
@@ -400,19 +532,34 @@ var Component$1 = function (_ReactComponet) {
         key: "clickBuntton",
         value: function clickBuntton(btn) {
             var mapEvents = this.props.mapEvents;
+            var valueList = this.state.valueList;
 
-            var nextValue = mapEvents.get(btn)(this.state.value);
+            var nextValue = mapEvents.get(btn)();
 
-            if (this.state.value) {
-                this.state.value.setNextValue(nextValue);
-                this.state.value.toggleCursor();
+            if (!valueList) {
+                valueList = new ValueList(nextValue);
+            } else {
+                valueList.addValue(nextValue);
             }
 
-            nextValue.toggleCursor();
+            this.setState({ valueList: valueList });
+        }
+    }, {
+        key: "handleKeyUp",
+        value: function handleKeyUp(_ref) {
+            var keyCode = _ref.keyCode;
+            var valueList = this.state.valueList;
 
-            return this.setState({
-                value: nextValue
-            });
+
+            if (keyCode == LEFT) {
+                valueList.prevValue();
+            } else if (keyCode == RIGHT) {
+                valueList.nextValue();
+            } else {
+                return;
+            }
+
+            this.setState({ valueList: valueList });
         }
     }, {
         key: "render",
@@ -421,16 +568,16 @@ var Component$1 = function (_ReactComponet) {
                 keyboard = _props.keyboard,
                 mapKeys = _props.mapKeys,
                 classes = _props.classes;
-            var value = this.state.value;
+            var valueList = this.state.valueList;
 
 
             return React.createElement(
                 Paper,
-                null,
+                { onKeyUp: this.handleKeyUp },
                 React.createElement(
                     MathJax.Provider,
                     { options: mathJaxConfig },
-                    React.createElement(Screen$1, { screenValue: value }),
+                    React.createElement(Screen$1, { screenValue: valueList, onKeyUp: this.handleKeyUp }),
                     React.createElement(
                         Grid,
                         { container: true, className: classes.container, spacing: 0 },
@@ -459,7 +606,7 @@ Component$1.propTypes = {
 };
 
 
-var Component$2 = withStyles(styles$2)(Component$1);
+var Component$2 = withStyles(styles$1)(Component$1);
 
 var Component$3 = function (_ReactComponent) {
     inherits(Component$$1, _ReactComponent);
@@ -507,7 +654,7 @@ Component$3.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
-var styles$3 = function styles() {
+var styles$2 = function styles() {
     return {
         button: {
             margin: 0,
@@ -520,7 +667,7 @@ var styles$3 = function styles() {
     };
 };
 
-var Key = withStyles(styles$3)(Component$3);
+var Key = withStyles(styles$2)(Component$3);
 
 var MapKeys = function () {
     function MapKeys() {
@@ -572,62 +719,6 @@ var MapKeys = function () {
 }();
 
 var defaultMapKeys = new MapKeys();
-
-var Value = function () {
-    function Value(operator, prevValue) {
-        classCallCheck(this, Value);
-
-        this.nextValue = null;
-        this.prevValue = prevValue;
-        this.operator = operator;
-        this.cursor = false;
-    }
-
-    createClass(Value, [{
-        key: "toggleCursor",
-        value: function toggleCursor() {
-            this.cursor = !this.cursor;
-        }
-    }, {
-        key: "setNextValue",
-        value: function setNextValue(nextValue) {
-            this.nextValue = nextValue;
-        }
-    }, {
-        key: "value",
-        value: function value() {
-            return this.operator;
-        }
-    }, {
-        key: "valueTeX",
-        value: function valueTeX() {
-            if (this.cursor) {
-                return this.value() + "\\mid";
-            }
-
-            return this.value();
-        }
-    }, {
-        key: "getValue",
-        value: function getValue() {
-            if (!this.prevValue) {
-                return this.value();
-            }
-
-            return this.prevValue.getValue() + this.value();
-        }
-    }, {
-        key: "getTeX",
-        value: function getTeX() {
-            if (!this.prevValue) {
-                return this.valueTeX();
-            }
-
-            return this.prevValue.getTeX() + this.valueTeX();
-        }
-    }]);
-    return Value;
-}();
 
 var Fraction = function (_Value) {
     inherits(Fraction, _Value);
