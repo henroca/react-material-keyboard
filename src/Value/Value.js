@@ -12,10 +12,15 @@ export default class Value {
 
     setNextValue(nextValue) {
         if (this.nextValue) {
-            nextValue.setNextValue(this.nextValue);
+            nextValue.nextValue = this.nextValue;
+            nextValue.nextValue.setPrevValue(nextValue);
         }
 
         this.nextValue = nextValue;
+    }
+
+    setPrevValue(prevValue) {
+        this.prevValue = prevValue;
     }
 
     value() {

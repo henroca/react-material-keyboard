@@ -1,4 +1,5 @@
-import Value from "../Value/Value";
+import Value from "./Value";
+import ValueContext from "./Strategies/ValueContext";
 
 export default class ValueList {
     /**
@@ -23,27 +24,24 @@ export default class ValueList {
      * set the current value to next value
      */
     nextValue() {
-        this.setValue("nextValue");
+        let value = this.getContext().changeValue("nextValue");
+
+        if (value === null) return value;
+        this.value = value;
+
+        return true;
     }
 
     /**
      * set the current value to prev value
      */
     prevValue() {
-        this.setValue("prevValue");
-    }
+        let value = this.getContext().changeValue("prevValue");
 
-    /**
-     * set current value
-     *
-     * @param {String} attrName
-     */
-    setValue(attrName) {
-        if (this.value[attrName]) {
-            this.value.toggleCursor()
-            this.value = this.value[attrName];
-            this.value.toggleCursor();
-        }
+        if (value === null) return value;
+        this.value = value;
+
+        return true;
     }
 
     /**
@@ -52,18 +50,30 @@ export default class ValueList {
      * @param {Value} value
      */
     addValue(value) {
-        value.prevValue = this.value;
+        this.value = this.getContext().addValue(value);
+    }
 
-        if (this.value.nextValue) {
-            value.nextValue = this.value.nextValue;
-            value.nextValue.prevValue = value;
-        }
+    /**
+     * unfocus value list
+     */
+    unfocus() {
+        this.value.cursor = false;
+    }
 
-        this.value.nextValue = value;
+    /**
+     * focus value list
+     */
+    focus() {
+        this.value.cursor = true;
+    }
 
-        this.value.toggleCursor();
-        value.toggleCursor();
-        this.value = value;
+    /**
+     *
+     * @returns {ValueContext}
+     */
+    getContext()
+    {
+        return new ValueContext(this.value);
     }
 
     /**

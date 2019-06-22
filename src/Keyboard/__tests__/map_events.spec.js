@@ -88,8 +88,8 @@ describe("MapEvents", () => {
         it("returns the object from division", () => {
             let value = new Operator("+", new Value("2"));
             let fraction = mapEvents.get("/")(value);
-            fraction.setDivider(new Value("2"));
-            fraction.setDividend(new Value("1"));
+            fraction.addDivider(new Value("2"));
+            fraction.addDividend(new Value("1"));
 
             expect(fraction).to.be.an.instanceof(Fraction);
             expect(fraction.getValue()).to.eql("2 + 1/2");

@@ -332,10 +332,16 @@ var Value = function () {
         key: "setNextValue",
         value: function setNextValue(nextValue) {
             if (this.nextValue) {
-                nextValue.setNextValue(this.nextValue);
+                nextValue.nextValue = this.nextValue;
+                nextValue.nextValue.setPrevValue(nextValue);
             }
 
             this.nextValue = nextValue;
+        }
+    }, {
+        key: "setPrevValue",
+        value: function setPrevValue(prevValue) {
+            this.prevValue = prevValue;
         }
     }, {
         key: "value",
@@ -373,6 +379,560 @@ var Value = function () {
     return Value;
 }();
 
+var BaseCommand = function () {
+    /**
+     *
+     * @param {Value} currentValue
+     */
+    function BaseCommand(currentValue) {
+        classCallCheck(this, BaseCommand);
+
+        this.currentValue = currentValue;
+    }
+
+    /**
+     * @return {Value}
+     */
+
+
+    createClass(BaseCommand, [{
+        key: "execute",
+        value: function execute() {
+            throw "Method not implemented";
+        }
+
+        /**
+         * @return {boolean}
+         */
+
+    }, {
+        key: "isEmptyValue",
+        value: function isEmptyValue() {
+            return this.currentValue.operator === '';
+        }
+
+        /**
+         * @return {boolean}
+         */
+
+    }, {
+        key: "nextIsNull",
+        value: function nextIsNull() {
+            return this.currentValue.nextValue === null || this.currentValue.nextValue === undefined;
+        }
+
+        /**
+         * @return {boolean}
+         */
+
+    }, {
+        key: "prevIsNull",
+        value: function prevIsNull() {
+            return this.currentValue.prevValue === null || this.currentValue.prevValue === undefined;
+        }
+    }]);
+    return BaseCommand;
+}();
+
+var AddValue = function (_BaseCommand) {
+    inherits(AddValue, _BaseCommand);
+
+    /**
+     *
+     * @param {Value} currentValue
+     * @param {Value} newValue
+     */
+    function AddValue(currentValue, newValue) {
+        classCallCheck(this, AddValue);
+
+        var _this = possibleConstructorReturn(this, (AddValue.__proto__ || Object.getPrototypeOf(AddValue)).call(this, currentValue));
+
+        _this.newValue = newValue;
+        return _this;
+    }
+
+    /**
+     * @return {Value}
+     */
+
+
+    createClass(AddValue, [{
+        key: "execute",
+        value: function execute() {
+            if (this.isEmptyValue()) {
+                this.replaceValue();
+            } else {
+                this.addValue();
+            }
+
+            this.newValue.cursor = true;
+
+            return this.newValue;
+        }
+
+        /**
+         *
+         */
+
+    }, {
+        key: "replaceValue",
+        value: function replaceValue() {
+            var nextValue = this.currentValue.nextValue;
+            var prevValue = this.currentValue.prevValue;
+
+            if (nextValue) {
+                nextValue.prevValue = this.newValue;
+                this.newValue.nextValue = nextValue;
+            }
+
+            if (prevValue) {
+                prevValue.nextValue = this.newValue;
+                this.newValue.prevValue = prevValue;
+            }
+        }
+
+        /**
+         *
+         */
+
+    }, {
+        key: "addValue",
+        value: function addValue() {
+            this.newValue.setPrevValue(this.currentValue);
+            this.currentValue.setNextValue(this.newValue);
+            this.currentValue.cursor = false;
+        }
+    }]);
+    return AddValue;
+}(BaseCommand);
+
+var ChangeValue = function (_BaseCommand) {
+    inherits(ChangeValue, _BaseCommand);
+
+    /**
+     *
+     * @param {Value} currentValue
+     * @param {string} direction
+     */
+    function ChangeValue(currentValue, direction) {
+        classCallCheck(this, ChangeValue);
+
+        var _this = possibleConstructorReturn(this, (ChangeValue.__proto__ || Object.getPrototypeOf(ChangeValue)).call(this, currentValue));
+
+        _this.direction = direction;
+        return _this;
+    }
+
+    /**
+     * @returns {Value}
+     */
+
+
+    createClass(ChangeValue, [{
+        key: "execute",
+        value: function execute() {
+            return this[this.direction]();
+        }
+
+        /**
+         * @returns {Value}
+         */
+
+    }, {
+        key: "nextValue",
+        value: function nextValue() {
+            if (this.nextIsNull()) return null;
+
+            var nextValue = this.currentValue.nextValue;
+
+            if (this.isEmptyValue()) {
+                nextValue.prevValue = undefined;
+            } else {
+                nextValue.prevValue.cursor = false;
+            }
+
+            nextValue.cursor = true;
+
+            return nextValue;
+        }
+
+        /**
+         * @returns {Value}
+         */
+
+    }, {
+        key: "prevValue",
+        value: function prevValue() {
+            if (this.isEmptyValue() && this.prevIsNull()) return null;
+
+            var prevValue = this.currentValue.prevValue;
+
+            if (this.prevIsNull()) {
+                prevValue = new Value("");
+                prevValue.setNextValue(this.currentValue);
+            }
+
+            if (this.isEmptyValue()) {
+                prevValue.nextValue = undefined;
+            } else {
+                prevValue.nextValue.prevValue = prevValue;
+                prevValue.nextValue.cursor = false;
+            }
+
+            prevValue.cursor = true;
+
+            return prevValue;
+        }
+    }]);
+    return ChangeValue;
+}(BaseCommand);
+
+var ValueStrategy = function () {
+    /**
+     *
+     * @param {Value} currentValue
+     */
+    function ValueStrategy(currentValue) {
+        classCallCheck(this, ValueStrategy);
+
+        this.currentValue = currentValue;
+    }
+
+    /**
+     *
+     * @param {Value} value
+     *
+     * @returns {Value}
+     */
+
+
+    createClass(ValueStrategy, [{
+        key: "addValue",
+        value: function addValue(value) {
+            var addValue = new AddValue(this.currentValue, value);
+            return addValue.execute();
+        }
+
+        /**
+         *
+         * @returns {any}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            var changeValue = new ChangeValue(this.currentValue, direction);
+            return changeValue.execute();
+        }
+    }]);
+    return ValueStrategy;
+}();
+
+var DIVIDER = "DIVIDER";
+var DIVIDEND = "DIVIDEND";
+
+var Fraction = function (_Value) {
+    inherits(Fraction, _Value);
+
+    /**
+     *
+     * @param {Value} prevValue
+     */
+    function Fraction(prevValue) {
+        classCallCheck(this, Fraction);
+
+        var _this = possibleConstructorReturn(this, (Fraction.__proto__ || Object.getPrototypeOf(Fraction)).call(this, "/", prevValue));
+
+        _this.divider = null;
+
+        var value = new Value('');
+        value.toggleCursor();
+
+        _this.dividend = new ValueList(value);
+        _this.currentCursor = DIVIDEND;
+        return _this;
+    }
+
+    /**
+     *
+     * @param {Value} divider
+     */
+
+
+    createClass(Fraction, [{
+        key: "addDivider",
+        value: function addDivider(divider) {
+            if (this.currentCursor === DIVIDEND) {
+                this.unfocus();
+                this.currentCursor = DIVIDER;
+            }
+
+            if (!this.divider) {
+                return this.divider = new ValueList(divider);
+            }
+
+            this.divider.addValue(divider);
+        }
+
+        /**
+         *
+         * @param {Value} dividend
+         */
+
+    }, {
+        key: "addDividend",
+        value: function addDividend(dividend) {
+            if (this.currentCursor === DIVIDER) {
+                this.unfocus();
+                this.currentCursor = DIVIDEND;
+            }
+
+            this.dividend.addValue(dividend);
+        }
+    }, {
+        key: "unfocus",
+        value: function unfocus() {
+            if (this.dividend) {
+                this.dividend.unfocus();
+            }
+
+            if (this.divider) {
+                this.divider.unfocus();
+            }
+
+            this.currentCursor = null;
+        }
+    }, {
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            this.cursor = !this.cursor;
+
+            if (!this.cursor) {
+                this.unfocus();
+            } else {
+                this.currentCursor = DIVIDEND;
+                this.dividend.focus();
+            }
+        }
+    }, {
+        key: "setParentheses",
+        value: function setParentheses(value) {
+            return value.length > 1 ? "(" + value + ")" : value;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            var dividend = this.setParentheses(this.getDividendValue());
+            var divider = this.setParentheses(this.getDividerValue());
+
+            return dividend + "/" + divider;
+        }
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            return "\\frac{" + this.getDividendTeX() + "}{" + this.getDividerTeX() + "}";
+        }
+    }, {
+        key: "getDividerTeX",
+        value: function getDividerTeX() {
+            return this.divider ? this.divider.last().getTeX() : '';
+        }
+    }, {
+        key: "getDividendTeX",
+        value: function getDividendTeX() {
+            return this.dividend ? this.dividend.last().getTeX() : '';
+        }
+    }, {
+        key: "getDividerValue",
+        value: function getDividerValue() {
+            return this.divider ? this.divider.last().getValue() : '';
+        }
+    }, {
+        key: "getDividendValue",
+        value: function getDividendValue() {
+            return this.dividend ? this.dividend.last().getValue() : '';
+        }
+    }]);
+    return Fraction;
+}(Value);
+
+var FractionStrategy = function (_ValueStrategy) {
+    inherits(FractionStrategy, _ValueStrategy);
+
+    function FractionStrategy() {
+        classCallCheck(this, FractionStrategy);
+        return possibleConstructorReturn(this, (FractionStrategy.__proto__ || Object.getPrototypeOf(FractionStrategy)).apply(this, arguments));
+    }
+
+    createClass(FractionStrategy, [{
+        key: "addValue",
+
+        /**
+         *
+         * @param {Value} value
+         */
+        value: function addValue(value) {
+            if (this.currentValue.currentCursor === DIVIDER) {
+                this.currentValue.addDivider(value);
+            } else {
+                this.currentValue.addDividend(value);
+            }
+
+            return this.currentValue;
+        }
+
+        /**
+         *
+         * @returns {Value}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            if (this.currentValue.currentCursor === DIVIDER) {
+                return this.execDirection(direction, this.currentValue.divider);
+            } else {
+                return this.execDirection(direction, this.currentValue.dividend);
+            }
+        }
+    }, {
+        key: "execDirection",
+        value: function execDirection(direction, value) {
+            if (direction == 'nextValue') {
+                if (!value.nextValue()) {
+                    if (this.currentValue.currentCursor === DIVIDEND) {
+                        this.changeCursor();
+                    } else {
+                        this.currentValue.toggleCursor();
+
+                        var newValue = new Value('', this.currentValue);
+                        newValue.toggleCursor();
+                        this.currentValue.setNextValue(newValue);
+
+                        return newValue;
+                    }
+                }
+            } else {
+                if (!value.prevValue()) {
+                    if (this.currentValue.currentCursor === DIVIDER) {
+                        this.changeCursor();
+                    } else {
+                        this.currentValue.unfocus();
+
+                        if (this.currentValue.prevValue) {
+                            this.currentValue.prevValue.toggleCursor();
+                        } else {
+                            var _newValue = new Value('');
+                            _newValue.toggleCursor();
+                            _newValue.setNextValue(this.currentValue);
+                            this.currentValue.prevValue = _newValue;
+                        }
+
+                        return this.currentValue.prevValue;
+                    }
+                }
+            }
+
+            return this.currentValue;
+        }
+    }, {
+        key: "changeCursor",
+        value: function changeCursor() {
+            if (this.currentValue.currentCursor === DIVIDER) {
+                this.currentValue.unfocus();
+                this.currentValue.currentCursor = DIVIDEND;
+
+                if (!this.currentValue.dividend) {
+                    this.currentValue.dividend = new ValueList(new Value(''));
+                }
+
+                this.currentValue.dividend.value = this.currentValue.dividend.last();
+                this.currentValue.dividend.value.toggleCursor();
+            } else {
+                this.currentValue.unfocus();
+                this.currentValue.currentCursor = DIVIDER;
+
+                if (!this.currentValue.divider) {
+                    this.currentValue.divider = new ValueList(new Value(''));
+                }
+
+                this.currentValue.divider.value = this.currentValue.divider.last();
+                this.currentValue.divider.value.toggleCursor();
+            }
+        }
+    }]);
+    return FractionStrategy;
+}(ValueStrategy);
+
+var ValueContext = function () {
+    function ValueContext(currentValue) {
+        classCallCheck(this, ValueContext);
+
+        this.currentValue = currentValue;
+    }
+
+    /**
+     *
+     * @param {Value} value
+     *
+     * @returns {Value}
+     */
+
+
+    createClass(ValueContext, [{
+        key: "addValue",
+        value: function addValue(value) {
+            return this.getStrategy().addValue(value);
+        }
+
+        /**
+         *
+         * @returns {any}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            return this.getStrategy().changeValue(direction);
+        }
+    }, {
+        key: "getStrategy",
+        value: function getStrategy() {
+            var className = this.currentValue.constructor.name;
+
+            switch (className) {
+                case "Fraction":
+                    return this.getFractionStrategy();
+                default:
+                    return this.getValueStrategy();
+            }
+        }
+
+        /**
+         *
+         * @returns {FractionStrategy}
+         */
+
+    }, {
+        key: "getFractionStrategy",
+        value: function getFractionStrategy() {
+            return new FractionStrategy(this.currentValue);
+        }
+
+        /**
+         *
+         * @returns {ValueStrategy}
+         */
+
+    }, {
+        key: "getValueStrategy",
+        value: function getValueStrategy() {
+            return new ValueStrategy(this.currentValue);
+        }
+    }]);
+    return ValueContext;
+}();
+
 var ValueList = function () {
     /**
      *
@@ -405,7 +965,12 @@ var ValueList = function () {
     }, {
         key: "nextValue",
         value: function nextValue() {
-            this.setValue("nextValue");
+            var value = this.getContext().changeValue("nextValue");
+
+            if (value === null) return value;
+            this.value = value;
+
+            return true;
         }
 
         /**
@@ -415,23 +980,12 @@ var ValueList = function () {
     }, {
         key: "prevValue",
         value: function prevValue() {
-            this.setValue("prevValue");
-        }
+            var value = this.getContext().changeValue("prevValue");
 
-        /**
-         * set current value
-         *
-         * @param {String} attrName
-         */
+            if (value === null) return value;
+            this.value = value;
 
-    }, {
-        key: "setValue",
-        value: function setValue(attrName) {
-            if (this.value[attrName]) {
-                this.value.toggleCursor();
-                this.value = this.value[attrName];
-                this.value.toggleCursor();
-            }
+            return true;
         }
 
         /**
@@ -443,18 +997,38 @@ var ValueList = function () {
     }, {
         key: "addValue",
         value: function addValue(value) {
-            value.prevValue = this.value;
+            this.value = this.getContext().addValue(value);
+        }
 
-            if (this.value.nextValue) {
-                value.nextValue = this.value.nextValue;
-                value.nextValue.prevValue = value;
-            }
+        /**
+         * unfocus value list
+         */
 
-            this.value.nextValue = value;
+    }, {
+        key: "unfocus",
+        value: function unfocus() {
+            this.value.cursor = false;
+        }
 
-            this.value.toggleCursor();
-            value.toggleCursor();
-            this.value = value;
+        /**
+         * focus value list
+         */
+
+    }, {
+        key: "focus",
+        value: function focus() {
+            this.value.cursor = true;
+        }
+
+        /**
+         *
+         * @returns {ValueContext}
+         */
+
+    }, {
+        key: "getContext",
+        value: function getContext() {
+            return new ValueContext(this.value);
         }
 
         /**
@@ -719,51 +1293,6 @@ var MapKeys = function () {
 }();
 
 var defaultMapKeys = new MapKeys();
-
-var Fraction = function (_Value) {
-    inherits(Fraction, _Value);
-
-    function Fraction(prevValue) {
-        classCallCheck(this, Fraction);
-
-        var _this = possibleConstructorReturn(this, (Fraction.__proto__ || Object.getPrototypeOf(Fraction)).call(this, "/", prevValue));
-
-        _this.divider = "";
-        _this.dividend = "";
-        return _this;
-    }
-
-    createClass(Fraction, [{
-        key: "setDivider",
-        value: function setDivider(divider) {
-            this.divider = divider.getValue();
-        }
-    }, {
-        key: "setDividend",
-        value: function setDividend(dividend) {
-            this.dividend = dividend.getValue();
-        }
-    }, {
-        key: "setParentheses",
-        value: function setParentheses(value) {
-            return value.length > 1 ? "(" + value + ")" : value;
-        }
-    }, {
-        key: "value",
-        value: function value() {
-            var dividend = this.setParentheses(this.dividend);
-            var divider = this.setParentheses(this.divider);
-
-            return dividend + "/" + divider;
-        }
-    }, {
-        key: "valueTeX",
-        value: function valueTeX() {
-            return "\\frac{" + this.dividend + "}{" + this.divider + "}";
-        }
-    }]);
-    return Fraction;
-}(Value);
 
 var Dot = function (_Value) {
     inherits(Dot, _Value);

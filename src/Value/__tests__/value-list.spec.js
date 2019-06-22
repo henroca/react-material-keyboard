@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import Value from "../../Value/Value";
+import Value from "../Value";
 import ValueList from "../ValueList";
+import Fraction from "../Fraction";
 
 describe("ValueList", () => {
     it("get last value", () => {
@@ -21,6 +22,7 @@ describe("ValueList", () => {
 
         expect(valueList.value).to.deep.equal(value2);
         valueList.nextValue()
+
         expect(valueList.value).to.deep.equal(value1);
     });
 
@@ -56,7 +58,35 @@ describe("ValueList", () => {
         let currentValue = valueList.value;
 
         expect(currentValue.operator).to.be.equal('3');
-        expect(currentValue.nextValue.operator).to.be.equal('1');
-        expect(currentValue.prevValue.operator).to.be.equal('2');
+        expect(valueList.last().getValue()).to.be.equal('231');
+    });
+
+    it("add in first position", () => {
+        let valueList = new ValueList(new Value('2'));
+        valueList.prevValue();
+        valueList.addValue(new Value('1'));
+
+        expect(valueList.last().getValue()).to.be.equal("12");
+    });
+
+    it("add divider in fraction", () => {
+        let valueList = new ValueList(new Fraction());
+        valueList.addValue(new Value("1"));
+        valueList.nextValue();
+        valueList.addValue(new Value("2"));
+        valueList.prevValue();
+        valueList.prevValue();
+        valueList.addValue(new Value("3"));
+
+        expect(valueList.last().getValue()).to.be.equal("(13)/2");
+    });
+
+    it("create 1/2", () => {
+        let valueList = new ValueList(new Fraction());
+        valueList.addValue(new Value("1"));
+        valueList.nextValue();
+        valueList.addValue(new Value("2"));
+
+        expect(valueList.last().getValue()).to.be.equal("1/2");
     });
 });

@@ -6,7 +6,7 @@ import { expect } from "chai";
 import Screen from "../";
 import Math from "../Math";
 import Value from "../../Value/Value";
-import ValueList from "../ValueList";
+import ValueList from "../../Value/ValueList";
 
 describe("<Screen />", () => {
     let wrapper = null;

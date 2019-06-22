@@ -1,18 +1,76 @@
 import Value from "./Value";
+import ValueList from "./ValueList";
+
+export const DIVIDER = "DIVIDER";
+export const DIVIDEND = "DIVIDEND";
 
 export default class Fraction extends Value {
+    /**
+     *
+     * @param {Value} prevValue
+     */
     constructor(prevValue) {
         super("/", prevValue);
-        this.divider = "";
-        this.dividend = "";
+        this.divider = null;
+
+        let value = new Value('');
+        value.toggleCursor();
+
+        this.dividend = new ValueList(value);
+        this.currentCursor = DIVIDEND;
     }
 
-    setDivider(divider) {
-        this.divider = divider.getValue();
+    /**
+     *
+     * @param {Value} divider
+     */
+    addDivider(divider) {
+        if (this.currentCursor === DIVIDEND) {
+            this.unfocus();
+            this.currentCursor = DIVIDER;
+        }
+
+        if (!this.divider) {
+            return this.divider = new ValueList(divider);
+        }
+
+        this.divider.addValue(divider);
     }
 
-    setDividend(dividend) {
-        this.dividend = dividend.getValue();
+    /**
+     *
+     * @param {Value} dividend
+     */
+    addDividend(dividend) {
+        if (this.currentCursor === DIVIDER) {
+            this.unfocus();
+            this.currentCursor = DIVIDEND;
+        }
+
+        this.dividend.addValue(dividend);
+    }
+
+    unfocus() {
+        if (this.dividend) {
+            this.dividend.unfocus();
+        }
+
+        if (this.divider) {
+            this.divider.unfocus();
+        }
+
+        this.currentCursor = null;
+    }
+
+    toggleCursor() {
+        this.cursor = !this.cursor;
+
+        if (!this.cursor) {
+            this.unfocus();
+        } else {
+            this.currentCursor = DIVIDEND;
+            this.dividend.focus();
+        }
     }
 
     setParentheses(value) {
@@ -20,13 +78,33 @@ export default class Fraction extends Value {
     }
 
     value() {
-        let dividend = this.setParentheses(this.dividend);
-        let divider = this.setParentheses(this.divider);
+        let dividend = this.setParentheses(this.getDividendValue());
+        let divider = this.setParentheses(this.getDividerValue());
 
         return `${dividend}/${divider}`;
     }
 
     valueTeX() {
-        return `\\frac{${this.dividend}}{${this.divider}}`;
+        return `\\frac{${this.getDividendTeX()}}{${this.getDividerTeX()}}`;
+    }
+
+    getDividerTeX() {
+        return this.divider ?
+            this.divider.last().getTeX() : '';
+    }
+
+    getDividendTeX() {
+        return this.dividend ?
+            this.dividend.last().getTeX() : '';
+    }
+
+    getDividerValue() {
+        return this.divider ?
+            this.divider.last().getValue() : '';
+    }
+
+    getDividendValue() {
+        return this.dividend ?
+            this.dividend.last().getValue() : '';
     }
 }

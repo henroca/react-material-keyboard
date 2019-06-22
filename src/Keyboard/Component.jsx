@@ -6,7 +6,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import MathJax from "react-mathjax";
 import Screen from "../Screen";
-import ValueList from "../Screen/ValueList";
+import ValueList from "../Value/ValueList";
 
 import { LEFT, RIGHT } from "../keyConsts";
 
