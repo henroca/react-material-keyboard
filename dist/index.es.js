@@ -506,128 +506,6 @@ var AddValue = function (_BaseCommand) {
     return AddValue;
 }(BaseCommand);
 
-var ChangeValue = function (_BaseCommand) {
-    inherits(ChangeValue, _BaseCommand);
-
-    /**
-     *
-     * @param {Value} currentValue
-     * @param {string} direction
-     */
-    function ChangeValue(currentValue, direction) {
-        classCallCheck(this, ChangeValue);
-
-        var _this = possibleConstructorReturn(this, (ChangeValue.__proto__ || Object.getPrototypeOf(ChangeValue)).call(this, currentValue));
-
-        _this.direction = direction;
-        return _this;
-    }
-
-    /**
-     * @returns {Value}
-     */
-
-
-    createClass(ChangeValue, [{
-        key: "execute",
-        value: function execute() {
-            return this[this.direction]();
-        }
-
-        /**
-         * @returns {Value}
-         */
-
-    }, {
-        key: "nextValue",
-        value: function nextValue() {
-            if (this.nextIsNull()) return null;
-
-            var nextValue = this.currentValue.nextValue;
-
-            if (this.isEmptyValue()) {
-                nextValue.prevValue = undefined;
-            } else {
-                nextValue.prevValue.cursor = false;
-            }
-
-            nextValue.cursor = true;
-
-            return nextValue;
-        }
-
-        /**
-         * @returns {Value}
-         */
-
-    }, {
-        key: "prevValue",
-        value: function prevValue() {
-            if (this.isEmptyValue() && this.prevIsNull()) return null;
-
-            var prevValue = this.currentValue.prevValue;
-
-            if (this.prevIsNull()) {
-                prevValue = new Value("");
-                prevValue.setNextValue(this.currentValue);
-            }
-
-            if (this.isEmptyValue()) {
-                prevValue.nextValue = undefined;
-            } else {
-                prevValue.nextValue.prevValue = prevValue;
-                prevValue.nextValue.cursor = false;
-            }
-
-            prevValue.cursor = true;
-
-            return prevValue;
-        }
-    }]);
-    return ChangeValue;
-}(BaseCommand);
-
-var ValueStrategy = function () {
-    /**
-     *
-     * @param {Value} currentValue
-     */
-    function ValueStrategy(currentValue) {
-        classCallCheck(this, ValueStrategy);
-
-        this.currentValue = currentValue;
-    }
-
-    /**
-     *
-     * @param {Value} value
-     *
-     * @returns {Value}
-     */
-
-
-    createClass(ValueStrategy, [{
-        key: "addValue",
-        value: function addValue(value) {
-            var addValue = new AddValue(this.currentValue, value);
-            return addValue.execute();
-        }
-
-        /**
-         *
-         * @returns {any}
-         */
-
-    }, {
-        key: "changeValue",
-        value: function changeValue(direction) {
-            var changeValue = new ChangeValue(this.currentValue, direction);
-            return changeValue.execute();
-        }
-    }]);
-    return ValueStrategy;
-}();
-
 var DIVIDER = "DIVIDER";
 var DIVIDEND = "DIVIDEND";
 
@@ -703,15 +581,24 @@ var Fraction = function (_Value) {
             this.currentCursor = null;
         }
     }, {
-        key: "toggleCursor",
-        value: function toggleCursor() {
-            this.cursor = !this.cursor;
+        key: "setCursor",
+        value: function setCursor(operator) {
+            if (operator === DIVIDER) {
+                if (this.divider) {
+                    this.divider.focusFirst();
+                } else {
+                    this.divider = new ValueList(new Value(''));
+                }
 
-            if (!this.cursor) {
-                this.unfocus();
+                this.currentCursor = DIVIDER;
             } else {
+                if (this.dividend) {
+                    this.dividend.focusLast();
+                } else {
+                    this.dividend = new ValueList(new Value(''));
+                }
+
                 this.currentCursor = DIVIDEND;
-                this.dividend.focus();
             }
         }
     }, {
@@ -756,6 +643,308 @@ var Fraction = function (_Value) {
     return Fraction;
 }(Value);
 
+var ChangeValue = function (_BaseCommand) {
+    inherits(ChangeValue, _BaseCommand);
+
+    /**
+     *
+     * @param {Value} currentValue
+     * @param {string} direction
+     */
+    function ChangeValue(currentValue, direction) {
+        classCallCheck(this, ChangeValue);
+
+        var _this = possibleConstructorReturn(this, (ChangeValue.__proto__ || Object.getPrototypeOf(ChangeValue)).call(this, currentValue));
+
+        _this.direction = direction;
+        return _this;
+    }
+
+    /**
+     * @returns {Value}
+     */
+
+
+    createClass(ChangeValue, [{
+        key: "execute",
+        value: function execute() {
+            if (this.direction === NEXT_VALUE) {
+                return this.nextValue();
+            }
+
+            return this.prevValue();
+        }
+
+        /**
+         * @returns {Value}
+         */
+
+    }, {
+        key: "nextValue",
+        value: function nextValue() {
+            if (this.nextIsNull()) return null;
+
+            var nextValue = this.currentValue.nextValue;
+
+            if (this.isEmptyValue()) {
+                if (this.currentValue.prevValue) {
+                    nextValue.setPrevValue(this.currentValue.prevValue);
+                    nextValue.prevValue.nextValue = nextValue;
+                } else {
+                    nextValue.prevValue = undefined;
+                }
+            } else {
+                nextValue.prevValue.cursor = false;
+            }
+
+            nextValue.cursor = true;
+
+            return this.setFraction(nextValue);
+        }
+
+        /**
+         * @returns {Value}
+         */
+
+    }, {
+        key: "prevValue",
+        value: function prevValue() {
+            if (this.isEmptyValue() && this.prevIsNull()) return null;
+
+            var prevValue = this.currentValue.prevValue;
+
+            if (this.prevIsNull()) {
+                prevValue = new Value("");
+                prevValue.setNextValue(this.currentValue);
+            }
+
+            if (this.isEmptyValue()) {
+                if (this.currentValue.nextValue) {
+                    this.currentValue.nextValue.setPrevValue(prevValue);
+                    prevValue.nextValue = this.currentValue.nextValue;
+                } else {
+                    prevValue.nextValue = undefined;
+                }
+            } else {
+                prevValue.nextValue.prevValue = prevValue;
+                prevValue.nextValue.cursor = false;
+            }
+
+            prevValue.cursor = true;
+
+            return this.setFraction(prevValue);
+        }
+    }, {
+        key: "setFraction",
+        value: function setFraction(value) {
+            var className = value.constructor.name;
+
+            if (className !== "Fraction") return value;
+            value.unfocus();
+
+            if (this.direction === PREV_VALUE && this.isEmptyValue()) {
+                value.setCursor(DIVIDER);
+                value.divider.focusLast();
+
+                return value;
+            }
+
+            if (this.direction === PREV_VALUE) {
+                var newValue = new Value('');
+                value.cursor = false;
+                value.setNextValue(newValue);
+                newValue.setPrevValue(value);
+                newValue.cursor = true;
+
+                return newValue;
+            }
+
+            value.setCursor(DIVIDEND);
+            value.dividend.focusFirst();
+
+            return value;
+        }
+    }]);
+    return ChangeValue;
+}(BaseCommand);
+
+var ValueStrategy = function () {
+    /**
+     *
+     * @param {Value} currentValue
+     */
+    function ValueStrategy(currentValue) {
+        classCallCheck(this, ValueStrategy);
+
+        this.currentValue = currentValue;
+    }
+
+    /**
+     *
+     * @param {Value} value
+     *
+     * @returns {Value}
+     */
+
+
+    createClass(ValueStrategy, [{
+        key: "addValue",
+        value: function addValue(value) {
+            var addValue = new AddValue(this.currentValue, value);
+            return addValue.execute();
+        }
+
+        /**
+         *
+         * @returns {any}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            var changeValue = new ChangeValue(this.currentValue, direction);
+            return changeValue.execute();
+        }
+    }]);
+    return ValueStrategy;
+}();
+
+/**
+ * Get the current value
+ *
+ * @returns {Value}
+ */
+var getCurrentValue = function getCurrentValue(fraction) {
+    var valueList = fraction.divider;
+
+    if (fraction.currentCursor === DIVIDEND) {
+        valueList = fraction.dividend;
+    }
+
+    return valueList.value;
+};
+
+var ChangeValue$1 = function (_BaseCommand) {
+    inherits(ChangeValue, _BaseCommand);
+
+    /**
+     *
+     * @param {Fraction} fraction
+     * @param {string} direction
+     */
+    function ChangeValue(fraction, direction) {
+        classCallCheck(this, ChangeValue);
+
+        var _this = possibleConstructorReturn(this, (ChangeValue.__proto__ || Object.getPrototypeOf(ChangeValue)).call(this, getCurrentValue(fraction)));
+
+        _this.fraction = fraction;
+        _this.direction = direction;
+        return _this;
+    }
+
+    /**
+     *
+     */
+
+
+    createClass(ChangeValue, [{
+        key: "execute",
+        value: function execute() {
+            if (this.direction === NEXT_VALUE) {
+                return this.nextValue();
+            }
+
+            return this.prevValue();
+        }
+
+        /**
+         * set next value
+         *
+         * @returns {Fraction}
+         */
+
+    }, {
+        key: "nextValue",
+        value: function nextValue() {
+            if (this.isDividend()) {
+                if (this.nextIsNull()) {
+                    this.fraction.unfocus();
+                    this.fraction.setCursor(DIVIDER);
+                } else {
+                    this.fraction.dividend.nextValue();
+                }
+
+                return this.fraction;
+            }
+
+            if (this.nextIsNull()) {
+                this.fraction.unfocus();
+                return null;
+            }
+
+            this.fraction.divider.nextValue();
+
+            return this.fraction;
+        }
+
+        /**
+         * set prev value
+         *
+         * @returns {Fraction}
+         */
+
+    }, {
+        key: "prevValue",
+        value: function prevValue() {
+            if (this.isDividend()) {
+                if (this.prevIsNull() && this.isEmptyValue()) {
+                    this.fraction.unfocus();
+                    return null;
+                }
+
+                this.fraction.dividend.prevValue();
+                return this.fraction;
+            }
+
+            if (this.prevIsNull()) {
+                if (this.isEmptyValue()) {
+                    if (this.nextIsNull()) {
+                        this.fraction.divider = null;
+                    } else {
+                        var value = this.fraction.divider.value;
+                        var next = value.nextValue;
+                        next.prevValue = null;
+                        this.fraction.divider.value = next;
+                        this.fraction.divider.focus();
+                        this.fraction.unfocus();
+                    }
+
+                    this.fraction.setCursor(DIVIDEND);
+                } else {
+                    this.fraction.divider.prevValue();
+                }
+            } else {
+                this.fraction.divider.prevValue();
+            }
+
+            return this.fraction;
+        }
+
+        /**
+         * is dividend?
+         *
+         * @returns {boolean}
+         */
+
+    }, {
+        key: "isDividend",
+        value: function isDividend() {
+            return this.fraction.currentCursor === DIVIDEND;
+        }
+    }]);
+    return ChangeValue;
+}(BaseCommand);
+
 var FractionStrategy = function (_ValueStrategy) {
     inherits(FractionStrategy, _ValueStrategy);
 
@@ -789,76 +978,50 @@ var FractionStrategy = function (_ValueStrategy) {
     }, {
         key: "changeValue",
         value: function changeValue(direction) {
-            if (this.currentValue.currentCursor === DIVIDER) {
-                return this.execDirection(direction, this.currentValue.divider);
-            } else {
-                return this.execDirection(direction, this.currentValue.dividend);
+            var command = new ChangeValue$1(this.currentValue, direction);
+            var result = command.execute();
+
+            if (result) return result;
+
+            if (direction === NEXT_VALUE) {
+                return this.changeToNext();
             }
+
+            return this.changeToPrev();
+        }
+
+        /**
+         *
+         * @returns {Value}
+         */
+
+    }, {
+        key: "changeToNext",
+        value: function changeToNext() {
+            var newValue = new Value('', this.currentValue);
+            newValue.cursor = true;
+
+            this.currentValue.setNextValue(newValue);
+
+            return newValue;
         }
     }, {
-        key: "execDirection",
-        value: function execDirection(direction, value) {
-            if (direction == 'nextValue') {
-                if (!value.nextValue()) {
-                    if (this.currentValue.currentCursor === DIVIDEND) {
-                        this.changeCursor();
-                    } else {
-                        this.currentValue.toggleCursor();
+        key: "changeToPrev",
+        value: function changeToPrev() {
+            if (this.currentValue.prevValue) {
+                this.currentValue.cursor = false;
+                this.currentValue.prevValue.cursor = true;
 
-                        var newValue = new Value('', this.currentValue);
-                        newValue.toggleCursor();
-                        this.currentValue.setNextValue(newValue);
-
-                        return newValue;
-                    }
-                }
-            } else {
-                if (!value.prevValue()) {
-                    if (this.currentValue.currentCursor === DIVIDER) {
-                        this.changeCursor();
-                    } else {
-                        this.currentValue.unfocus();
-
-                        if (this.currentValue.prevValue) {
-                            this.currentValue.prevValue.toggleCursor();
-                        } else {
-                            var _newValue = new Value('');
-                            _newValue.toggleCursor();
-                            _newValue.setNextValue(this.currentValue);
-                            this.currentValue.prevValue = _newValue;
-                        }
-
-                        return this.currentValue.prevValue;
-                    }
-                }
+                return this.currentValue.prevValue;
             }
 
-            return this.currentValue;
-        }
-    }, {
-        key: "changeCursor",
-        value: function changeCursor() {
-            if (this.currentValue.currentCursor === DIVIDER) {
-                this.currentValue.unfocus();
-                this.currentValue.currentCursor = DIVIDEND;
+            var newValue = new Value('');
+            newValue.setNextValue(this.currentValue);
+            newValue.cursor = true;
 
-                if (!this.currentValue.dividend) {
-                    this.currentValue.dividend = new ValueList(new Value(''));
-                }
+            this.currentValue.setPrevValue(newValue);
 
-                this.currentValue.dividend.value = this.currentValue.dividend.last();
-                this.currentValue.dividend.value.toggleCursor();
-            } else {
-                this.currentValue.unfocus();
-                this.currentValue.currentCursor = DIVIDER;
-
-                if (!this.currentValue.divider) {
-                    this.currentValue.divider = new ValueList(new Value(''));
-                }
-
-                this.currentValue.divider.value = this.currentValue.divider.last();
-                this.currentValue.divider.value.toggleCursor();
-            }
+            return newValue;
         }
     }]);
     return FractionStrategy;
@@ -933,6 +1096,9 @@ var ValueContext = function () {
     return ValueContext;
 }();
 
+var NEXT_VALUE = "nextValue";
+var PREV_VALUE = "prevValue";
+
 var ValueList = function () {
     /**
      *
@@ -954,7 +1120,7 @@ var ValueList = function () {
         key: "boot",
         value: function boot() {
             if (!this.value.cursor) {
-                this.value.toggleCursor();
+                this.value.cursor = true;
             }
         }
 
@@ -965,7 +1131,7 @@ var ValueList = function () {
     }, {
         key: "nextValue",
         value: function nextValue() {
-            var value = this.getContext().changeValue("nextValue");
+            var value = this.getContext().changeValue(NEXT_VALUE);
 
             if (value === null) return value;
             this.value = value;
@@ -980,7 +1146,7 @@ var ValueList = function () {
     }, {
         key: "prevValue",
         value: function prevValue() {
-            var value = this.getContext().changeValue("prevValue");
+            var value = this.getContext().changeValue(PREV_VALUE);
 
             if (value === null) return value;
             this.value = value;
@@ -1032,6 +1198,30 @@ var ValueList = function () {
         }
 
         /**
+         * Focus last value
+         */
+
+    }, {
+        key: "focusLast",
+        value: function focusLast() {
+            this.unfocus();
+            this.value = this.last();
+            this.focus();
+        }
+
+        /**
+         * Focus first value
+         */
+
+    }, {
+        key: "focusFirst",
+        value: function focusFirst() {
+            this.unfocus();
+            this.value = this.first();
+            this.focus();
+        }
+
+        /**
          *  returns the last Value from list
          *
          * @returns {Value}
@@ -1044,9 +1234,26 @@ var ValueList = function () {
             var nextValue = null;
 
             while (nextValue = value.nextValue) {
-                if (nextValue) {
-                    value = nextValue;
-                }
+                value = nextValue;
+            }
+
+            return value;
+        }
+
+        /**
+         * returns the first Value from list
+         *
+         * @returns {Value}
+         */
+
+    }, {
+        key: "first",
+        value: function first() {
+            var value = this.value;
+            var prevValue = null;
+
+            while (prevValue = value.prevValue) {
+                value = prevValue;
             }
 
             return value;

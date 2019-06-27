@@ -62,14 +62,23 @@ export default class Fraction extends Value {
         this.currentCursor = null;
     }
 
-    toggleCursor() {
-        this.cursor = !this.cursor;
+    setCursor(operator) {
+        if (operator === DIVIDER) {
+            if (this.divider) {
+                this.divider.focusFirst();
+            } else {
+                this.divider = new ValueList(new Value(''));
+            }
 
-        if (!this.cursor) {
-            this.unfocus();
+            this.currentCursor = DIVIDER;
         } else {
+            if (this.dividend) {
+                this.dividend.focusLast();
+            } else {
+                this.dividend = new ValueList(new Value(''));
+            }
+
             this.currentCursor = DIVIDEND;
-            this.dividend.focus();
         }
     }
 

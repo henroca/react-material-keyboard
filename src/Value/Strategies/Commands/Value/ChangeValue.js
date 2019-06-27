@@ -1,5 +1,7 @@
 import Value from "../../../Value";
 import BaseCommand from "../BaseCommand";
+import { NEXT_VALUE, PREV_VALUE } from "../../../ValueList";
+import { DIVIDEND, DIVIDER } from "../../../Fraction";
 
 export default class ChangeValue extends BaseCommand {
     /**
@@ -16,7 +18,11 @@ export default class ChangeValue extends BaseCommand {
      * @returns {Value}
      */
     execute() {
-        return this[this.direction]();
+        if (this.direction === NEXT_VALUE) {
+            return this.nextValue();
+        }
+
+        return this.prevValue();
     }
 
     /**
@@ -28,14 +34,19 @@ export default class ChangeValue extends BaseCommand {
         let nextValue = this.currentValue.nextValue;
 
         if (this.isEmptyValue()) {
-            nextValue.prevValue = undefined;
+            if (this.currentValue.prevValue) {
+                nextValue.setPrevValue(this.currentValue.prevValue);
+                nextValue.prevValue.nextValue = nextValue;
+            } else {
+                nextValue.prevValue = undefined;
+            }
         } else {
             nextValue.prevValue.cursor = false;
         }
 
         nextValue.cursor = true;
 
-        return nextValue;
+        return this.setFraction(nextValue);
     }
 
     /**
@@ -52,7 +63,12 @@ export default class ChangeValue extends BaseCommand {
         }
 
         if (this.isEmptyValue()) {
-            prevValue.nextValue = undefined;
+            if (this.currentValue.nextValue) {
+                this.currentValue.nextValue.setPrevValue(prevValue);
+                prevValue.nextValue = this.currentValue.nextValue;
+            } else {
+                prevValue.nextValue = undefined;
+            }
         } else {
             prevValue.nextValue.prevValue = prevValue;
             prevValue.nextValue.cursor = false;
@@ -60,6 +76,35 @@ export default class ChangeValue extends BaseCommand {
 
         prevValue.cursor = true;
 
-        return prevValue;
+        return this.setFraction(prevValue);
+    }
+
+    setFraction(value) {
+        let className = value.constructor.name;
+
+        if (className !== "Fraction") return value;
+        value.unfocus();
+
+        if (this.direction === PREV_VALUE && this.isEmptyValue()) {
+            value.setCursor(DIVIDER);
+            value.divider.focusLast();
+
+            return value;
+        }
+
+        if (this.direction === PREV_VALUE) {
+            let newValue = new Value('');
+            value.cursor = false;
+            value.setNextValue(newValue);
+            newValue.setPrevValue(value);
+            newValue.cursor = true;
+
+            return newValue;
+        }
+
+        value.setCursor(DIVIDEND);
+        value.dividend.focusFirst();
+
+        return value;
     }
 }

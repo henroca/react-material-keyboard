@@ -89,4 +89,13 @@ describe("ValueList", () => {
 
         expect(valueList.last().getValue()).to.be.equal("1/2");
     });
+
+    it("add cursor after change to divider", () => {
+        let valueList = new ValueList(new Fraction());
+        valueList.addValue(new Value("1"));
+        valueList.nextValue();
+        let divider = valueList.last().divider;
+
+        expect(divider.last().cursor).to.be.true;
+    });
 });
