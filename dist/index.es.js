@@ -139,7 +139,7 @@ var Math$1 = function (_React$Component) {
 
                     var _loop = function _loop(mjx) {
                         if (mjx.innerHTML == '∣') {
-                            mjx.style.fontSize = "1.4em";
+                            mjx.style.fontSize = "1em";
                             _this2.timeCursor = setInterval(function (el) {
                                 if (mjx.style.visibility == 'hidden') {
                                     mjx.style.visibility = 'visible';
@@ -602,6 +602,24 @@ var Fraction = function (_Value) {
             }
         }
     }, {
+        key: "getCurrentValue",
+        value: function getCurrentValue() {
+            if (this.currentCursor == DIVIDER) {
+                return this.divider.value;
+            }
+
+            return this.dividend.value;
+        }
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            if (this.currentCursor == DIVIDER) {
+                return this.divider[direction]();
+            }
+
+            return this.dividend[direction]();
+        }
+    }, {
         key: "setParentheses",
         value: function setParentheses(value) {
             return value.length > 1 ? "(" + value + ")" : value;
@@ -978,6 +996,13 @@ var FractionStrategy = function (_ValueStrategy) {
     }, {
         key: "changeValue",
         value: function changeValue(direction) {
+            var value = this.currentValue.getCurrentValue();
+
+            if (value.constructor.name === 'Fraction') {
+                this.currentValue.changeValue(direction);
+                return this.currentValue;
+            }
+
             var command = new ChangeValue$1(this.currentValue, direction);
             var result = command.execute();
 
@@ -1063,12 +1088,11 @@ var ValueContext = function () {
         value: function getStrategy() {
             var className = this.currentValue.constructor.name;
 
-            switch (className) {
-                case "Fraction":
-                    return this.getFractionStrategy();
-                default:
-                    return this.getValueStrategy();
+            if (className === "Fraction") {
+                return this.getFractionStrategy();
             }
+
+            return this.getValueStrategy();
         }
 
         /**
@@ -1512,6 +1536,10 @@ var Dot = function (_Value) {
     createClass(Dot, [{
         key: "valueTeX",
         value: function valueTeX() {
+            if (this.cursor) {
+                return ",\\mid";
+            }
+
             return ",";
         }
     }]);

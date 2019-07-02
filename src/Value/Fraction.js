@@ -82,6 +82,22 @@ export default class Fraction extends Value {
         }
     }
 
+    getCurrentValue() {
+        if (this.currentCursor == DIVIDER) {
+            return this.divider.value;
+        }
+
+        return this.dividend.value;
+    }
+
+    changeValue(direction) {
+        if (this.currentCursor == DIVIDER) {
+            return this.divider[direction]();
+        }
+
+        return this.dividend[direction]();
+    }
+
     setParentheses(value) {
         return value.length > 1 ? `(${value})` : value;
     }

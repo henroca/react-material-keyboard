@@ -54,7 +54,7 @@ export default class Math extends React.Component {
 
             for (let mjx of mjxEls) {
                 if (mjx.innerHTML == '∣') {
-                    mjx.style.fontSize = "1.4em";
+                    mjx.style.fontSize = "1em";
                     this.timeCursor = setInterval((el) => {
                         if (mjx.style.visibility == 'hidden') {
                             mjx.style.visibility = 'visible';

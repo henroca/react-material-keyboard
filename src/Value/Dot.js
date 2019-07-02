@@ -6,6 +6,10 @@ export default class Dot extends Value {
     }
 
     valueTeX() {
+        if (this.cursor) {
+            return ",\\mid";
+        }
+
         return ",";
     }
 }

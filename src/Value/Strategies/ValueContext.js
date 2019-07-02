@@ -29,12 +29,11 @@ export default class ValueContext {
         let className = this.currentValue
             .constructor.name;
 
-        switch (className) {
-            case "Fraction":
-                return this.getFractionStrategy();
-            default:
-                return this.getValueStrategy();
+        if (className === "Fraction") {
+            return this.getFractionStrategy();
         }
+
+        return this.getValueStrategy();
     }
 
     /**
