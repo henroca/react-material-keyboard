@@ -1,12 +1,11 @@
-import Value from "../../../Value";
 import BaseCommand from "../BaseCommand";
 
 export default class AddValue extends BaseCommand {
 
     /**
      *
-     * @param {Value} currentValue
-     * @param {Value} newValue
+     * @param {Object} currentValue
+     * @param {Object} newValue
      */
     constructor(currentValue, newValue) {
         super(currentValue);
@@ -14,7 +13,7 @@ export default class AddValue extends BaseCommand {
     }
 
     /**
-     * @return {Value}
+     * @return {Object}
      */
     execute() {
         if (this.isEmptyValue()) {

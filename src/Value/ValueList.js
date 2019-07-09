@@ -1,5 +1,4 @@
-import Value from "./Value";
-import ValueContext from "./Strategies/ValueContext";
+import contextFactory from "./Strategies/contextFactory";
 
 export const NEXT_VALUE = "nextValue";
 export const PREV_VALUE = "prevValue";
@@ -7,7 +6,7 @@ export const PREV_VALUE = "prevValue";
 export default class ValueList {
     /**
      *
-     * @param {Value} value
+     * @param {Object} value
      */
     constructor(value) {
         this.value = value;
@@ -50,7 +49,7 @@ export default class ValueList {
     /**
      *  add value to list
      *
-     * @param {Value} value
+     * @param {Object} value
      */
     addValue(value) {
         this.value = this.getContext().addValue(value);
@@ -68,15 +67,6 @@ export default class ValueList {
      */
     focus() {
         this.value.cursor = true;
-    }
-
-    /**
-     *
-     * @returns {ValueContext}
-     */
-    getContext()
-    {
-        return new ValueContext(this.value);
     }
 
     /**
@@ -100,13 +90,13 @@ export default class ValueList {
     /**
      *  returns the last Value from list
      *
-     * @returns {Value}
+     * @returns {Object}
      */
     last() {
         let value = this.value;
         let nextValue = null;
 
-        while (nextValue = value.nextValue) {
+        while ((nextValue = value.nextValue)) {
             value = nextValue;
         }
 
@@ -116,16 +106,20 @@ export default class ValueList {
     /**
      * returns the first Value from list
      *
-     * @returns {Value}
+     * @returns {Object}
      */
     first() {
         let value = this.value;
         let prevValue = null;
 
-        while (prevValue = value.prevValue) {
+        while ((prevValue = value.prevValue)) {
             value = prevValue;
         }
 
         return value;
+    }
+
+    getContext() {
+        return contextFactory(this.value);
     }
 }

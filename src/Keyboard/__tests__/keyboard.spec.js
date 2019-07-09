@@ -10,7 +10,7 @@ import Keyboard from "../Keyboard";
 import Component from "../Component";
 import { MapKeys } from "../MapKeys";
 import Value from "../../Value/Value";
-import { LEFT, RIGHT } from "../../keyConsts";
+import { LEFT } from "../../keyConsts";
 
 describe("<Keyboard />", () => {
     let wrapper = null;

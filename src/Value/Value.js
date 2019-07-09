@@ -19,6 +19,10 @@ export default class Value {
         this.nextValue = nextValue;
     }
 
+    getContext() {
+        return "value";
+    }
+
     setPrevValue(prevValue) {
         this.prevValue = prevValue;
     }

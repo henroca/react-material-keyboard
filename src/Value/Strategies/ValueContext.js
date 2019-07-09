@@ -1,20 +1,21 @@
-import ValueStrategy from "./ValueStrategy";
-import FractionStrategy from "./FractionStrategy";
-import Value from "../Value";
-
 export default class ValueContext {
-    constructor (currentValue) {
-        this.currentValue = currentValue;
+
+    /**
+     *
+     * @param {Object} strategy
+     */
+    constructor (strategy) {
+        this.strategy = strategy;
     }
 
     /**
      *
-     * @param {Value} value
+     * @param {Object} value
      *
-     * @returns {Value}
+     * @returns {Object}
      */
     addValue (value) {
-        return this.getStrategy().addValue(value);
+        return this.strategy.addValue(value);
     }
 
     /**
@@ -22,33 +23,6 @@ export default class ValueContext {
      * @returns {any}
      */
     changeValue (direction) {
-        return this.getStrategy().changeValue(direction);
-    }
-
-    getStrategy () {
-        let className = this.currentValue
-            .constructor.name;
-
-        if (className === "Fraction") {
-            return this.getFractionStrategy();
-        }
-
-        return this.getValueStrategy();
-    }
-
-    /**
-     *
-     * @returns {FractionStrategy}
-     */
-    getFractionStrategy () {
-        return new FractionStrategy(this.currentValue);
-    }
-
-    /**
-     *
-     * @returns {ValueStrategy}
-     */
-    getValueStrategy () {
-        return new ValueStrategy(this.currentValue);
+        return this.strategy.changeValue(direction);
     }
 }

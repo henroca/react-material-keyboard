@@ -6,7 +6,7 @@ import { DIVIDEND, DIVIDER } from "../../../Fraction";
 export default class ChangeValue extends BaseCommand {
     /**
      *
-     * @param {Value} currentValue
+     * @param {Object} currentValue
      * @param {string} direction
      */
     constructor(currentValue, direction) {
@@ -15,7 +15,7 @@ export default class ChangeValue extends BaseCommand {
     }
 
     /**
-     * @returns {Value}
+     * @returns {Object}
      */
     execute() {
         if (this.direction === NEXT_VALUE) {
@@ -26,7 +26,7 @@ export default class ChangeValue extends BaseCommand {
     }
 
     /**
-     * @returns {Value}
+     * @returns {Object}
      */
     nextValue() {
         if (this.nextIsNull()) return null;
@@ -50,7 +50,7 @@ export default class ChangeValue extends BaseCommand {
     }
 
     /**
-     * @returns {Value}
+     * @returns {Object}
      */
     prevValue() {
         if (this.isEmptyValue() && this.prevIsNull()) return null;
@@ -93,7 +93,7 @@ export default class ChangeValue extends BaseCommand {
         }
 
         if (this.direction === PREV_VALUE) {
-            let newValue = new Value('');
+            let newValue = new Value("");
             value.cursor = false;
             value.setNextValue(newValue);
             newValue.setPrevValue(value);

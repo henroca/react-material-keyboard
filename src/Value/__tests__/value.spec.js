@@ -122,7 +122,7 @@ describe("Value", () => {
 
             fraction.addDivider(new Value("3"));
             fraction.addDividend(new Value("x"));
-            fraction.unfocus()
+            fraction.unfocus();
 
             expect(fraction.getTeX()).to.eql("1 + \\frac{x}{3}");
         });
@@ -132,7 +132,7 @@ describe("Value", () => {
             let fraction = new Fraction();
             fraction.addDivider(new Value("x"));
             fraction.addDividend(dividend);
-            fraction.unfocus()
+            fraction.unfocus();
 
             let value = new Value("4", new Operator("+", fraction));
 
@@ -145,7 +145,7 @@ describe("Value", () => {
             let fraction = new Fraction();
             fraction.addDivider(divider);
             fraction.addDividend(dividend);
-            fraction.unfocus()
+            fraction.unfocus();
 
             expect(fraction.getTeX()).to.eql("\\frac{2 + x}{x - 3}");
         });

@@ -23,6 +23,7 @@ class Screen extends React.Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
         screenValue: PropTypes.object,
+        onKeyUp: PropTypes.func,
     };
 
     renderValue() {

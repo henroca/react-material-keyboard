@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import defaultMapKeys from "./MapKeys";
 import defaultMapEvents from "./MapEvents";
 import { defaultKeyboard } from "./keyboards";
-
+import contextConfig from "./contextConfig";
 
 export default () => {
     let mapKeys = defaultMapKeys;
@@ -16,10 +16,17 @@ export default () => {
             keyboard: PropTypes.array,
             mapKeys: PropTypes.object,
             mapEvents: PropTypes.object,
+            contextConfig: PropTypes.object,
         };
 
         render() {
-            let props = {keyboard, mapKeys, mapEvents, ...this.props};
+            let props = {
+                keyboard,
+                mapKeys,
+                mapEvents,
+                contextConfig,
+                ...this.props
+            };
 
             return (
                 <WrappedComponent {...props} />

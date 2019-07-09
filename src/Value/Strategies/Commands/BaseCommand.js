@@ -1,16 +1,14 @@
-import Value from "../../Value";
-
 export default class BaseCommand {
     /**
      *
-     * @param {Value} currentValue
+     * @param {Object} currentValue
      */
     constructor(currentValue) {
         this.currentValue = currentValue;
     }
 
     /**
-     * @return {Value}
+     * @return {Object}
      */
     execute() {
         throw "Method not implemented";
@@ -20,7 +18,7 @@ export default class BaseCommand {
      * @return {boolean}
      */
     isEmptyValue() {
-        return this.currentValue.operator === ''
+        return this.currentValue.operator === "";
     }
 
     /**

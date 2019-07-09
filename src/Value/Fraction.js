@@ -7,13 +7,13 @@ export const DIVIDEND = "DIVIDEND";
 export default class Fraction extends Value {
     /**
      *
-     * @param {Value} prevValue
+     * @param {Object} prevValue
      */
     constructor(prevValue) {
         super("/", prevValue);
         this.divider = null;
 
-        let value = new Value('');
+        let value = new Value("");
         value.toggleCursor();
 
         this.dividend = new ValueList(value);
@@ -22,7 +22,7 @@ export default class Fraction extends Value {
 
     /**
      *
-     * @param {Value} divider
+     * @param {Object} divider
      */
     addDivider(divider) {
         if (this.currentCursor === DIVIDEND) {
@@ -39,7 +39,7 @@ export default class Fraction extends Value {
 
     /**
      *
-     * @param {Value} dividend
+     * @param {Object} dividend
      */
     addDividend(dividend) {
         if (this.currentCursor === DIVIDER) {
@@ -48,6 +48,10 @@ export default class Fraction extends Value {
         }
 
         this.dividend.addValue(dividend);
+    }
+
+    getContext() {
+        return "fraction";
     }
 
     unfocus() {
@@ -67,7 +71,7 @@ export default class Fraction extends Value {
             if (this.divider) {
                 this.divider.focusFirst();
             } else {
-                this.divider = new ValueList(new Value(''));
+                this.divider = new ValueList(new Value(""));
             }
 
             this.currentCursor = DIVIDER;
@@ -75,7 +79,7 @@ export default class Fraction extends Value {
             if (this.dividend) {
                 this.dividend.focusLast();
             } else {
-                this.dividend = new ValueList(new Value(''));
+                this.dividend = new ValueList(new Value(""));
             }
 
             this.currentCursor = DIVIDEND;
@@ -115,21 +119,21 @@ export default class Fraction extends Value {
 
     getDividerTeX() {
         return this.divider ?
-            this.divider.last().getTeX() : '';
+            this.divider.last().getTeX() : "";
     }
 
     getDividendTeX() {
         return this.dividend ?
-            this.dividend.last().getTeX() : '';
+            this.dividend.last().getTeX() : "";
     }
 
     getDividerValue() {
         return this.divider ?
-            this.divider.last().getValue() : '';
+            this.divider.last().getValue() : "";
     }
 
     getDividendValue() {
         return this.dividend ?
-            this.dividend.last().getValue() : '';
+            this.dividend.last().getValue() : "";
     }
 }

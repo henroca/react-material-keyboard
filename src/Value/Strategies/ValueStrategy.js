@@ -1,11 +1,10 @@
-import Value from "../Value";
-import AddValue from "./Commands/Value/AddValue"
+import AddValue from "./Commands/Value/AddValue";
 import ChangeValue from "./Commands/Value/ChangeValue";
 
 export default class ValueStrategy {
     /**
      *
-     * @param {Value} currentValue
+     * @param {Object} currentValue
      */
     constructor(currentValue) {
         this.currentValue = currentValue;
@@ -13,9 +12,9 @@ export default class ValueStrategy {
 
     /**
      *
-     * @param {Value} value
+     * @param {Object} value
      *
-     * @returns {Value}
+     * @returns {Object}
      */
     addValue(value) {
         let addValue = new AddValue(this.currentValue, value);

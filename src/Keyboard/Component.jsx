@@ -7,6 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import MathJax from "react-mathjax";
 import Screen from "../Screen";
 import ValueList from "../Value/ValueList";
+import { init } from "./appContext";
 
 import { LEFT, RIGHT } from "../keyConsts";
 
@@ -27,8 +28,8 @@ const mathJaxConfig = {
     },
     showProcessingMessages: false,
     styles: {
-        "#MathJax_Message": {display: 'none'},
-        "#MathJax_MSIE_Frame": {display: 'none'}
+        "#MathJax_Message": {display: "none"},
+        "#MathJax_MSIE_Frame": {display: "none"}
     }
 };
 
@@ -37,6 +38,7 @@ class Component extends ReactComponet {
         keyboard: PropTypes.array.isRequired,
         mapKeys: PropTypes.object.isRequired,
         mapEvents: PropTypes.object.isRequired,
+        contextConfig: PropTypes.object.isRequired,
         classes: PropTypes.object.isRequired,
     };
 
@@ -52,6 +54,7 @@ class Component extends ReactComponet {
         this.props.mapKeys.setCallback(this.clickBuntton);
         this.props.mapKeys.setMap();
         this.props.mapEvents.setMap();
+        init(this.props.contextConfig);
     }
 
     clickBuntton(btn) {

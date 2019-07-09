@@ -1,13 +1,13 @@
 import ValueStrategy from "./ValueStrategy";
 import Value from "../Value";
-import { DIVIDEND, DIVIDER } from "../Fraction";
+import { DIVIDER } from "../Fraction";
 import ChangeValue from "./Commands/Fraction/ChangeValue";
 import { NEXT_VALUE } from "../ValueList";
 
 export default class FractionStrategy extends ValueStrategy {
     /**
      *
-     * @param {Value} value
+     * @param {Object} value
      */
     addValue(value) {
         if (this.currentValue.currentCursor === DIVIDER) {
@@ -21,12 +21,12 @@ export default class FractionStrategy extends ValueStrategy {
 
     /**
      *
-     * @returns {Value}
+     * @returns {Object}
      */
     changeValue(direction) {
         let value = this.currentValue.getCurrentValue();
 
-        if (value.constructor.name === 'Fraction') {
+        if (value.constructor.name === "Fraction") {
             this.currentValue.changeValue(direction);
             return this.currentValue;
         }
@@ -45,10 +45,10 @@ export default class FractionStrategy extends ValueStrategy {
 
     /**
      *
-     * @returns {Value}
+     * @returns {Object}
      */
     changeToNext() {
-        let newValue = new Value('', this.currentValue);
+        let newValue = new Value("", this.currentValue);
         newValue.cursor = true;
 
         this.currentValue.setNextValue(newValue);
@@ -64,7 +64,7 @@ export default class FractionStrategy extends ValueStrategy {
             return this.currentValue.prevValue;
         }
 
-        let newValue = new Value('');
+        let newValue = new Value("");
         newValue.setNextValue(this.currentValue);
         newValue.cursor = true;
 

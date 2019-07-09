@@ -14,7 +14,7 @@ jest.mock("react-mathjax", () => {
 
     Node.propTypes = {
         onRender: PropTypes.func,
-    }
+    };
 
     return { Node };
 });

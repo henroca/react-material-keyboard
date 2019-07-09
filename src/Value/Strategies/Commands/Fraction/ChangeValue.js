@@ -1,28 +1,26 @@
 import BaseCommand from "../BaseCommand";
-import Value from "../../../Value";
-import Fraction, { DIVIDEND, DIVIDER } from "../../../Fraction";
+import { DIVIDEND, DIVIDER } from "../../../Fraction";
 import { NEXT_VALUE } from "../../../ValueList";
-
 
 /**
  * Get the current value
  *
- * @returns {Value}
+ * @returns {Object}
  */
 const getCurrentValue = (fraction) => {
-   let valueList = fraction.divider;
+    let valueList = fraction.divider;
 
-   if (fraction.currentCursor === DIVIDEND) {
-       valueList = fraction.dividend;
-   }
+    if (fraction.currentCursor === DIVIDEND) {
+        valueList = fraction.dividend;
+    }
 
-   return valueList.value;
-}
+    return valueList.value;
+};
 
 export default class ChangeValue extends BaseCommand {
     /**
      *
-     * @param {Fraction} fraction
+     * @param {Object} fraction
      * @param {string} direction
      */
     constructor(fraction, direction) {
@@ -45,7 +43,7 @@ export default class ChangeValue extends BaseCommand {
     /**
      * set next value
      *
-     * @returns {Fraction}
+     * @returns {Object}
      */
     nextValue() {
         if (this.isDividend()) {
@@ -72,7 +70,7 @@ export default class ChangeValue extends BaseCommand {
     /**
      * set prev value
      *
-     * @returns {Fraction}
+     * @returns {Object}
      */
     prevValue() {
         if (this.isDividend()) {

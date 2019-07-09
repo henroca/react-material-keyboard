@@ -50,16 +50,16 @@ export default class Math extends React.Component {
         let mathList = document.getElementsByClassName("math");
 
         for (let el of mathList) {
-            let mjxEls = el.getElementsByClassName("mjx-char")
+            let mjxEls = el.getElementsByClassName("mjx-char");
 
             for (let mjx of mjxEls) {
-                if (mjx.innerHTML == '∣') {
+                if (mjx.innerHTML == "∣") {
                     mjx.style.fontSize = "1em";
-                    this.timeCursor = setInterval((el) => {
-                        if (mjx.style.visibility == 'hidden') {
-                            mjx.style.visibility = 'visible';
+                    this.timeCursor = setInterval(() => {
+                        if (mjx.style.visibility == "hidden") {
+                            mjx.style.visibility = "visible";
                         } else {
-                            mjx.style.visibility = 'hidden';
+                            mjx.style.visibility = "hidden";
                         }
                     }, 500);
                 }
