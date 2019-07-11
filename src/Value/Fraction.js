@@ -103,7 +103,7 @@ export default class Fraction extends Value {
     }
 
     setParentheses(value) {
-        return value.length > 1 ? `(${value})` : value;
+        return value.length > 1 ? `[${value}]` : value;
     }
 
     value() {

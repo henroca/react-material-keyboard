@@ -78,7 +78,7 @@ describe("ValueList", () => {
         valueList.prevValue();
         valueList.addValue(new Value("3"));
 
-        expect(valueList.last().getValue()).to.be.equal("(13)/2");
+        expect(valueList.last().getValue()).to.be.equal("[13]/2");
     });
 
     it("create 1/2", () => {
