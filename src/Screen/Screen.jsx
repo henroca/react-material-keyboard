@@ -22,13 +22,25 @@ const styles = () => ({
 class Screen extends React.Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
+        screenValue: PropTypes.object,
+        onKeyUp: PropTypes.func,
     };
 
+    renderValue() {
+        let { screenValue } = this.props;
+
+        if (screenValue) {
+            return (<Math value={screenValue.last().getTeX()} />);
+        }
+
+        return (<span>Degite um valor</span>);
+    }
+
     render() {
-        let { classes } = this.props;
+        let { classes, onKeyUp } = this.props;
 
         return (
-            <Grid container className={classes.root} spacing={0}>
+            <Grid container onKeyUp={onKeyUp} className={classes.root} spacing={0}>
                 <Grid item xs={6}>
                     <span>LIMPAR</span>
                 </Grid>
@@ -36,7 +48,7 @@ class Screen extends React.Component {
                     <Backspace className={classes.icon} fontSize="small"/>
                 </Grid>
                 <Grid item xs={12} className={classes.screen}>
-                    <Math value={"2 + 3"} />
+                    {this.renderValue()}
                 </Grid>
             </Grid>
         );

@@ -3,11 +3,14 @@ import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { expect } from "chai";
 import Grid from "@material-ui/core/Grid";
+import Key from "../../Key";
 
 import { defaultKeyboard } from "../keyboards";
 import Keyboard from "../Keyboard";
 import Component from "../Component";
 import { MapKeys } from "../MapKeys";
+import Value from "../../Value/Value";
+import { LEFT } from "../../keyConsts";
 
 describe("<Keyboard />", () => {
     let wrapper = null;
@@ -59,6 +62,38 @@ describe("<Keyboard />", () => {
             let mapKeys = wrapper.find(Component).props().mapKeys;
 
             expect(mapKeys).to.be.an.instanceof(MapKeys);
+        });
+    });
+
+    context("when click a button", () => {
+        it("changes the current value", () => {
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            let valueList = wrapper.find(Component).children().state("valueList");
+            let value = new Value("1");
+            value.toggleCursor();
+
+            expect(valueList.value).to.deep.equal(value);
+        });
+
+        it("change the cursor", () => {
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            wrapper.find(Key).at(1).find("button").simulate("click");
+
+            let valueList = wrapper.find(Component).children().state("valueList");
+
+            expect(valueList.value.cursor).to.be.true;
+            expect(valueList.value.prevValue.cursor).to.be.false;
+        });
+
+        it("set cursor to prevValue", () => {
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            wrapper.find(Key).at(1).find("button").simulate("click");
+            wrapper.simulate("keyup", {keyCode: LEFT});
+
+            let valueList = wrapper.find(Component).children().state("valueList");
+
+            expect(valueList.value.cursor).to.be.true;
+            expect(valueList.value.nextValue.cursor).to.be.false;
         });
     });
 
