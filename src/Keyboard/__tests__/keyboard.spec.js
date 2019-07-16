@@ -28,11 +28,12 @@ describe("<Keyboard />", () => {
         it("renders the default keyboard", () => {
             let keyboard = wrapper.find(Component).props().keyboard;
 
-            expect(keyboard).to.be.ofSize(4);
+            expect(keyboard).to.be.ofSize(5);
             expect(keyboard[0]).to.be.equalTo(["1", "2", "3", "+"]);
             expect(keyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
             expect(keyboard[2]).to.be.equalTo(["7", "8", "9", "*"]);
             expect(keyboard[3]).to.be.equalTo([",", "0", "=", "/"]);
+            expect(keyboard[4]).to.be.equalTo(["(", ")"]);
         });
 
         it("renders the custom keyboard", () => {
@@ -98,7 +99,7 @@ describe("<Keyboard />", () => {
     });
 
     it("returns four keys columns from default keyboard", () => {
-        expect(defaultKeyboard).to.be.ofSize(4);
+        expect(defaultKeyboard).to.be.ofSize(5);
     });
 
     it("returns first column from default keyboard", () => {

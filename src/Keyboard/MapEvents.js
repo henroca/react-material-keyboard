@@ -24,6 +24,8 @@ class MapEvents {
         this.set("-", (value) => (new Operator("-", value)));
         this.set("*", (value) => (new Operator("*", value)));
         this.set("/", (value) => (new Fraction(value)));
+        this.set("(", (value) => (new Value("(", value)));
+        this.set(")", (value) => (new Value(")", value)));
     }
 
     setNumbersButtons() {

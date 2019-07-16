@@ -55,7 +55,7 @@ describe("Value", () => {
             expect(fraction.getValue()).to.eql("1 + x/3");
         });
 
-        it("returns (2 + 3)/x + 4", () => {
+        it("returns [2 + 3]/x + 4", () => {
             let dividend = new Value("3", new Operator("+", new Value("2")));
             let fraction = new Fraction();
             fraction.addDivider(new Value("x"));
@@ -63,17 +63,17 @@ describe("Value", () => {
 
             let value = new Value("4", new Operator("+", fraction));
 
-            expect(value.getValue()).to.eql("(2 + 3)/x + 4");
+            expect(value.getValue()).to.eql("[2 + 3]/x + 4");
         });
 
-        it("returns (2 + x)/(x - 3)", () => {
+        it("returns [2 + x]/[x - 3]", () => {
             let divider = new Value("3", new Operator("-", new Value("x")));
             let dividend = new Value("x", new Operator("+", new Value("2")));
             let fraction = new Fraction();
             fraction.addDivider(divider);
             fraction.addDividend(dividend);
 
-            expect(fraction.getValue()).to.eql("(2 + x)/(x - 3)");
+            expect(fraction.getValue()).to.eql("[2 + x]/[x - 3]");
         });
     });
 
