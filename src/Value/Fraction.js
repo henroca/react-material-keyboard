@@ -21,6 +21,7 @@ export default class Fraction extends Value {
     }
 
     /**
+     *  Add value in divider
      *
      * @param {Object} divider
      */
@@ -38,6 +39,7 @@ export default class Fraction extends Value {
     }
 
     /**
+     *  Add value in dividend
      *
      * @param {Object} dividend
      */
@@ -50,10 +52,19 @@ export default class Fraction extends Value {
         this.dividend.addValue(dividend);
     }
 
+    /**
+     *  Get context key
+     *
+     * @returns {String}
+     */
     getContext() {
         return "fraction";
     }
 
+    /**
+     * unfocus fraction
+     *
+     */
     unfocus() {
         if (this.dividend) {
             this.dividend.unfocus();
@@ -66,6 +77,11 @@ export default class Fraction extends Value {
         this.currentCursor = null;
     }
 
+    /**
+     * Set cursor in operator
+     *
+     * @param {String} operator
+     */
     setCursor(operator) {
         if (operator === DIVIDER) {
             if (this.divider) {
@@ -86,6 +102,11 @@ export default class Fraction extends Value {
         }
     }
 
+    /**
+     * get the current value
+     *
+     * @returns {Object}
+     */
     getCurrentValue() {
         if (this.currentCursor == DIVIDER) {
             return this.divider.value;
@@ -94,6 +115,12 @@ export default class Fraction extends Value {
         return this.dividend.value;
     }
 
+    /**
+     *  Change value direction
+     *
+     * @param {String} direction
+     * @returns {Object}
+     */
     changeValue(direction) {
         if (this.currentCursor == DIVIDER) {
             return this.divider[direction]();
@@ -102,10 +129,22 @@ export default class Fraction extends Value {
         return this.dividend[direction]();
     }
 
+    /**
+     * set prentheses
+     *
+     * @param {String} value
+     *
+     * @returns {String}
+     */
     setParentheses(value) {
         return value.length > 1 ? `[${value}]` : value;
     }
 
+    /**
+     * get value
+     *
+     * @returns {String}
+     */
     value() {
         let dividend = this.setParentheses(this.getDividendValue());
         let divider = this.setParentheses(this.getDividerValue());
@@ -113,25 +152,50 @@ export default class Fraction extends Value {
         return `${dividend}/${divider}`;
     }
 
+    /**
+     * get TEX value
+     *
+     * @returns {String}
+     */
     valueTeX() {
         return `\\frac{${this.getDividendTeX()}}{${this.getDividerTeX()}}`;
     }
 
+    /**
+     * get divider TEX
+     *
+     * @returns {String}
+     */
     getDividerTeX() {
         return this.divider ?
             this.divider.last().getTeX() : "";
     }
 
+    /**
+     * get dividend TEX
+     *
+     * @returns {String}
+     */
     getDividendTeX() {
         return this.dividend ?
             this.dividend.last().getTeX() : "";
     }
 
+    /**
+     * get divider Value
+     *
+     * @returns {String}
+     */
     getDividerValue() {
         return this.divider ?
             this.divider.last().getValue() : "";
     }
 
+    /**
+     * get dividend Value
+     *
+     * @returns {String}
+     */
     getDividendValue() {
         return this.dividend ?
             this.dividend.last().getValue() : "";

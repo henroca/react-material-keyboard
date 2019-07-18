@@ -2,6 +2,7 @@ import Value from "../Value/Value";
 import Fraction from "../Value/Fraction";
 import Dot from "../Value/Dot";
 import Operator from "../Value/Operator";
+import Exponent from "../Value/Exponent";
 
 class MapEvents {
     constructor() {
@@ -26,6 +27,7 @@ class MapEvents {
         this.set("/", (value) => (new Fraction(value)));
         this.set("(", (value) => (new Value("(", value)));
         this.set(")", (value) => (new Value(")", value)));
+        this.set("^", (value) => (new Exponent(value)));
     }
 
     setNumbersButtons() {

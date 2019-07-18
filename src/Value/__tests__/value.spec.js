@@ -4,6 +4,7 @@ import Value from "../Value";
 import Fraction from "../Fraction";
 import Dot from "../Dot";
 import Operator from "../Operator";
+import Exponent from "../Exponent";
 
 describe("Value", () => {
     context("when create a value", () => {
@@ -74,6 +75,15 @@ describe("Value", () => {
             fraction.addDividend(dividend);
 
             expect(fraction.getValue()).to.eql("[2 + x]/[x - 3]");
+        });
+    });
+
+    context("when create a potentiation", () => {
+        it("returns **2", () => {
+            let exponent = new Exponent();
+            exponent.addValue(new Value("2"));
+
+            expect(exponent.getValue()).to.eql("**[2]");
         });
     });
 
@@ -148,6 +158,15 @@ describe("Value", () => {
             fraction.unfocus();
 
             expect(fraction.getTeX()).to.eql("\\frac{2 + x}{x - 3}");
+        });
+    });
+
+    context("when create a TEX value with potentiation", () => {
+        it("returns ^{2}", () => {
+            let exponent = new Exponent();
+            exponent.addValue(new Value("2"));
+
+            expect(exponent.getTeX()).to.eql("^{2\\mid}");
         });
     });
 });
