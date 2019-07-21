@@ -26,7 +26,7 @@ export default class FractionStrategy extends ValueStrategy {
     changeValue(direction) {
         let value = this.currentValue.getCurrentValue();
 
-        if (value.constructor.name === "Fraction") {
+        if (value.getContext() !== "value") {
             this.currentValue.changeValue(direction);
             return this.currentValue;
         }

@@ -2,6 +2,7 @@ import { expect } from "chai";
 import Value from "../Value";
 import ValueList from "../ValueList";
 import Fraction from "../Fraction";
+import Exponent from "../Exponent";
 
 describe("ValueList", () => {
     it("get last value", () => {
@@ -97,5 +98,37 @@ describe("ValueList", () => {
         let divider = valueList.last().divider;
 
         expect(divider.last().cursor).to.be.true;
+    });
+
+    it("add exponent 2", () => {
+        let valueList = new ValueList(new Value("2"));
+        valueList.addValue(new Exponent());
+        valueList.addValue(new Value("2"));
+
+        expect(valueList.last().getValue()).to.be.equal("2**[2]");
+    });
+
+    it("go to prev value from exponent", () => {
+        let valueList = new ValueList(new Value("2"));
+        valueList.addValue(new Exponent());
+        valueList.addValue(new Value("2"));
+        valueList.prevValue();
+        valueList.addValue(new Value("2"));
+        valueList.prevValue();
+        valueList.prevValue();
+        valueList.addValue(new Value("2"));
+
+        expect(valueList.last().getValue()).to.be.equal("22**[22]");
+    });
+
+    it("go to next value from exponent", () => {
+        let valueList = new ValueList(new Value("2"));
+        valueList.addValue(new Exponent());
+        valueList.addValue(new Value("2"));
+        valueList.nextValue();
+        valueList.addValue(new Value("+"));
+        valueList.addValue(new Value("3"));
+
+        expect(valueList.last().getValue()).to.be.equal("2**[2]+3");
     });
 });

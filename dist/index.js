@@ -53,6 +53,31 @@ var _extends = Object.assign || function (target) {
   return target;
 };
 
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
 var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
@@ -764,6 +789,7 @@ var MapKeys = function () {
             this.set("/", this.getComponent("\\frac{x}{y}", "/"));
             this.set("(", this.getComponent("(", "("));
             this.set(")", this.getComponent(")", ")"));
+            this.set("^", this.getComponent("x^y", "^"));
         }
     }, {
         key: "setNumbersButtons",
@@ -875,6 +901,7 @@ var Fraction = function (_Value) {
     }
 
     /**
+     *  Add value in divider
      *
      * @param {Object} divider
      */
@@ -896,6 +923,7 @@ var Fraction = function (_Value) {
         }
 
         /**
+         *  Add value in dividend
          *
          * @param {Object} dividend
          */
@@ -910,11 +938,24 @@ var Fraction = function (_Value) {
 
             this.dividend.addValue(dividend);
         }
+
+        /**
+         *  Get context key
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "getContext",
         value: function getContext() {
             return "fraction";
         }
+
+        /**
+         * unfocus fraction
+         *
+         */
+
     }, {
         key: "unfocus",
         value: function unfocus() {
@@ -928,6 +969,13 @@ var Fraction = function (_Value) {
 
             this.currentCursor = null;
         }
+
+        /**
+         * Set cursor in operator
+         *
+         * @param {String} operator
+         */
+
     }, {
         key: "setCursor",
         value: function setCursor(operator) {
@@ -949,6 +997,13 @@ var Fraction = function (_Value) {
                 this.currentCursor = DIVIDEND;
             }
         }
+
+        /**
+         * get the current value
+         *
+         * @returns {Object}
+         */
+
     }, {
         key: "getCurrentValue",
         value: function getCurrentValue() {
@@ -958,6 +1013,14 @@ var Fraction = function (_Value) {
 
             return this.dividend.value;
         }
+
+        /**
+         *  Change value direction
+         *
+         * @param {String} direction
+         * @returns {Object}
+         */
+
     }, {
         key: "changeValue",
         value: function changeValue(direction) {
@@ -967,11 +1030,27 @@ var Fraction = function (_Value) {
 
             return this.dividend[direction]();
         }
+
+        /**
+         * set prentheses
+         *
+         * @param {String} value
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "setParentheses",
         value: function setParentheses(value) {
             return value.length > 1 ? "[" + value + "]" : value;
         }
+
+        /**
+         * get value
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "value",
         value: function value() {
@@ -980,26 +1059,61 @@ var Fraction = function (_Value) {
 
             return dividend + "/" + divider;
         }
+
+        /**
+         * get TEX value
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "valueTeX",
         value: function valueTeX() {
             return "\\frac{" + this.getDividendTeX() + "}{" + this.getDividerTeX() + "}";
         }
+
+        /**
+         * get divider TEX
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "getDividerTeX",
         value: function getDividerTeX() {
             return this.divider ? this.divider.last().getTeX() : "";
         }
+
+        /**
+         * get dividend TEX
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "getDividendTeX",
         value: function getDividendTeX() {
             return this.dividend ? this.dividend.last().getTeX() : "";
         }
+
+        /**
+         * get divider Value
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "getDividerValue",
         value: function getDividerValue() {
             return this.divider ? this.divider.last().getValue() : "";
         }
+
+        /**
+         * get dividend Value
+         *
+         * @returns {String}
+         */
+
     }, {
         key: "getDividendValue",
         value: function getDividendValue() {
@@ -1065,6 +1179,96 @@ var Operator = function (_Value) {
     return Operator;
 }(Value);
 
+var Exponent = function (_Value) {
+    inherits(Exponent, _Value);
+
+    /**
+     *
+     * @param {Object} prevValue
+     */
+    function Exponent(prevValue) {
+        classCallCheck(this, Exponent);
+
+        var _this = possibleConstructorReturn(this, (Exponent.__proto__ || Object.getPrototypeOf(Exponent)).call(this, "^", prevValue));
+
+        var value = new Value("");
+        value.toggleCursor();
+
+        _this.valueList = new ValueList(value);
+        return _this;
+    }
+
+    createClass(Exponent, [{
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            get(Exponent.prototype.__proto__ || Object.getPrototypeOf(Exponent.prototype), "toggleCursor", this).call(this);
+
+            if (this.cursor) {
+                this.valueList.focusLast();
+            }
+        }
+
+        /**
+         *
+         * @param {Object} value
+         */
+
+    }, {
+        key: "addValue",
+        value: function addValue(value) {
+            this.valueList.addValue(value);
+        }
+
+        /**
+         * unfocus potentiation
+         *
+         */
+
+    }, {
+        key: "unfocus",
+        value: function unfocus() {
+            this.valueList.unfocus();
+        }
+
+        /**
+         * Get value
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "value",
+        value: function value() {
+            return "**[" + this.valueList.last().getValue() + "]";
+        }
+
+        /**
+         * Get TEX value
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            return "^{" + this.valueList.last().getTeX() + "}";
+        }
+
+        /**
+         *  Get context key
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "getContext",
+        value: function getContext() {
+            return "exponent";
+        }
+    }]);
+    return Exponent;
+}(Value);
+
 var MapEvents = function () {
     function MapEvents() {
         classCallCheck(this, MapEvents);
@@ -1110,6 +1314,9 @@ var MapEvents = function () {
             this.set(")", function (value) {
                 return new Value(")", value);
             });
+            this.set("^", function (value) {
+                return new Exponent(value);
+            });
         }
     }, {
         key: "setNumbersButtons",
@@ -1132,7 +1339,7 @@ var MapEvents = function () {
 
 var defaultMapEvents = new MapEvents();
 
-var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"], ["(", ")"]];
+var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"], ["(", ")", "^"]];
 
 var BaseCommand = function () {
     /**
@@ -1315,7 +1522,7 @@ var ChangeValue = function (_BaseCommand) {
                 nextValue.prevValue.cursor = false;
             }
 
-            nextValue.cursor = true;
+            nextValue.toggleCursor();
 
             return this.setFraction(nextValue);
         }
@@ -1348,7 +1555,7 @@ var ChangeValue = function (_BaseCommand) {
                 prevValue.nextValue.cursor = false;
             }
 
-            prevValue.cursor = true;
+            prevValue.toggleCursor();
 
             return this.setFraction(prevValue);
         }
@@ -1598,7 +1805,7 @@ var FractionStrategy = function (_ValueStrategy) {
         value: function changeValue(direction) {
             var value = this.currentValue.getCurrentValue();
 
-            if (value.constructor.name === "Fraction") {
+            if (value.getContext() !== "value") {
                 this.currentValue.changeValue(direction);
                 return this.currentValue;
             }
@@ -1652,9 +1859,119 @@ var FractionStrategy = function (_ValueStrategy) {
     return FractionStrategy;
 }(ValueStrategy);
 
+var ExponentStrategy = function (_ValueStrategy) {
+    inherits(ExponentStrategy, _ValueStrategy);
+
+    function ExponentStrategy() {
+        classCallCheck(this, ExponentStrategy);
+        return possibleConstructorReturn(this, (ExponentStrategy.__proto__ || Object.getPrototypeOf(ExponentStrategy)).apply(this, arguments));
+    }
+
+    createClass(ExponentStrategy, [{
+        key: "addValue",
+
+        /**
+         *
+         * @param {Object} value
+         * @returns {Object}
+         */
+        value: function addValue(value) {
+            this.currentValue.addValue(value);
+            return this.currentValue;
+        }
+
+        /**
+         *
+         * @returns {any}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            if (direction == NEXT_VALUE) {
+                return this.nextValue();
+            }
+
+            return this.prevValue();
+        }
+    }, {
+        key: "nextValue",
+        value: function nextValue() {
+            var currentValue = this.currentValue.valueList.value;
+            var nextValue = currentValue.nextValue;
+
+            if (nextValue) {
+                this.currentValue.valueList.nextValue();
+                return this.currentValue;
+            }
+
+            if (currentValue.getContext() !== "value") {
+                this.currentValue.valueList.nextValue();
+                return this.currentValue;
+            }
+
+            nextValue = new Value("", this.currentValue);
+            this.currentValue.unfocus();
+            this.currentValue.cursor = false;
+            this.currentValue.setNextValue(nextValue);
+            nextValue.cursor = true;
+
+            return nextValue;
+        }
+    }, {
+        key: "prevValue",
+        value: function prevValue() {
+            var currentValue = this.currentValue.valueList.value;
+            var prevValue = currentValue.prevValue;
+
+            if (prevValue) {
+                this.currentValue.valueList.prevValue();
+                return this.currentValue;
+            }
+
+            if (currentValue.getContext() !== "value") {
+                this.currentValue.valueList.prevValue();
+                return this.currentValue;
+            }
+
+            if (currentValue.operator === "") {
+                currentValue.nextValue.prevValue = undefined;
+                this.currentValue.valueList.value = currentValue.nextValue;
+                this.currentValue.unfocus();
+                this.currentValue.cursor = false;
+
+                return this.getPrev();
+            }
+
+            var newValue = new Value("");
+            newValue.setNextValue(currentValue);
+            currentValue.setPrevValue(newValue);
+
+            this.currentValue.valueList.prevValue();
+            return this.currentValue;
+        }
+    }, {
+        key: "getPrev",
+        value: function getPrev() {
+            var prevValue = this.currentValue.prevValue;
+
+            if (!prevValue) {
+                prevValue = new Value("");
+                prevValue.setNextValue(this.currentValue);
+            }
+
+            prevValue.cursor = true;
+
+            return prevValue;
+        }
+    }]);
+    return ExponentStrategy;
+}(ValueStrategy);
+
 var contextConfig = {
     "fraction": FractionStrategy,
-    "value": ValueStrategy
+    "value": ValueStrategy,
+    "exponent": ExponentStrategy
 };
 
 var withKeyboard = (function () {

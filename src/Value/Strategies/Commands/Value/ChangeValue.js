@@ -44,7 +44,7 @@ export default class ChangeValue extends BaseCommand {
             nextValue.prevValue.cursor = false;
         }
 
-        nextValue.cursor = true;
+        nextValue.toggleCursor();
 
         return this.setFraction(nextValue);
     }
@@ -74,7 +74,7 @@ export default class ChangeValue extends BaseCommand {
             prevValue.nextValue.cursor = false;
         }
 
-        prevValue.cursor = true;
+        prevValue.toggleCursor();
 
         return this.setFraction(prevValue);
     }
