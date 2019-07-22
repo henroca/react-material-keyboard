@@ -5,6 +5,7 @@ import Fraction from "../Fraction";
 import Dot from "../Dot";
 import Operator from "../Operator";
 import Exponent from "../Exponent";
+import Root from "../Root";
 
 describe("Value", () => {
     context("when create a value", () => {
@@ -84,6 +85,23 @@ describe("Value", () => {
             exponent.addValue(new Value("2"));
 
             expect(exponent.getValue()).to.eql("**[2]");
+        });
+    });
+
+    context("when create a root", () => {
+        it("returns sqrt(9)", () => {
+            let root = new Root();
+            root.addRadicand(new Value("9"));
+
+            expect(root.getValue()).to.eql("sqrt(9)");
+        });
+
+        it("returns sqrt(8, 3)", () => {
+            let root = new Root();
+            root.addRadicand(new Value("8"));
+            root.addIndex(new Value("3"));
+
+            expect(root.getValue()).to.eql("sqrt(8, 3)");
         });
     });
 
@@ -167,6 +185,23 @@ describe("Value", () => {
             exponent.addValue(new Value("2"));
 
             expect(exponent.getTeX()).to.eql("^{2\\mid}");
+        });
+    });
+
+    context("when create a TEX value with root", () => {
+        it("returns a square to default", () => {
+            let root = new Root();
+            root.addRadicand(new Value("9"));
+
+            expect(root.getTeX()).to.eql("\\sqrt{9\\mid}");
+        });
+
+        it("changes the index to 3", () => {
+            let root = new Root();
+            root.addRadicand(new Value("8"));
+            root.addIndex(new Value("3"));
+
+            expect(root.getTeX()).to.eql("\\sqrt[3\\mid]{8}");
         });
     });
 });
