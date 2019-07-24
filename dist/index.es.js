@@ -783,6 +783,7 @@ var MapKeys = function () {
             this.set("(", this.getComponent("(", "("));
             this.set(")", this.getComponent(")", ")"));
             this.set("^", this.getComponent("x^y", "^"));
+            this.set("sqrt", this.getComponent("\\sqrt[y]{x}", "sqrt"));
         }
     }, {
         key: "setNumbersButtons",
@@ -1262,6 +1263,210 @@ var Exponent = function (_Value) {
     return Exponent;
 }(Value);
 
+var RADICAND = "RADICAND";
+var INDEX = "INDEX";
+
+var Root = function (_Value) {
+    inherits(Root, _Value);
+
+    /**
+     *
+     * @param {Object} prevValue
+     */
+    function Root(prevValue) {
+        classCallCheck(this, Root);
+
+        var _this = possibleConstructorReturn(this, (Root.__proto__ || Object.getPrototypeOf(Root)).call(this, "sqrt", prevValue));
+
+        _this.index = null;
+
+        var value = new Value("");
+        value.toggleCursor();
+
+        _this.radicand = new ValueList(value);
+        _this.currentCursor = RADICAND;
+        return _this;
+    }
+
+    createClass(Root, [{
+        key: "addRadicand",
+        value: function addRadicand(value) {
+            if (!this.isRadicand()) {
+                this.unfocus();
+                this.focus(RADICAND);
+            }
+
+            if (!this.radicand) {
+                this.radicand = new ValueList(value);
+                return;
+            }
+
+            this.radicand.addValue(value);
+        }
+    }, {
+        key: "addIndex",
+        value: function addIndex(value) {
+            if (!this.isIndex()) {
+                this.unfocus();
+                this.focus(INDEX);
+            }
+
+            if (!this.index) {
+                this.index = new ValueList(value);
+                return;
+            }
+
+            this.index.addValue(value);
+        }
+    }, {
+        key: "focus",
+        value: function focus(operator) {
+            this.cursor = true;
+
+            if (operator === RADICAND) {
+                this.currentCursor = RADICAND;
+                if (!this.radicand) return;
+                this.radicand.focusLast();
+                return;
+            }
+
+            this.currentCursor = INDEX;
+            if (!this.index) return;
+            this.index.focusLast();
+        }
+    }, {
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            get(Root.prototype.__proto__ || Object.getPrototypeOf(Root.prototype), "toggleCursor", this).call(this);
+
+            if (this.cursor) {
+                this.focus(RADICAND);
+            }
+        }
+
+        /**
+         * Get value
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "value",
+        value: function value() {
+            if (this.index) return "sqrt(" + this.radicand.last().getValue() + ", " + this.index.last().getValue() + ")";
+
+            return "sqrt(" + this.radicand.last().getValue() + ")";
+        }
+
+        /**
+         * Get TEX value
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            if (this.index) return "\\sqrt[" + this.index.last().getTeX() + "]{" + this.radicand.last().getTeX() + "}";
+
+            return "\\sqrt{" + this.radicand.last().getTeX() + "}";
+        }
+
+        /**
+         * unfocus
+         *
+         */
+
+    }, {
+        key: "unfocus",
+        value: function unfocus() {
+            if (this.radicand) this.radicand.unfocus();
+            if (this.index) this.index.unfocus();
+
+            this.currentCursor = null;
+            this.cursor = false;
+        }
+
+        /**
+         * get the current value
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "getCurrentValue",
+        value: function getCurrentValue() {
+            var valueList = this.index;
+
+            if (this.isRadicand()) {
+                valueList = this.radicand;
+            }
+
+            if (!valueList) return null;
+
+            return valueList.value;
+        }
+
+        /**
+         *  Change value direction
+         *
+         * @param {String} direction
+         * @returns {Object}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            if (this.isRadicand()) {
+                return this.radicand[direction]();
+            }
+
+            return this.index[direction]();
+        }
+    }, {
+        key: "toNextValue",
+        value: function toNextValue() {
+            if (this.isRadicand()) {
+                this.radicand.nextValue();
+            } else {
+                this.index.nextValue();
+            }
+        }
+    }, {
+        key: "toPrevValue",
+        value: function toPrevValue() {
+            if (this.isRadicand()) {
+                this.radicand.prevValue();
+            } else {
+                this.index.prevValue();
+            }
+        }
+    }, {
+        key: "isRadicand",
+        value: function isRadicand() {
+            return this.currentCursor === RADICAND;
+        }
+    }, {
+        key: "isIndex",
+        value: function isIndex() {
+            return this.currentCursor === INDEX;
+        }
+
+        /**
+         *  Get context key
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "getContext",
+        value: function getContext() {
+            return "root";
+        }
+    }]);
+    return Root;
+}(Value);
+
 var MapEvents = function () {
     function MapEvents() {
         classCallCheck(this, MapEvents);
@@ -1310,6 +1515,9 @@ var MapEvents = function () {
             this.set("^", function (value) {
                 return new Exponent(value);
             });
+            this.set("sqrt", function (value) {
+                return new Root(value);
+            });
         }
     }, {
         key: "setNumbersButtons",
@@ -1332,7 +1540,7 @@ var MapEvents = function () {
 
 var defaultMapEvents = new MapEvents();
 
-var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"], ["(", ")", "^"]];
+var defaultKeyboard = [["1", "2", "3", "+"], ["4", "5", "6", "-"], ["7", "8", "9", "*"], [",", "0", "=", "/"], ["(", ")", "^", "sqrt"]];
 
 var BaseCommand = function () {
     /**
@@ -1623,6 +1831,47 @@ var ValueStrategy = function () {
             var changeValue = new ChangeValue(this.currentValue, direction);
             return changeValue.execute();
         }
+
+        /**
+        *  change to next value
+        *
+        * @returns {Object}
+        */
+
+    }, {
+        key: "changeToNext",
+        value: function changeToNext() {
+            var newValue = new Value("", this.currentValue);
+            newValue.cursor = true;
+
+            this.currentValue.setNextValue(newValue);
+
+            return newValue;
+        }
+
+        /**
+         * change to prev value
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "changeToPrev",
+        value: function changeToPrev() {
+            if (this.currentValue.prevValue) {
+                this.currentValue.prevValue.cursor = true;
+
+                return this.currentValue.prevValue;
+            }
+
+            var newValue = new Value("");
+            newValue.setNextValue(this.currentValue);
+            newValue.cursor = true;
+
+            this.currentValue.setPrevValue(newValue);
+
+            return newValue;
+        }
     }]);
     return ValueStrategy;
 }();
@@ -1798,7 +2047,7 @@ var FractionStrategy = function (_ValueStrategy) {
         value: function changeValue(direction) {
             var value = this.currentValue.getCurrentValue();
 
-            if (value.getContext() !== "value") {
+            if (value && value.getContext() !== "value") {
                 this.currentValue.changeValue(direction);
                 return this.currentValue;
             }
@@ -1808,45 +2057,13 @@ var FractionStrategy = function (_ValueStrategy) {
 
             if (result) return result;
 
+            this.currentValue.unfocus();
+
             if (direction === NEXT_VALUE) {
                 return this.changeToNext();
             }
 
             return this.changeToPrev();
-        }
-
-        /**
-         *
-         * @returns {Object}
-         */
-
-    }, {
-        key: "changeToNext",
-        value: function changeToNext() {
-            var newValue = new Value("", this.currentValue);
-            newValue.cursor = true;
-
-            this.currentValue.setNextValue(newValue);
-
-            return newValue;
-        }
-    }, {
-        key: "changeToPrev",
-        value: function changeToPrev() {
-            if (this.currentValue.prevValue) {
-                this.currentValue.cursor = false;
-                this.currentValue.prevValue.cursor = true;
-
-                return this.currentValue.prevValue;
-            }
-
-            var newValue = new Value("");
-            newValue.setNextValue(this.currentValue);
-            newValue.cursor = true;
-
-            this.currentValue.setPrevValue(newValue);
-
-            return newValue;
         }
     }]);
     return FractionStrategy;
@@ -1961,10 +2178,192 @@ var ExponentStrategy = function (_ValueStrategy) {
     return ExponentStrategy;
 }(ValueStrategy);
 
+var ChangeValue$2 = function (_BaseCommand) {
+    inherits(ChangeValue, _BaseCommand);
+
+    /**
+     *
+     * @param {Object} root
+     * @param {string} direction
+     */
+    function ChangeValue(root, direction) {
+        classCallCheck(this, ChangeValue);
+
+        var _this = possibleConstructorReturn(this, (ChangeValue.__proto__ || Object.getPrototypeOf(ChangeValue)).call(this, root.getCurrentValue()));
+
+        _this.root = root;
+        _this.direction = direction;
+        return _this;
+    }
+
+    /**
+     *  Execute the command to change position value
+     *
+     * @returns {Object}
+     */
+
+
+    createClass(ChangeValue, [{
+        key: "execute",
+        value: function execute() {
+            if (this.direction === NEXT_VALUE) {
+                return this.nextValue();
+            }
+
+            return this.prevValue();
+        }
+
+        /**
+         * set next value
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "nextValue",
+        value: function nextValue() {
+            if (this.nextIsNull()) {
+                if (this.root.isRadicand()) return null;
+
+                this.root.unfocus();
+                this.root.focus(RADICAND);
+
+                if (!this.root.radicand) {
+                    this.root.radicand = new ValueList(new Value(''));
+                    this.root.radicand.boot();
+                }
+            } else {
+                this.root.toNextValue();
+            }
+
+            return this.root;
+        }
+
+        /**
+         * set prev value
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "prevValue",
+        value: function prevValue() {
+            if (this.prevIsNull() && this.isEmptyValue()) {
+                if (this.nextIsNull()) {
+                    this.changeToNullValue();
+                } else {
+                    var nextValue = this.currentValue.nextValue;
+                    nextValue.prevValue = null;
+                    this.setCurrentValue(nextValue);
+                }
+
+                if (this.root.isIndex()) return null;
+
+                this.root.unfocus();
+                this.root.focus(INDEX);
+
+                if (!this.root.index) {
+                    this.root.index = new ValueList(new Value(''));
+                    this.root.index.boot();
+                }
+
+                return this.root;
+            }
+
+            if (this.prevIsNull()) {
+                var value = new Value("");
+                value.setNextValue(this.currentValue);
+                this.currentValue.setPrevValue(value);
+            }
+
+            this.root.toPrevValue();
+            return this.root;
+        }
+    }, {
+        key: "setCurrentValue",
+        value: function setCurrentValue(value) {
+            if (this.root.isIndex()) {
+                this.root.index.value = value;
+            } else {
+                this.root.radicand.value = value;
+            }
+        }
+    }, {
+        key: "changeToNullValue",
+        value: function changeToNullValue() {
+            if (this.root.isIndex()) {
+                this.root.index = null;
+            } else {
+                this.root.radicand = null;
+            }
+        }
+    }]);
+    return ChangeValue;
+}(BaseCommand);
+
+var RootStrategy = function (_ValueStrategy) {
+    inherits(RootStrategy, _ValueStrategy);
+
+    function RootStrategy() {
+        classCallCheck(this, RootStrategy);
+        return possibleConstructorReturn(this, (RootStrategy.__proto__ || Object.getPrototypeOf(RootStrategy)).apply(this, arguments));
+    }
+
+    createClass(RootStrategy, [{
+        key: "addValue",
+
+        /**
+         *
+         * @param {Object} value
+         * @returns {Object}
+         */
+        value: function addValue(value) {
+            if (this.currentValue.isRadicand()) {
+                this.currentValue.addRadicand(value);
+            } else {
+                this.currentValue.addIndex(value);
+            }
+
+            return this.currentValue;
+        }
+
+        /**
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "changeValue",
+        value: function changeValue(direction) {
+            var value = this.currentValue.getCurrentValue();
+
+            if (value && value.getContext() !== "value") {
+                this.currentValue.changeValue(direction);
+                return this.currentValue;
+            }
+
+            var command = new ChangeValue$2(this.currentValue, direction);
+            var result = command.execute();
+
+            if (result) return result;
+
+            this.currentValue.unfocus();
+
+            if (direction === NEXT_VALUE) {
+                return this.changeToNext();
+            }
+
+            return this.changeToPrev();
+        }
+    }]);
+    return RootStrategy;
+}(ValueStrategy);
+
 var contextConfig = {
     "fraction": FractionStrategy,
     "value": ValueStrategy,
-    "exponent": ExponentStrategy
+    "exponent": ExponentStrategy,
+    "root": RootStrategy
 };
 
 var withKeyboard = (function () {

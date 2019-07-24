@@ -53,15 +53,23 @@ export default class Root extends Value {
         this.cursor = true;
 
         if (operator === RADICAND) {
-            if (!this.radicand) return;
             this.currentCursor = RADICAND;
+            if (!this.radicand) return;
             this.radicand.focusLast();
             return;
         }
 
-        if (!this.index) return;
         this.currentCursor = INDEX;
+        if (!this.index) return;
         this.index.focusLast();
+    }
+
+    toggleCursor() {
+        super.toggleCursor();
+
+        if (this.cursor) {
+            this.focus(RADICAND);
+        }
     }
 
     /**
@@ -71,9 +79,9 @@ export default class Root extends Value {
      */
     value() {
         if (this.index)
-            return `sqrt(${this.radicand.last().getValue()}, ${this.index.last().getValue()})`
+            return `sqrt(${this.radicand.last().getValue()}, ${this.index.last().getValue()})`;
 
-        return `sqrt(${this.radicand.last().getValue()})`
+        return `sqrt(${this.radicand.last().getValue()})`;
     }
 
     /**
@@ -83,9 +91,9 @@ export default class Root extends Value {
      */
     valueTeX() {
         if (this.index)
-            return `\\sqrt[${this.index.last().getTeX()}]{${this.radicand.last().getTeX()}}`
+            return `\\sqrt[${this.index.last().getTeX()}]{${this.radicand.last().getTeX()}}`;
 
-        return `\\sqrt{${this.radicand.last().getTeX()}}`
+        return `\\sqrt{${this.radicand.last().getTeX()}}`;
     }
 
     /**
@@ -100,11 +108,67 @@ export default class Root extends Value {
         this.cursor = false;
     }
 
+    /**
+     * get the current value
+     *
+     * @returns {Object}
+     */
+    getCurrentValue() {
+        let valueList = this.index;
+
+        if (this.isRadicand()) {
+            valueList = this.radicand;
+        }
+
+        if (!valueList) return null;
+
+        return valueList.value;
+    }
+
+    /**
+     *  Change value direction
+     *
+     * @param {String} direction
+     * @returns {Object}
+     */
+    changeValue(direction) {
+        if (this.isRadicand()) {
+            return this.radicand[direction]();
+        }
+
+        return this.index[direction]();
+    }
+
+    toNextValue() {
+        if (this.isRadicand()) {
+            this.radicand.nextValue();
+        } else {
+            this.index.nextValue();
+        }
+    }
+
+    toPrevValue() {
+        if (this.isRadicand()) {
+            this.radicand.prevValue();
+        } else {
+            this.index.prevValue();
+        }
+    }
+
     isRadicand() {
         return this.currentCursor === RADICAND;
     }
 
     isIndex() {
         return this.currentCursor === INDEX;
+    }
+
+    /**
+     *  Get context key
+     *
+     * @returns {String}
+     */
+    getContext() {
+        return "root";
     }
 }
