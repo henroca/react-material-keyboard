@@ -35,6 +35,7 @@ export class MapKeys {
         this.set("(", this.getComponent("(", "("));
         this.set(")", this.getComponent(")", ")"));
         this.set("^", this.getComponent("x^y", "^"));
+        this.set("sqrt", this.getComponent("\\sqrt[y]{x}", "sqrt"));
     }
 
     setNumbersButtons() {

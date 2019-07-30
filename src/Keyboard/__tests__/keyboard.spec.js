@@ -33,7 +33,7 @@ describe("<Keyboard />", () => {
             expect(keyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
             expect(keyboard[2]).to.be.equalTo(["7", "8", "9", "*"]);
             expect(keyboard[3]).to.be.equalTo([",", "0", "=", "/"]);
-            expect(keyboard[4]).to.be.equalTo(["(", ")", "^"]);
+            expect(keyboard[4]).to.be.equalTo(["(", ")", "^", "sqrt"]);
         });
 
         it("renders the custom keyboard", () => {

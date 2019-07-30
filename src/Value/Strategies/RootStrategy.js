@@ -1,18 +1,18 @@
 import ValueStrategy from "./ValueStrategy";
-import { DIVIDER } from "../Fraction";
-import ChangeValue from "./Commands/Fraction/ChangeValue";
+import ChangeValue from "./Commands/Root/ChangeValue";
 import { NEXT_VALUE } from "../ValueList";
 
-export default class FractionStrategy extends ValueStrategy {
+export default class RootStrategy extends ValueStrategy {
     /**
      *
      * @param {Object} value
+     * @returns {Object}
      */
     addValue(value) {
-        if (this.currentValue.currentCursor === DIVIDER) {
-            this.currentValue.addDivider(value);
+        if (this.currentValue.isRadicand()) {
+            this.currentValue.addRadicand(value);
         } else {
-            this.currentValue.addDividend(value);
+            this.currentValue.addIndex(value);
         }
 
         return this.currentValue;

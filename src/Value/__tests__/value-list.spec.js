@@ -3,6 +3,7 @@ import Value from "../Value";
 import ValueList from "../ValueList";
 import Fraction from "../Fraction";
 import Exponent from "../Exponent";
+import Root from "../Root";
 
 describe("ValueList", () => {
     it("get last value", () => {
@@ -130,5 +131,22 @@ describe("ValueList", () => {
         valueList.addValue(new Value("3"));
 
         expect(valueList.last().getValue()).to.be.equal("2**[2]+3");
+    });
+
+    it("add radicand on square root", () => {
+        let valueList = new ValueList(new Root());
+        valueList.addValue(new Value("4"));
+
+        expect(valueList.last().getValue()).to.be.equal("sqrt(4)");
+    });
+
+    it("add index and radicand on root", () => {
+        let valueList = new ValueList(new Root());
+        valueList.addValue(new Value("8"));
+        valueList.prevValue();
+        valueList.prevValue();
+        valueList.addValue(new Value("3"));
+
+        expect(valueList.last().getValue()).to.be.equal("sqrt(8, 3)");
     });
 });
