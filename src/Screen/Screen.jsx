@@ -17,6 +17,9 @@ const styles = () => ({
         display: "flex",
         justifyContent: "center",
     },
+    actionBtn: {
+        cursor: "pointer",
+    },
 });
 
 class Screen extends React.Component {
@@ -37,12 +40,18 @@ class Screen extends React.Component {
     }
 
     render() {
-        let { classes, onKeyUp } = this.props;
+        let { classes, onKeyUp, onClear} = this.props;
 
         return (
             <Grid container onKeyUp={onKeyUp} className={classes.root} spacing={0}>
                 <Grid item xs={6}>
-                    <span>LIMPAR</span>
+                    <span
+                        id="clear"
+                        onClick={onClear}
+                        className={classes.actionBtn}
+                    >
+                        LIMPAR
+                    </span>
                 </Grid>
                 <Grid item xs={6}>
                     <Backspace className={classes.icon} fontSize="small"/>

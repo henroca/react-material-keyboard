@@ -273,6 +273,9 @@ var styles$1 = function styles$$1() {
         screen: {
             display: "flex",
             justifyContent: "center"
+        },
+        actionBtn: {
+            cursor: "pointer"
         }
     };
 };
@@ -306,7 +309,8 @@ var Screen = function (_React$Component) {
         value: function render() {
             var _props = this.props,
                 classes = _props.classes,
-                onKeyUp = _props.onKeyUp;
+                onKeyUp = _props.onKeyUp,
+                onClear = _props.onClear;
 
 
             return React__default.createElement(
@@ -317,7 +321,11 @@ var Screen = function (_React$Component) {
                     { item: true, xs: 6 },
                     React__default.createElement(
                         "span",
-                        null,
+                        {
+                            id: "clear",
+                            onClick: onClear,
+                            className: classes.actionBtn
+                        },
                         "LIMPAR"
                     )
                 ),
@@ -563,6 +571,77 @@ var ValueList = function () {
 var LEFT = 37;
 var RIGHT = 39;
 
+var Value = function () {
+    function Value(operator, prevValue) {
+        classCallCheck(this, Value);
+
+        this.nextValue = null;
+        this.prevValue = prevValue;
+        this.operator = operator;
+        this.cursor = false;
+    }
+
+    createClass(Value, [{
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            this.cursor = !this.cursor;
+        }
+    }, {
+        key: "setNextValue",
+        value: function setNextValue(nextValue) {
+            if (this.nextValue) {
+                nextValue.nextValue = this.nextValue;
+                nextValue.nextValue.setPrevValue(nextValue);
+            }
+
+            this.nextValue = nextValue;
+        }
+    }, {
+        key: "getContext",
+        value: function getContext() {
+            return "value";
+        }
+    }, {
+        key: "setPrevValue",
+        value: function setPrevValue(prevValue) {
+            this.prevValue = prevValue;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            return this.operator;
+        }
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            if (this.cursor) {
+                return this.value() + "\\mid";
+            }
+
+            return this.value();
+        }
+    }, {
+        key: "getValue",
+        value: function getValue() {
+            if (!this.prevValue) {
+                return this.value();
+            }
+
+            return this.prevValue.getValue() + this.value();
+        }
+    }, {
+        key: "getTeX",
+        value: function getTeX() {
+            if (!this.prevValue) {
+                return this.valueTeX();
+            }
+
+            return this.prevValue.getTeX() + this.valueTeX();
+        }
+    }]);
+    return Value;
+}();
+
 var styles$2 = function styles$$1() {
     return {
         container: {
@@ -601,6 +680,7 @@ var Component = function (_ReactComponet) {
 
         _this.clickBuntton = _this.clickBuntton.bind(_this);
         _this.handleKeyUp = _this.handleKeyUp.bind(_this);
+        _this.handleKeyClear = _this.handleKeyClear.bind(_this);
         _this.props.mapKeys.setCallback(_this.clickBuntton);
         _this.props.mapKeys.setMap();
         _this.props.mapEvents.setMap();
@@ -642,6 +722,17 @@ var Component = function (_ReactComponet) {
             this.setState({ valueList: valueList });
         }
     }, {
+        key: "handleKeyClear",
+        value: function handleKeyClear() {
+            var valueList = this.state.valueList;
+
+
+            if (valueList) {
+                valueList = new ValueList(new Value(""));
+                this.setState({ valueList: valueList });
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
             var _props = this.props,
@@ -657,7 +748,11 @@ var Component = function (_ReactComponet) {
                 React__default.createElement(
                     MathJax.Provider,
                     { options: mathJaxConfig },
-                    React__default.createElement(Screen$1, { screenValue: valueList, onKeyUp: this.handleKeyUp }),
+                    React__default.createElement(Screen$1, {
+                        screenValue: valueList,
+                        onKeyUp: this.handleKeyUp,
+                        onClear: this.handleKeyClear
+                    }),
                     React__default.createElement(
                         Grid,
                         { container: true, className: classes.container, spacing: 0 },
@@ -804,77 +899,6 @@ var MapKeys = function () {
 }();
 
 var defaultMapKeys = new MapKeys();
-
-var Value = function () {
-    function Value(operator, prevValue) {
-        classCallCheck(this, Value);
-
-        this.nextValue = null;
-        this.prevValue = prevValue;
-        this.operator = operator;
-        this.cursor = false;
-    }
-
-    createClass(Value, [{
-        key: "toggleCursor",
-        value: function toggleCursor() {
-            this.cursor = !this.cursor;
-        }
-    }, {
-        key: "setNextValue",
-        value: function setNextValue(nextValue) {
-            if (this.nextValue) {
-                nextValue.nextValue = this.nextValue;
-                nextValue.nextValue.setPrevValue(nextValue);
-            }
-
-            this.nextValue = nextValue;
-        }
-    }, {
-        key: "getContext",
-        value: function getContext() {
-            return "value";
-        }
-    }, {
-        key: "setPrevValue",
-        value: function setPrevValue(prevValue) {
-            this.prevValue = prevValue;
-        }
-    }, {
-        key: "value",
-        value: function value() {
-            return this.operator;
-        }
-    }, {
-        key: "valueTeX",
-        value: function valueTeX() {
-            if (this.cursor) {
-                return this.value() + "\\mid";
-            }
-
-            return this.value();
-        }
-    }, {
-        key: "getValue",
-        value: function getValue() {
-            if (!this.prevValue) {
-                return this.value();
-            }
-
-            return this.prevValue.getValue() + this.value();
-        }
-    }, {
-        key: "getTeX",
-        value: function getTeX() {
-            if (!this.prevValue) {
-                return this.valueTeX();
-            }
-
-            return this.prevValue.getTeX() + this.valueTeX();
-        }
-    }]);
-    return Value;
-}();
 
 var DIVIDER = "DIVIDER";
 var DIVIDEND = "DIVIDEND";
@@ -1840,10 +1864,10 @@ var ValueStrategy = function () {
         }
 
         /**
-        *  change to next value
-        *
-        * @returns {Object}
-        */
+         *  change to next value
+         *
+         * @returns {Object}
+         */
 
     }, {
         key: "changeToNext",
@@ -2236,7 +2260,7 @@ var ChangeValue$2 = function (_BaseCommand) {
                 this.root.focus(RADICAND);
 
                 if (!this.root.radicand) {
-                    this.root.radicand = new ValueList(new Value(''));
+                    this.root.radicand = new ValueList(new Value(""));
                     this.root.radicand.boot();
                 }
             } else {
@@ -2270,7 +2294,7 @@ var ChangeValue$2 = function (_BaseCommand) {
                 this.root.focus(INDEX);
 
                 if (!this.root.index) {
-                    this.root.index = new ValueList(new Value(''));
+                    this.root.index = new ValueList(new Value(""));
                     this.root.index.boot();
                 }
 

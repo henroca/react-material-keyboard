@@ -26,7 +26,7 @@ describe("<Screen />", () => {
         });
 
         it("render the <span>LIMPAR</span>", () => {
-            expect(wrapper.contains(<span>LIMPAR</span>)).to.true;
+            expect(wrapper.contains(<span id="clear">LIMPAR</span>)).to.true;
         });
 
         it("render Math Componet", () => {

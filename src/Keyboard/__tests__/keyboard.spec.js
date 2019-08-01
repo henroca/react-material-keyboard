@@ -98,6 +98,18 @@ describe("<Keyboard />", () => {
         });
     });
 
+    it("clear the values", () => {
+        wrapper.find(Key).at(0).find("button").simulate("click");
+        wrapper.find(Key).at(1).find("button").simulate("click");
+        wrapper.find("#clear").simulate("click");
+
+        let valueList = wrapper.find(Component).children().state("valueList");
+        let value = new Value("");
+        value.toggleCursor();
+
+        expect(valueList.last()).to.deep.equal(value);
+    })
+
     it("returns four keys columns from default keyboard", () => {
         expect(defaultKeyboard).to.be.ofSize(5);
     });
