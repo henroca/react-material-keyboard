@@ -24,6 +24,42 @@ export default class ValueStrategy {
 
     /**
      *
+     * @returns {Object}
+     */
+    remove() {
+        let prevValue = this.currentValue.prevValue;
+        let nextValue = this.currentValue.nextValue;
+
+        if (!prevValue) {
+            prevValue = new Value("");
+        }
+
+        if (prevValue.getContext() !== "value") {
+            if (this.currentValue.operator == "") {
+                prevValue = prevValue.prevValue;
+
+                if (!prevValue) {
+                    prevValue = new Value("");
+                }
+            } else {
+                prevValue = new Value("", prevValue);
+            }
+        }
+
+        if (nextValue) {
+            prevValue.nextValue = nextValue;
+            nextValue.prevValue = prevValue;
+        } else {
+            prevValue.nextValue = undefined;
+        }
+
+        prevValue.toggleCursor();
+
+        return prevValue;
+    }
+
+    /**
+     *
      * @returns {any}
      */
     changeValue(direction) {

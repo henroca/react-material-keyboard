@@ -20,6 +20,14 @@ export default class ValueContext {
 
     /**
      *
+     * @returns {Obejct}
+     */
+    remove() {
+        return this.strategy.remove();
+    }
+
+    /**
+     *
      * @returns {any}
      */
     changeValue (direction) {

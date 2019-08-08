@@ -10,6 +10,7 @@ import ValueList from "../Value/ValueList";
 import { init } from "./appContext";
 
 import { LEFT, RIGHT } from "../keyConsts";
+import Value from "../Value/Value";
 
 const styles = () => ({
     container: {
@@ -51,6 +52,9 @@ class Component extends ReactComponet {
 
         this.clickBuntton = this.clickBuntton.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.handleKeyClear = this.handleKeyClear.bind(this);
+        this.handleKeyRemove = this.handleKeyRemove.bind(this);
+
         this.props.mapKeys.setCallback(this.clickBuntton);
         this.props.mapKeys.setMap();
         this.props.mapEvents.setMap();
@@ -85,6 +89,24 @@ class Component extends ReactComponet {
         this.setState({ valueList });
     }
 
+    handleKeyClear() {
+        let { valueList } = this.state;
+
+        if (valueList) {
+            valueList = new ValueList(new Value(""));
+            this.setState({ valueList });
+        }
+    }
+
+    handleKeyRemove() {
+        let { valueList } = this.state;
+
+        if (valueList) {
+            valueList.remove();
+            this.setState({ valueList });
+        }
+    }
+
     render() {
         let { keyboard, mapKeys, classes } = this.props;
         let { valueList } = this.state;
@@ -92,7 +114,12 @@ class Component extends ReactComponet {
         return (
             <Paper onKeyUp={this.handleKeyUp}>
                 <MathJax.Provider options={mathJaxConfig}>
-                    <Screen screenValue={valueList} onKeyUp={this.handleKeyUp}/>
+                    <Screen
+                        screenValue={valueList}
+                        onKeyUp={this.handleKeyUp}
+                        onClear={this.handleKeyClear}
+                        onRemove={this.handleKeyRemove}
+                    />
                     <Grid container className={classes.container} spacing={0}>
                         {keyboard.map(row => row.map(btn => (
                             <Grid key={btn} item xs={Math.ceil(12/row.length)}>

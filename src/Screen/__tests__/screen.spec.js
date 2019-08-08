@@ -25,10 +25,6 @@ describe("<Screen />", () => {
             expect(wrapper.find(Backspace)).to.have.lengthOf(1);
         });
 
-        it("render the <span>LIMPAR</span>", () => {
-            expect(wrapper.contains(<span>LIMPAR</span>)).to.true;
-        });
-
         it("render Math Componet", () => {
             expect(wrapper.find(Math)).to.have.lengthOf(1);
         });

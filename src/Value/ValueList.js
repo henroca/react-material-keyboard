@@ -56,6 +56,13 @@ export default class ValueList {
     }
 
     /**
+     * remove the current value
+     */
+    remove() {
+        this.value = this.getContext().remove();
+    }
+
+    /**
      * unfocus value list
      */
     unfocus() {

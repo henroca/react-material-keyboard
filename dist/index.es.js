@@ -261,11 +261,15 @@ var styles = function styles() {
             padding: "1em 2em"
         },
         icon: {
-            float: "right"
+            float: "right",
+            cursor: "pointer"
         },
         screen: {
             display: "flex",
             justifyContent: "center"
+        },
+        actionBtn: {
+            cursor: "pointer"
         }
     };
 };
@@ -299,7 +303,9 @@ var Screen = function (_React$Component) {
         value: function render() {
             var _props = this.props,
                 classes = _props.classes,
-                onKeyUp = _props.onKeyUp;
+                onKeyUp = _props.onKeyUp,
+                onClear = _props.onClear,
+                onRemove = _props.onRemove;
 
 
             return React.createElement(
@@ -310,14 +316,22 @@ var Screen = function (_React$Component) {
                     { item: true, xs: 6 },
                     React.createElement(
                         "span",
-                        null,
+                        {
+                            id: "clear",
+                            onClick: onClear,
+                            className: classes.actionBtn
+                        },
                         "LIMPAR"
                     )
                 ),
                 React.createElement(
                     Grid,
                     { item: true, xs: 6 },
-                    React.createElement(Backspace, { className: classes.icon, fontSize: "small" })
+                    React.createElement(Backspace, {
+                        className: classes.icon,
+                        fontSize: "small",
+                        onClick: onRemove
+                    })
                 ),
                 React.createElement(
                     Grid,
@@ -333,7 +347,9 @@ var Screen = function (_React$Component) {
 Screen.propTypes = {
     classes: PropTypes.object.isRequired,
     screenValue: PropTypes.object,
-    onKeyUp: PropTypes.func
+    onKeyUp: PropTypes.func,
+    onRemove: PropTypes.func,
+    onClear: PropTypes.func
 };
 
 
@@ -370,6 +386,17 @@ var ValueContext = function () {
         key: "addValue",
         value: function addValue(value) {
             return this.strategy.addValue(value);
+        }
+
+        /**
+         *
+         * @returns {Obejct}
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            return this.strategy.remove();
         }
 
         /**
@@ -461,6 +488,16 @@ var ValueList = function () {
         key: "addValue",
         value: function addValue(value) {
             this.value = this.getContext().addValue(value);
+        }
+
+        /**
+         * remove the current value
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.value = this.getContext().remove();
         }
 
         /**
@@ -556,6 +593,77 @@ var ValueList = function () {
 var LEFT = 37;
 var RIGHT = 39;
 
+var Value = function () {
+    function Value(operator, prevValue) {
+        classCallCheck(this, Value);
+
+        this.nextValue = null;
+        this.prevValue = prevValue;
+        this.operator = operator;
+        this.cursor = false;
+    }
+
+    createClass(Value, [{
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            this.cursor = !this.cursor;
+        }
+    }, {
+        key: "setNextValue",
+        value: function setNextValue(nextValue) {
+            if (this.nextValue) {
+                nextValue.nextValue = this.nextValue;
+                nextValue.nextValue.setPrevValue(nextValue);
+            }
+
+            this.nextValue = nextValue;
+        }
+    }, {
+        key: "getContext",
+        value: function getContext() {
+            return "value";
+        }
+    }, {
+        key: "setPrevValue",
+        value: function setPrevValue(prevValue) {
+            this.prevValue = prevValue;
+        }
+    }, {
+        key: "value",
+        value: function value() {
+            return this.operator;
+        }
+    }, {
+        key: "valueTeX",
+        value: function valueTeX() {
+            if (this.cursor) {
+                return this.value() + "\\mid";
+            }
+
+            return this.value();
+        }
+    }, {
+        key: "getValue",
+        value: function getValue() {
+            if (!this.prevValue) {
+                return this.value();
+            }
+
+            return this.prevValue.getValue() + this.value();
+        }
+    }, {
+        key: "getTeX",
+        value: function getTeX() {
+            if (!this.prevValue) {
+                return this.valueTeX();
+            }
+
+            return this.prevValue.getTeX() + this.valueTeX();
+        }
+    }]);
+    return Value;
+}();
+
 var styles$1 = function styles() {
     return {
         container: {
@@ -594,6 +702,9 @@ var Component$1 = function (_ReactComponet) {
 
         _this.clickBuntton = _this.clickBuntton.bind(_this);
         _this.handleKeyUp = _this.handleKeyUp.bind(_this);
+        _this.handleKeyClear = _this.handleKeyClear.bind(_this);
+        _this.handleKeyRemove = _this.handleKeyRemove.bind(_this);
+
         _this.props.mapKeys.setCallback(_this.clickBuntton);
         _this.props.mapKeys.setMap();
         _this.props.mapEvents.setMap();
@@ -635,6 +746,28 @@ var Component$1 = function (_ReactComponet) {
             this.setState({ valueList: valueList });
         }
     }, {
+        key: "handleKeyClear",
+        value: function handleKeyClear() {
+            var valueList = this.state.valueList;
+
+
+            if (valueList) {
+                valueList = new ValueList(new Value(""));
+                this.setState({ valueList: valueList });
+            }
+        }
+    }, {
+        key: "handleKeyRemove",
+        value: function handleKeyRemove() {
+            var valueList = this.state.valueList;
+
+
+            if (valueList) {
+                valueList.remove();
+                this.setState({ valueList: valueList });
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
             var _props = this.props,
@@ -650,7 +783,12 @@ var Component$1 = function (_ReactComponet) {
                 React.createElement(
                     MathJax.Provider,
                     { options: mathJaxConfig },
-                    React.createElement(Screen$1, { screenValue: valueList, onKeyUp: this.handleKeyUp }),
+                    React.createElement(Screen$1, {
+                        screenValue: valueList,
+                        onKeyUp: this.handleKeyUp,
+                        onClear: this.handleKeyClear,
+                        onRemove: this.handleKeyRemove
+                    }),
                     React.createElement(
                         Grid,
                         { container: true, className: classes.container, spacing: 0 },
@@ -797,77 +935,6 @@ var MapKeys = function () {
 }();
 
 var defaultMapKeys = new MapKeys();
-
-var Value = function () {
-    function Value(operator, prevValue) {
-        classCallCheck(this, Value);
-
-        this.nextValue = null;
-        this.prevValue = prevValue;
-        this.operator = operator;
-        this.cursor = false;
-    }
-
-    createClass(Value, [{
-        key: "toggleCursor",
-        value: function toggleCursor() {
-            this.cursor = !this.cursor;
-        }
-    }, {
-        key: "setNextValue",
-        value: function setNextValue(nextValue) {
-            if (this.nextValue) {
-                nextValue.nextValue = this.nextValue;
-                nextValue.nextValue.setPrevValue(nextValue);
-            }
-
-            this.nextValue = nextValue;
-        }
-    }, {
-        key: "getContext",
-        value: function getContext() {
-            return "value";
-        }
-    }, {
-        key: "setPrevValue",
-        value: function setPrevValue(prevValue) {
-            this.prevValue = prevValue;
-        }
-    }, {
-        key: "value",
-        value: function value() {
-            return this.operator;
-        }
-    }, {
-        key: "valueTeX",
-        value: function valueTeX() {
-            if (this.cursor) {
-                return this.value() + "\\mid";
-            }
-
-            return this.value();
-        }
-    }, {
-        key: "getValue",
-        value: function getValue() {
-            if (!this.prevValue) {
-                return this.value();
-            }
-
-            return this.prevValue.getValue() + this.value();
-        }
-    }, {
-        key: "getTeX",
-        value: function getTeX() {
-            if (!this.prevValue) {
-                return this.valueTeX();
-            }
-
-            return this.prevValue.getTeX() + this.valueTeX();
-        }
-    }]);
-    return Value;
-}();
 
 var DIVIDER = "DIVIDER";
 var DIVIDEND = "DIVIDEND";
@@ -1023,6 +1090,21 @@ var Fraction = function (_Value) {
             }
 
             return this.dividend[direction]();
+        }
+
+        /**
+         *
+         *
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            if (this.currentCursor == DIVIDER) {
+                return this.divider.remove();
+            }
+
+            return this.dividend.remove();
         }
 
         /**
@@ -1214,6 +1296,16 @@ var Exponent = function (_Value) {
         }
 
         /**
+         *
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.valueList.remove();
+        }
+
+        /**
          * unfocus potentiation
          *
          */
@@ -1342,6 +1434,15 @@ var Root = function (_Value) {
             if (this.cursor) {
                 this.focus(RADICAND);
             }
+        }
+    }, {
+        key: "remove",
+        value: function remove() {
+            if (this.isIndex()) {
+                return this.index.remove();
+            }
+
+            this.radicand.remove();
         }
 
         /**
@@ -1822,6 +1923,45 @@ var ValueStrategy = function () {
 
         /**
          *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            var prevValue = this.currentValue.prevValue;
+            var nextValue = this.currentValue.nextValue;
+
+            if (!prevValue) {
+                prevValue = new Value("");
+            }
+
+            if (prevValue.getContext() !== "value") {
+                if (this.currentValue.operator == "") {
+                    prevValue = prevValue.prevValue;
+
+                    if (!prevValue) {
+                        prevValue = new Value("");
+                    }
+                } else {
+                    prevValue = new Value("", prevValue);
+                }
+            }
+
+            if (nextValue) {
+                prevValue.nextValue = nextValue;
+                nextValue.prevValue = prevValue;
+            } else {
+                prevValue.nextValue = undefined;
+            }
+
+            prevValue.toggleCursor();
+
+            return prevValue;
+        }
+
+        /**
+         *
          * @returns {any}
          */
 
@@ -1833,10 +1973,10 @@ var ValueStrategy = function () {
         }
 
         /**
-        *  change to next value
-        *
-        * @returns {Object}
-        */
+         *  change to next value
+         *
+         * @returns {Object}
+         */
 
     }, {
         key: "changeToNext",
@@ -2043,6 +2183,17 @@ var FractionStrategy = function (_ValueStrategy) {
          */
 
     }, {
+        key: "remove",
+        value: function remove() {
+            this.currentValue.remove();
+            return this.currentValue;
+        }
+        /**
+         *
+         * @returns {Object}
+         */
+
+    }, {
         key: "changeValue",
         value: function changeValue(direction) {
             var value = this.currentValue.getCurrentValue();
@@ -2103,6 +2254,11 @@ var ExponentStrategy = function (_ValueStrategy) {
             }
 
             return this.prevValue();
+        }
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.currentValue.remove();
         }
     }, {
         key: "nextValue",
@@ -2229,7 +2385,7 @@ var ChangeValue$2 = function (_BaseCommand) {
                 this.root.focus(RADICAND);
 
                 if (!this.root.radicand) {
-                    this.root.radicand = new ValueList(new Value(''));
+                    this.root.radicand = new ValueList(new Value(""));
                     this.root.radicand.boot();
                 }
             } else {
@@ -2263,7 +2419,7 @@ var ChangeValue$2 = function (_BaseCommand) {
                 this.root.focus(INDEX);
 
                 if (!this.root.index) {
-                    this.root.index = new ValueList(new Value(''));
+                    this.root.index = new ValueList(new Value(""));
                     this.root.index.boot();
                 }
 
@@ -2324,6 +2480,18 @@ var RootStrategy = function (_ValueStrategy) {
                 this.currentValue.addIndex(value);
             }
 
+            return this.currentValue;
+        }
+
+        /**
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.currentValue.remove();
             return this.currentValue;
         }
 

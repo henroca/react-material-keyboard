@@ -22,6 +22,14 @@ export default class FractionStrategy extends ValueStrategy {
      *
      * @returns {Object}
      */
+    remove() {
+        this.currentValue.remove();
+        return this.currentValue;
+    }
+    /**
+     *
+     * @returns {Object}
+     */
     changeValue(direction) {
         let value = this.currentValue.getCurrentValue();
 
