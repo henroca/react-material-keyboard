@@ -53,6 +53,8 @@ class Component extends ReactComponet {
         this.clickBuntton = this.clickBuntton.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.handleKeyClear = this.handleKeyClear.bind(this);
+        this.handleKeyRemove = this.handleKeyRemove.bind(this);
+
         this.props.mapKeys.setCallback(this.clickBuntton);
         this.props.mapKeys.setMap();
         this.props.mapEvents.setMap();
@@ -96,6 +98,15 @@ class Component extends ReactComponet {
         }
     }
 
+    handleKeyRemove() {
+        let { valueList } = this.state;
+
+        if (valueList) {
+            valueList.remove();
+            this.setState({ valueList });
+        }
+    }
+
     render() {
         let { keyboard, mapKeys, classes } = this.props;
         let { valueList } = this.state;
@@ -107,6 +118,7 @@ class Component extends ReactComponet {
                         screenValue={valueList}
                         onKeyUp={this.handleKeyUp}
                         onClear={this.handleKeyClear}
+                        onRemove={this.handleKeyRemove}
                     />
                     <Grid container className={classes.container} spacing={0}>
                         {keyboard.map(row => row.map(btn => (

@@ -130,6 +130,18 @@ export default class Fraction extends Value {
     }
 
     /**
+     *
+     *
+     */
+    remove() {
+        if (this.currentCursor == DIVIDER) {
+            return this.divider.remove();
+        }
+
+        return this.dividend.remove();
+    }
+
+    /**
      * set prentheses
      *
      * @param {String} value

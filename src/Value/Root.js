@@ -72,6 +72,14 @@ export default class Root extends Value {
         }
     }
 
+    remove() {
+        if (this.isIndex()) {
+            return this.index.remove();
+        }
+
+        this.radicand.remove();
+    }
+
     /**
      * Get value
      *

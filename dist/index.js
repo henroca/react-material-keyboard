@@ -268,7 +268,8 @@ var styles$1 = function styles$$1() {
             padding: "1em 2em"
         },
         icon: {
-            float: "right"
+            float: "right",
+            cursor: "pointer"
         },
         screen: {
             display: "flex",
@@ -310,7 +311,8 @@ var Screen = function (_React$Component) {
             var _props = this.props,
                 classes = _props.classes,
                 onKeyUp = _props.onKeyUp,
-                onClear = _props.onClear;
+                onClear = _props.onClear,
+                onRemove = _props.onRemove;
 
 
             return React__default.createElement(
@@ -332,7 +334,11 @@ var Screen = function (_React$Component) {
                 React__default.createElement(
                     Grid,
                     { item: true, xs: 6 },
-                    React__default.createElement(icons.Backspace, { className: classes.icon, fontSize: "small" })
+                    React__default.createElement(icons.Backspace, {
+                        className: classes.icon,
+                        fontSize: "small",
+                        onClick: onRemove
+                    })
                 ),
                 React__default.createElement(
                     Grid,
@@ -348,7 +354,9 @@ var Screen = function (_React$Component) {
 Screen.propTypes = {
     classes: PropTypes.object.isRequired,
     screenValue: PropTypes.object,
-    onKeyUp: PropTypes.func
+    onKeyUp: PropTypes.func,
+    onRemove: PropTypes.func,
+    onClear: PropTypes.func
 };
 
 
@@ -385,6 +393,17 @@ var ValueContext = function () {
         key: "addValue",
         value: function addValue(value) {
             return this.strategy.addValue(value);
+        }
+
+        /**
+         *
+         * @returns {Obejct}
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            return this.strategy.remove();
         }
 
         /**
@@ -476,6 +495,16 @@ var ValueList = function () {
         key: "addValue",
         value: function addValue(value) {
             this.value = this.getContext().addValue(value);
+        }
+
+        /**
+         * remove the current value
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.value = this.getContext().remove();
         }
 
         /**
@@ -681,6 +710,8 @@ var Component = function (_ReactComponet) {
         _this.clickBuntton = _this.clickBuntton.bind(_this);
         _this.handleKeyUp = _this.handleKeyUp.bind(_this);
         _this.handleKeyClear = _this.handleKeyClear.bind(_this);
+        _this.handleKeyRemove = _this.handleKeyRemove.bind(_this);
+
         _this.props.mapKeys.setCallback(_this.clickBuntton);
         _this.props.mapKeys.setMap();
         _this.props.mapEvents.setMap();
@@ -733,6 +764,17 @@ var Component = function (_ReactComponet) {
             }
         }
     }, {
+        key: "handleKeyRemove",
+        value: function handleKeyRemove() {
+            var valueList = this.state.valueList;
+
+
+            if (valueList) {
+                valueList.remove();
+                this.setState({ valueList: valueList });
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
             var _props = this.props,
@@ -751,7 +793,8 @@ var Component = function (_ReactComponet) {
                     React__default.createElement(Screen$1, {
                         screenValue: valueList,
                         onKeyUp: this.handleKeyUp,
-                        onClear: this.handleKeyClear
+                        onClear: this.handleKeyClear,
+                        onRemove: this.handleKeyRemove
                     }),
                     React__default.createElement(
                         Grid,
@@ -1057,6 +1100,21 @@ var Fraction = function (_Value) {
         }
 
         /**
+         *
+         *
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            if (this.currentCursor == DIVIDER) {
+                return this.divider.remove();
+            }
+
+            return this.dividend.remove();
+        }
+
+        /**
          * set prentheses
          *
          * @param {String} value
@@ -1245,6 +1303,16 @@ var Exponent = function (_Value) {
         }
 
         /**
+         *
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.valueList.remove();
+        }
+
+        /**
          * unfocus potentiation
          *
          */
@@ -1373,6 +1441,15 @@ var Root = function (_Value) {
             if (this.cursor) {
                 this.focus(RADICAND);
             }
+        }
+    }, {
+        key: "remove",
+        value: function remove() {
+            if (this.isIndex()) {
+                return this.index.remove();
+            }
+
+            this.radicand.remove();
         }
 
         /**
@@ -1853,6 +1930,45 @@ var ValueStrategy = function () {
 
         /**
          *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            var prevValue = this.currentValue.prevValue;
+            var nextValue = this.currentValue.nextValue;
+
+            if (!prevValue) {
+                prevValue = new Value("");
+            }
+
+            if (prevValue.getContext() !== "value") {
+                if (this.currentValue.operator == "") {
+                    prevValue = prevValue.prevValue;
+
+                    if (!prevValue) {
+                        prevValue = new Value("");
+                    }
+                } else {
+                    prevValue = new Value("", prevValue);
+                }
+            }
+
+            if (nextValue) {
+                prevValue.nextValue = nextValue;
+                nextValue.prevValue = prevValue;
+            } else {
+                prevValue.nextValue = undefined;
+            }
+
+            prevValue.toggleCursor();
+
+            return prevValue;
+        }
+
+        /**
+         *
          * @returns {any}
          */
 
@@ -2074,6 +2190,17 @@ var FractionStrategy = function (_ValueStrategy) {
          */
 
     }, {
+        key: "remove",
+        value: function remove() {
+            this.currentValue.remove();
+            return this.currentValue;
+        }
+        /**
+         *
+         * @returns {Object}
+         */
+
+    }, {
         key: "changeValue",
         value: function changeValue(direction) {
             var value = this.currentValue.getCurrentValue();
@@ -2134,6 +2261,11 @@ var ExponentStrategy = function (_ValueStrategy) {
             }
 
             return this.prevValue();
+        }
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.currentValue.remove();
         }
     }, {
         key: "nextValue",
@@ -2355,6 +2487,18 @@ var RootStrategy = function (_ValueStrategy) {
                 this.currentValue.addIndex(value);
             }
 
+            return this.currentValue;
+        }
+
+        /**
+         *
+         * @returns {Object}
+         */
+
+    }, {
+        key: "remove",
+        value: function remove() {
+            this.currentValue.remove();
             return this.currentValue;
         }
 

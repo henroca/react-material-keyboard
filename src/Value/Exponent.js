@@ -32,6 +32,13 @@ export default class Exponent extends Value {
     }
 
     /**
+     *
+     */
+    remove() {
+        this.valueList.remove();
+    }
+
+    /**
      * unfocus potentiation
      *
      */

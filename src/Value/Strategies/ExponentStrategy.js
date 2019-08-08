@@ -25,6 +25,10 @@ export default class ExponentStrategy extends ValueStrategy {
         return this.prevValue();
     }
 
+    remove() {
+        this.currentValue.remove();
+    }
+
     nextValue() {
         let currentValue = this.currentValue.valueList.value;
         let nextValue = currentValue.nextValue;

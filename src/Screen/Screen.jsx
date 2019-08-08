@@ -12,6 +12,7 @@ const styles = () => ({
     },
     icon: {
         float: "right",
+        cursor: "pointer",
     },
     screen: {
         display: "flex",
@@ -27,6 +28,8 @@ class Screen extends React.Component {
         classes: PropTypes.object.isRequired,
         screenValue: PropTypes.object,
         onKeyUp: PropTypes.func,
+        onRemove: PropTypes.func,
+        onClear: PropTypes.func
     };
 
     renderValue() {
@@ -40,7 +43,12 @@ class Screen extends React.Component {
     }
 
     render() {
-        let { classes, onKeyUp, onClear} = this.props;
+        let {
+            classes,
+            onKeyUp,
+            onClear,
+            onRemove,
+        } = this.props;
 
         return (
             <Grid container onKeyUp={onKeyUp} className={classes.root} spacing={0}>
@@ -54,7 +62,11 @@ class Screen extends React.Component {
                     </span>
                 </Grid>
                 <Grid item xs={6}>
-                    <Backspace className={classes.icon} fontSize="small"/>
+                    <Backspace
+                        className={classes.icon}
+                        fontSize="small"
+                        onClick={onRemove}
+                    />
                 </Grid>
                 <Grid item xs={12} className={classes.screen}>
                     {this.renderValue()}

@@ -108,7 +108,7 @@ describe("<Keyboard />", () => {
         value.toggleCursor();
 
         expect(valueList.last()).to.deep.equal(value);
-    })
+    });
 
     it("returns four keys columns from default keyboard", () => {
         expect(defaultKeyboard).to.be.ofSize(5);
