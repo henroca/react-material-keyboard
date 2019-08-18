@@ -71,7 +71,7 @@ describe("MapEvents", () => {
         });
 
         it("returns /", () => {
-            expect(mapEvents.get("/")().getValue()).to.eql("/");
+            expect(mapEvents.get("/")().getValue()).to.eql("[]/[]");
         });
 
         it("returns ,", () => {
@@ -92,7 +92,7 @@ describe("MapEvents", () => {
             fraction.addDividend(new Value("1"));
 
             expect(fraction).to.be.an.instanceof(Fraction);
-            expect(fraction.getValue()).to.eql("2 + 1/2");
+            expect(fraction.getValue()).to.eql("2 + [1]/[2]");
         });
     });
 });

@@ -126,6 +126,9 @@ export default class ValueList {
         return value;
     }
 
+    /**
+     * @returns {Object}
+     */
     getContext() {
         return contextFactory(this.value);
     }

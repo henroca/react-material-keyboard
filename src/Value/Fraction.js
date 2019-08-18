@@ -149,7 +149,7 @@ export default class Fraction extends Value {
      * @returns {String}
      */
     setParentheses(value) {
-        return value.length > 1 ? `[${value}]` : value;
+        return `[${value}]`;
     }
 
     /**

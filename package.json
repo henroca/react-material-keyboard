@@ -86,7 +86,5 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "install": "^0.12.2"
-  }
+  "dependencies": {}
 }
