@@ -581,10 +581,31 @@ var ValueList = function () {
 
             return value;
         }
+
+        /**
+         * @returns {Object}
+         */
+
     }, {
         key: "getContext",
         value: function getContext() {
             return contextFactory(this.value);
+        }
+
+        /**
+         *
+         * @returns {String}
+         */
+
+    }, {
+        key: "serialize",
+        value: function serialize() {
+            var value = this.first();
+            var newValue = Object.assign({}, value);
+
+            while (value = value.nextValue) {
+                newValue = Object.assign({}, value);
+            }
         }
     }]);
     return ValueList;
@@ -664,6 +685,25 @@ var Value = function () {
     return Value;
 }();
 
+var parse = function parse(string, mapEvents) {
+    var value = mapEvents.get(string.charAt(0))();
+    var valueList = new ValueList(value);
+
+    for (var i = 1; i < string.length; i++) {
+        switch (string.charAt(i)) {
+            case ' ':
+                break;
+
+            default:
+                value = mapEvents.get(string.charAt(i))();
+
+                valueList.addValue(value);
+        }
+    }
+
+    return valueList;
+};
+
 var styles$1 = function styles() {
     return {
         container: {
@@ -725,6 +765,11 @@ var Component$1 = function (_ReactComponet) {
             } else {
                 valueList.addValue(nextValue);
             }
+
+            var val = valueList.last().getValue();
+
+            console.log(val);
+            console.log(parse(val, mapEvents));
 
             this.setState({ valueList: valueList });
         }

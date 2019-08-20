@@ -52,7 +52,7 @@ export default class Exponent extends Value {
      * @returns {String}
      */
     value() {
-        return `**[${this.valueList.last().getValue()}]`;
+        return `^[${this.valueList.last().getValue()}]`;
     }
 
     /**

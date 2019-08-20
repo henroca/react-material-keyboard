@@ -80,7 +80,7 @@ describe("ValueList", () => {
         valueList.prevValue();
         valueList.addValue(new Value("3"));
 
-        expect(valueList.last().getValue()).to.be.equal("[13]/2");
+        expect(valueList.last().getValue()).to.be.equal("[13]/[2]");
     });
 
     it("create 1/2", () => {
@@ -89,7 +89,7 @@ describe("ValueList", () => {
         valueList.nextValue();
         valueList.addValue(new Value("2"));
 
-        expect(valueList.last().getValue()).to.be.equal("1/2");
+        expect(valueList.last().getValue()).to.be.equal("[1]/[2]");
     });
 
     it("add cursor after change to divider", () => {
@@ -106,7 +106,7 @@ describe("ValueList", () => {
         valueList.addValue(new Exponent());
         valueList.addValue(new Value("2"));
 
-        expect(valueList.last().getValue()).to.be.equal("2**[2]");
+        expect(valueList.last().getValue()).to.be.equal("2^[2]");
     });
 
     it("go to prev value from exponent", () => {
@@ -119,7 +119,7 @@ describe("ValueList", () => {
         valueList.prevValue();
         valueList.addValue(new Value("2"));
 
-        expect(valueList.last().getValue()).to.be.equal("22**[22]");
+        expect(valueList.last().getValue()).to.be.equal("22^[22]");
     });
 
     it("go to next value from exponent", () => {
@@ -130,7 +130,7 @@ describe("ValueList", () => {
         valueList.addValue(new Value("+"));
         valueList.addValue(new Value("3"));
 
-        expect(valueList.last().getValue()).to.be.equal("2**[2]+3");
+        expect(valueList.last().getValue()).to.be.equal("2^[2]+3");
     });
 
     it("add radicand on square root", () => {

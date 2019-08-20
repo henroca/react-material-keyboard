@@ -54,7 +54,7 @@ describe("Value", () => {
             fraction.addDivider(new Value("3"));
             fraction.addDividend(new Value("x"));
 
-            expect(fraction.getValue()).to.eql("1 + x/3");
+            expect(fraction.getValue()).to.eql("1 + [x]/[3]");
         });
 
         it("returns [2 + 3]/x + 4", () => {
@@ -65,7 +65,7 @@ describe("Value", () => {
 
             let value = new Value("4", new Operator("+", fraction));
 
-            expect(value.getValue()).to.eql("[2 + 3]/x + 4");
+            expect(value.getValue()).to.eql("[2 + 3]/[x] + 4");
         });
 
         it("returns [2 + x]/[x - 3]", () => {
@@ -80,11 +80,11 @@ describe("Value", () => {
     });
 
     context("when create a potentiation", () => {
-        it("returns **2", () => {
+        it("returns ^2", () => {
             let exponent = new Exponent();
             exponent.addValue(new Value("2"));
 
-            expect(exponent.getValue()).to.eql("**[2]");
+            expect(exponent.getValue()).to.eql("^[2]");
         });
     });
 
