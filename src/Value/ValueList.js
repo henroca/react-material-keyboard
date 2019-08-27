@@ -66,14 +66,18 @@ export default class ValueList {
      * unfocus value list
      */
     unfocus() {
-        this.value.cursor = false;
+        if (!this.value.cursor) return;
+
+        this.value.toggleCursor();
     }
 
     /**
      * focus value list
      */
     focus() {
-        this.value.cursor = true;
+        if (this.value.cursor) return;
+
+        this.value.toggleCursor();
     }
 
     /**

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import context from "jest-plugin-context";
-import { parse } from "../parser";
+import { parser } from "../parser";
 import mapEvents from "../../Keyboard/MapEvents";
 import ValueList from "../ValueList";
 import Value from "../Value";
@@ -16,14 +16,14 @@ describe("Parser", () => {
     context("when has only values", () => {
         it("parse value 5", () => {
             let valueList = new ValueList(new Value("5"));
-            expect(parse("5", mapEvents)).to.deep.equal(valueList);
+            expect(parser("5", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value 52", () => {
             let valueList = new ValueList(new Value("5"));
             valueList.addValue(new Value("2"));
 
-            expect(parse("52", mapEvents)).to.deep.equal(valueList);
+            expect(parser("52", mapEvents)).to.deep.equal(valueList);
         });
     });
 
@@ -33,7 +33,7 @@ describe("Parser", () => {
             valueList.addValue(new Operator("+"));
             valueList.addValue(new Value("2"));
 
-            expect(parse("5 + 2", mapEvents)).to.deep.equal(valueList);
+            expect(parser("5 + 2", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value 5.2 = 2", () => {
@@ -43,7 +43,7 @@ describe("Parser", () => {
             valueList.addValue(new Operator("="));
             valueList.addValue(new Value("2"));
 
-            expect(parse("5.2 = 2", mapEvents)).to.deep.equal(valueList);
+            expect(parser("5.2 = 2", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value 3 + [3]/[2]", () => {
@@ -55,7 +55,7 @@ describe("Parser", () => {
             valueList.addValue(new Value("2"));
             valueList.nextValue();
 
-            expect(parse("3 + [3]/[2]", mapEvents)).to.deep.equal(valueList);
+            expect(parser("3 + [3]/[2]", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value 3 + [3 + 2]/[2 * [1 + 2]/[2]]", () => {
@@ -77,7 +77,7 @@ describe("Parser", () => {
             valueList.nextValue();
             valueList.nextValue();
 
-            expect(parse("3 + [3 + 2]/[2 * [1 + 2]/[2]]", mapEvents)).to.deep.equal(valueList);
+            expect(parser("3 + [3 + 2]/[2 * [1 + 2]/[2]]", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value 2^[2]", () => {
@@ -86,7 +86,7 @@ describe("Parser", () => {
             valueList.addValue(new Value("2"));
             valueList.nextValue();
 
-            expect(parse("2^[2]", mapEvents)).to.deep.equal(valueList);
+            expect(parser("2^[2]", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value 2^[[1]/[2]]", () => {
@@ -99,7 +99,7 @@ describe("Parser", () => {
             valueList.nextValue();
             valueList.nextValue();
 
-            expect(parse("2^[[1]/[2]]", mapEvents)).to.deep.equal(valueList);
+            expect(parser("2^[[1]/[2]]", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value sqrt(4)", () => {
@@ -107,7 +107,7 @@ describe("Parser", () => {
             valueList.addValue(new Value("4"));
             valueList.nextValue();
 
-            expect(parse("sqrt(4)", mapEvents)).to.deep.equal(valueList);
+            expect(parser("sqrt(4)", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value sqrt(9, 3)", () => {
@@ -117,7 +117,7 @@ describe("Parser", () => {
             valueList.addValue(new Value("3"));
             valueList.nextValue();
 
-            expect(parse("sqrt(9, 3)", mapEvents)).to.deep.equal(valueList);
+            expect(parser("sqrt(9, 3)", mapEvents)).to.deep.equal(valueList);
         });
 
         it("parse value sqrt(9, [1]/[2])", () => {
@@ -131,7 +131,7 @@ describe("Parser", () => {
             valueList.nextValue();
             valueList.nextValue();
 
-            expect(parse("sqrt(9, [1]/[2])", mapEvents)).to.deep.equal(valueList);
+            expect(parser("sqrt(9, [1]/[2])", mapEvents)).to.deep.equal(valueList);
         });
     });
 });

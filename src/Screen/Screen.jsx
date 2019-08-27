@@ -16,7 +16,17 @@ const styles = () => ({
     },
     screen: {
         display: "flex",
+        alignItems: "center",
         justifyContent: "center",
+        position: "relative",
+    },
+    status: {
+        top: "-12px",
+        left: "20px",
+        padding: "0 10px",
+        margin: 0,
+        position: "absolute",
+        background: "white",
     },
     actionBtn: {
         cursor: "pointer",
@@ -29,7 +39,8 @@ class Screen extends React.Component {
         screenValue: PropTypes.object,
         onKeyUp: PropTypes.func,
         onRemove: PropTypes.func,
-        onClear: PropTypes.func
+        onClear: PropTypes.func,
+        correct: PropTypes.bool,
     };
 
     renderValue() {
@@ -40,6 +51,54 @@ class Screen extends React.Component {
         }
 
         return (<span>Degite um valor</span>);
+    }
+
+    getCorrectText() {
+        let { correct, classes } = this.props;
+
+        if (typeof correct === "undefined") {
+            return "";
+        }
+
+        if (correct) {
+            return (
+                <h4
+                    className={classes.status}
+                    style={{ color: "#228416" }}
+                >
+                    Correto
+                </h4>
+            );
+        }
+
+        return (
+            <h4
+                className={classes.status}
+                style={{ color: "#ec211d" }}
+            >
+                Incorreto
+            </h4>
+        );
+    }
+
+    getCorrectBorder() {
+        let { correct } = this.props;
+
+        if (typeof correct === "undefined") {
+            return {};
+        }
+
+        if (correct) {
+            return {
+                border: "2px solid",
+                borderColor: "#228416"
+            };
+        }
+
+        return {
+            border: "2px solid",
+            borderColor: "#ec211d"
+        };
     }
 
     render() {
@@ -68,7 +127,13 @@ class Screen extends React.Component {
                         onClick={onRemove}
                     />
                 </Grid>
-                <Grid item xs={12} className={classes.screen}>
+                <Grid
+                    item
+                    xs={12}
+                    className={classes.screen}
+                    style={this.getCorrectBorder()}
+                >
+                    {this.getCorrectText()}
                     {this.renderValue()}
                 </Grid>
             </Grid>

@@ -20,6 +20,16 @@ export default class Fraction extends Value {
         this.currentCursor = DIVIDEND;
     }
 
+    toggleCursor() {
+        super.toggleCursor();
+
+        if (this.cursor) {
+            this.setCursor(DIVIDEND);
+        } else {
+            this.unfocus();
+        }
+    }
+
     /**
      *  Add value in divider
      *

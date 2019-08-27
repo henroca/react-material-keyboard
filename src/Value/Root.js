@@ -69,6 +69,8 @@ export default class Root extends Value {
 
         if (this.cursor) {
             this.focus(RADICAND);
+        } else {
+            this.unfocus();
         }
     }
 
