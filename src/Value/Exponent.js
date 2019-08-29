@@ -20,6 +20,8 @@ export default class Exponent extends Value {
 
         if (this.cursor) {
             this.valueList.focusLast();
+        } else {
+            this.unfocus();
         }
     }
 

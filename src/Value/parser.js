@@ -9,7 +9,7 @@ const isSqrt = (string, i) => string.charAt(i + 1) === "q" &&
     string.charAt(i + 3) === "t";
 
 
-export const parse = (string, mapEvents) => {
+export const parser = (string, mapEvents) => {
     let valueList = new ValueList(new Value(""));
 
     for (let i = 0; i < string.length; i++) {

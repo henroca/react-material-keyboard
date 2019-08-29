@@ -12,7 +12,18 @@ var Grid = _interopDefault(require('@material-ui/core/Grid'));
 var icons = require('@material-ui/icons');
 var styles = require('@material-ui/core/styles');
 var green = _interopDefault(require('@material-ui/core/colors/green'));
+var red = _interopDefault(require('@material-ui/core/colors/red'));
 var Paper = _interopDefault(require('@material-ui/core/Paper'));
+var Fab = _interopDefault(require('@material-ui/core/Fab'));
+var Collapse = _interopDefault(require('@material-ui/core/Collapse'));
+require('@material-ui/core/List');
+require('@material-ui/core/ListItem');
+var CloseIcon = _interopDefault(require('@material-ui/icons/Close'));
+var Table = _interopDefault(require('@material-ui/core/Table'));
+var TableBody = _interopDefault(require('@material-ui/core/TableBody'));
+var TableCell = _interopDefault(require('@material-ui/core/TableCell'));
+var TableHead = _interopDefault(require('@material-ui/core/TableHead'));
+var TableRow = _interopDefault(require('@material-ui/core/TableRow'));
 var Button = _interopDefault(require('@material-ui/core/Button'));
 
 var classCallCheck = function (instance, Constructor) {
@@ -273,7 +284,17 @@ var styles$1 = function styles$$1() {
         },
         screen: {
             display: "flex",
-            justifyContent: "center"
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative"
+        },
+        status: {
+            top: "-12px",
+            left: "20px",
+            padding: "0 10px",
+            margin: 0,
+            position: "absolute",
+            background: "white"
         },
         actionBtn: {
             cursor: "pointer"
@@ -306,13 +327,67 @@ var Screen = function (_React$Component) {
             );
         }
     }, {
+        key: "getCorrectText",
+        value: function getCorrectText() {
+            var _props = this.props,
+                correct = _props.correct,
+                classes = _props.classes;
+
+
+            if (typeof correct === "undefined") {
+                return "";
+            }
+
+            if (correct) {
+                return React__default.createElement(
+                    "h4",
+                    {
+                        className: classes.status,
+                        style: { color: "#228416" }
+                    },
+                    "Correto"
+                );
+            }
+
+            return React__default.createElement(
+                "h4",
+                {
+                    className: classes.status,
+                    style: { color: "#ec211d" }
+                },
+                "Incorreto"
+            );
+        }
+    }, {
+        key: "getCorrectBorder",
+        value: function getCorrectBorder() {
+            var correct = this.props.correct;
+
+
+            if (typeof correct === "undefined") {
+                return {};
+            }
+
+            if (correct) {
+                return {
+                    border: "2px solid",
+                    borderColor: "#228416"
+                };
+            }
+
+            return {
+                border: "2px solid",
+                borderColor: "#ec211d"
+            };
+        }
+    }, {
         key: "render",
         value: function render() {
-            var _props = this.props,
-                classes = _props.classes,
-                onKeyUp = _props.onKeyUp,
-                onClear = _props.onClear,
-                onRemove = _props.onRemove;
+            var _props2 = this.props,
+                classes = _props2.classes,
+                onKeyUp = _props2.onKeyUp,
+                onClear = _props2.onClear,
+                onRemove = _props2.onRemove;
 
 
             return React__default.createElement(
@@ -342,7 +417,13 @@ var Screen = function (_React$Component) {
                 ),
                 React__default.createElement(
                     Grid,
-                    { item: true, xs: 12, className: classes.screen },
+                    {
+                        item: true,
+                        xs: 12,
+                        className: classes.screen,
+                        style: this.getCorrectBorder()
+                    },
+                    this.getCorrectText(),
                     this.renderValue()
                 )
             );
@@ -356,7 +437,8 @@ Screen.propTypes = {
     screenValue: PropTypes.object,
     onKeyUp: PropTypes.func,
     onRemove: PropTypes.func,
-    onClear: PropTypes.func
+    onClear: PropTypes.func,
+    correct: PropTypes.bool
 };
 
 
@@ -514,7 +596,9 @@ var ValueList = function () {
     }, {
         key: "unfocus",
         value: function unfocus() {
-            this.value.cursor = false;
+            if (!this.value.cursor) return;
+
+            this.value.toggleCursor();
         }
 
         /**
@@ -524,7 +608,9 @@ var ValueList = function () {
     }, {
         key: "focus",
         value: function focus() {
-            this.value.cursor = true;
+            if (this.value.cursor) return;
+
+            this.value.toggleCursor();
         }
 
         /**
@@ -597,22 +683,6 @@ var ValueList = function () {
         key: "getContext",
         value: function getContext() {
             return contextFactory(this.value);
-        }
-
-        /**
-         *
-         * @returns {String}
-         */
-
-    }, {
-        key: "serialize",
-        value: function serialize() {
-            var value = this.first();
-            var newValue = Object.assign({}, value);
-
-            while (value = value.nextValue) {
-                newValue = Object.assign({}, value);
-            }
         }
     }]);
     return ValueList;
@@ -692,302 +762,6 @@ var Value = function () {
     return Value;
 }();
 
-var parse = function parse(string, mapEvents) {
-    var value = mapEvents.get(string.charAt(0))();
-    var valueList = new ValueList(value);
-
-    for (var i = 1; i < string.length; i++) {
-        switch (string.charAt(i)) {
-            case ' ':
-                break;
-
-            default:
-                value = mapEvents.get(string.charAt(i))();
-
-                valueList.addValue(value);
-        }
-    }
-
-    return valueList;
-};
-
-var styles$2 = function styles$$1() {
-    return {
-        container: {
-            backgroundColor: green["A200"]
-        }
-    };
-};
-
-var mathJaxConfig = {
-    tex2jax: {
-        inlineMath: []
-    },
-    showMathMenu: false,
-    showMathMenuMSIE: false,
-    "fast-preview": {
-        disabled: true
-    },
-    showProcessingMessages: false,
-    styles: {
-        "#MathJax_Message": { display: "none" },
-        "#MathJax_MSIE_Frame": { display: "none" }
-    }
-};
-
-var Component = function (_ReactComponet) {
-    inherits(Component, _ReactComponet);
-
-    function Component(props) {
-        classCallCheck(this, Component);
-
-        var _this = possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, props));
-
-        _this.state = {
-            valueList: null
-        };
-
-        _this.clickBuntton = _this.clickBuntton.bind(_this);
-        _this.handleKeyUp = _this.handleKeyUp.bind(_this);
-        _this.handleKeyClear = _this.handleKeyClear.bind(_this);
-        _this.handleKeyRemove = _this.handleKeyRemove.bind(_this);
-
-        _this.props.mapKeys.setCallback(_this.clickBuntton);
-        _this.props.mapKeys.setMap();
-        _this.props.mapEvents.setMap();
-        init(_this.props.contextConfig);
-        return _this;
-    }
-
-    createClass(Component, [{
-        key: "clickBuntton",
-        value: function clickBuntton(btn) {
-            var mapEvents = this.props.mapEvents;
-            var valueList = this.state.valueList;
-
-            var nextValue = mapEvents.get(btn)();
-
-            if (!valueList) {
-                valueList = new ValueList(nextValue);
-            } else {
-                valueList.addValue(nextValue);
-            }
-
-            var val = valueList.last().getValue();
-
-            console.log(val);
-            console.log(parse(val, mapEvents));
-
-            this.setState({ valueList: valueList });
-        }
-    }, {
-        key: "handleKeyUp",
-        value: function handleKeyUp(_ref) {
-            var keyCode = _ref.keyCode;
-            var valueList = this.state.valueList;
-
-
-            if (keyCode == LEFT) {
-                valueList.prevValue();
-            } else if (keyCode == RIGHT) {
-                valueList.nextValue();
-            } else {
-                return;
-            }
-
-            this.setState({ valueList: valueList });
-        }
-    }, {
-        key: "handleKeyClear",
-        value: function handleKeyClear() {
-            var valueList = this.state.valueList;
-
-
-            if (valueList) {
-                valueList = new ValueList(new Value(""));
-                this.setState({ valueList: valueList });
-            }
-        }
-    }, {
-        key: "handleKeyRemove",
-        value: function handleKeyRemove() {
-            var valueList = this.state.valueList;
-
-
-            if (valueList) {
-                valueList.remove();
-                this.setState({ valueList: valueList });
-            }
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            var _props = this.props,
-                keyboard = _props.keyboard,
-                mapKeys = _props.mapKeys,
-                classes = _props.classes;
-            var valueList = this.state.valueList;
-
-
-            return React__default.createElement(
-                Paper,
-                { onKeyUp: this.handleKeyUp },
-                React__default.createElement(
-                    MathJax.Provider,
-                    { options: mathJaxConfig },
-                    React__default.createElement(Screen$1, {
-                        screenValue: valueList,
-                        onKeyUp: this.handleKeyUp,
-                        onClear: this.handleKeyClear,
-                        onRemove: this.handleKeyRemove
-                    }),
-                    React__default.createElement(
-                        Grid,
-                        { container: true, className: classes.container, spacing: 0 },
-                        keyboard.map(function (row) {
-                            return row.map(function (btn) {
-                                return React__default.createElement(
-                                    Grid,
-                                    { key: btn, item: true, xs: Math.ceil(12 / row.length) },
-                                    mapKeys.get(btn)
-                                );
-                            });
-                        })
-                    )
-                )
-            );
-        }
-    }]);
-    return Component;
-}(React.Component);
-
-Component.propTypes = {
-    keyboard: PropTypes.array.isRequired,
-    mapKeys: PropTypes.object.isRequired,
-    mapEvents: PropTypes.object.isRequired,
-    contextConfig: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired
-};
-
-
-var Component$1 = styles.withStyles(styles$2)(Component);
-
-var Component$2 = function (_ReactComponent) {
-    inherits(Component, _ReactComponent);
-
-    function Component(props) {
-        classCallCheck(this, Component);
-
-        var _this = possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, props));
-
-        _this.handleClick = _this.handleClick.bind(_this);
-        return _this;
-    }
-
-    createClass(Component, [{
-        key: "handleClick",
-        value: function handleClick() {
-            var _props = this.props,
-                onClick = _props.onClick,
-                value = _props.value;
-
-            onClick(value);
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            var _props2 = this.props,
-                text = _props2.text,
-                classes = _props2.classes;
-
-
-            return React__default.createElement(
-                Button,
-                { className: classes.button, onClick: this.handleClick },
-                React__default.createElement(MathJax.Node, { formula: text })
-            );
-        }
-    }]);
-    return Component;
-}(React.Component);
-
-Component$2.propTypes = {
-    text: PropTypes.string.isRequired,
-    onClick: PropTypes.func.isRequired,
-    value: PropTypes.string.isRequired,
-    classes: PropTypes.object.isRequired
-};
-
-var styles$3 = function styles$$1() {
-    return {
-        button: {
-            margin: 0,
-            width: "100%",
-            height: "68px"
-        },
-        input: {
-            display: "none"
-        }
-    };
-};
-
-var Key = styles.withStyles(styles$3)(Component$2);
-
-var MapKeys = function () {
-    function MapKeys() {
-        classCallCheck(this, MapKeys);
-
-        this.map = new Map();
-    }
-
-    createClass(MapKeys, [{
-        key: "setCallback",
-        value: function setCallback(callback) {
-            this.callback = callback;
-        }
-    }, {
-        key: "get",
-        value: function get$$1(key) {
-            return this.map.get(key);
-        }
-    }, {
-        key: "set",
-        value: function set$$1(key, val) {
-            return this.map.set(key, val);
-        }
-    }, {
-        key: "getComponent",
-        value: function getComponent(text, value) {
-            return React__default.createElement(Key, { key: text + value, text: text, value: value, onClick: this.callback });
-        }
-    }, {
-        key: "setMap",
-        value: function setMap() {
-            this.setNumbersButtons();
-            this.set("=", this.getComponent("=", "="));
-            this.set(",", this.getComponent(",", ","));
-            this.set("+", this.getComponent("+", "+"));
-            this.set("-", this.getComponent("-", "-"));
-            this.set("*", this.getComponent("*", "*"));
-            this.set("/", this.getComponent("\\frac{x}{y}", "/"));
-            this.set("(", this.getComponent("(", "("));
-            this.set(")", this.getComponent(")", ")"));
-            this.set("^", this.getComponent("x^y", "^"));
-            this.set("sqrt", this.getComponent("\\sqrt[y]{x}", "sqrt"));
-        }
-    }, {
-        key: "setNumbersButtons",
-        value: function setNumbersButtons() {
-            for (var index = 0; index <= 9; index++) {
-                this.set(index.toString(), this.getComponent(index.toString(), index.toString()));
-            }
-        }
-    }]);
-    return MapKeys;
-}();
-
-var defaultMapKeys = new MapKeys();
-
 var DIVIDER = "DIVIDER";
 var DIVIDEND = "DIVIDEND";
 
@@ -1013,14 +787,25 @@ var Fraction = function (_Value) {
         return _this;
     }
 
-    /**
-     *  Add value in divider
-     *
-     * @param {Object} divider
-     */
-
-
     createClass(Fraction, [{
+        key: "toggleCursor",
+        value: function toggleCursor() {
+            get(Fraction.prototype.__proto__ || Object.getPrototypeOf(Fraction.prototype), "toggleCursor", this).call(this);
+
+            if (this.cursor) {
+                this.setCursor(DIVIDEND);
+            } else {
+                this.unfocus();
+            }
+        }
+
+        /**
+         *  Add value in divider
+         *
+         * @param {Object} divider
+         */
+
+    }, {
         key: "addDivider",
         value: function addDivider(divider) {
             if (this.currentCursor === DIVIDEND) {
@@ -1170,7 +955,7 @@ var Fraction = function (_Value) {
     }, {
         key: "setParentheses",
         value: function setParentheses(value) {
-            return value.length > 1 ? "[" + value + "]" : value;
+            return "[" + value + "]";
         }
 
         /**
@@ -1251,62 +1036,6 @@ var Fraction = function (_Value) {
     return Fraction;
 }(Value);
 
-var Dot = function (_Value) {
-    inherits(Dot, _Value);
-
-    function Dot(prevValue) {
-        classCallCheck(this, Dot);
-        return possibleConstructorReturn(this, (Dot.__proto__ || Object.getPrototypeOf(Dot)).call(this, ".", prevValue));
-    }
-
-    createClass(Dot, [{
-        key: "valueTeX",
-        value: function valueTeX() {
-            if (this.cursor) {
-                return ",\\mid";
-            }
-
-            return ",";
-        }
-    }]);
-    return Dot;
-}(Value);
-
-var Operator = function (_Value) {
-    inherits(Operator, _Value);
-
-    function Operator() {
-        classCallCheck(this, Operator);
-        return possibleConstructorReturn(this, (Operator.__proto__ || Object.getPrototypeOf(Operator)).apply(this, arguments));
-    }
-
-    createClass(Operator, [{
-        key: "value",
-        value: function value() {
-            return " " + this.operator;
-        }
-    }, {
-        key: "getValue",
-        value: function getValue() {
-            if (!this.prevValue) {
-                return this.value() + " ";
-            }
-
-            return this.prevValue.getValue() + this.value() + " ";
-        }
-    }, {
-        key: "getTeX",
-        value: function getTeX() {
-            if (!this.prevValue) {
-                return this.valueTeX() + " ";
-            }
-
-            return this.prevValue.getTeX() + this.valueTeX() + " ";
-        }
-    }]);
-    return Operator;
-}(Value);
-
 var Exponent = function (_Value) {
     inherits(Exponent, _Value);
 
@@ -1333,6 +1062,8 @@ var Exponent = function (_Value) {
 
             if (this.cursor) {
                 this.valueList.focusLast();
+            } else {
+                this.unfocus();
             }
         }
 
@@ -1377,7 +1108,7 @@ var Exponent = function (_Value) {
     }, {
         key: "value",
         value: function value() {
-            return "**[" + this.valueList.last().getValue() + "]";
+            return "^[" + this.valueList.last().getValue() + "]";
         }
 
         /**
@@ -1485,6 +1216,8 @@ var Root = function (_Value) {
 
             if (this.cursor) {
                 this.focus(RADICAND);
+            } else {
+                this.unfocus();
             }
         }
     }, {
@@ -1618,6 +1351,545 @@ var Root = function (_Value) {
         }
     }]);
     return Root;
+}(Value);
+
+var isSqrt = function isSqrt(string, i) {
+    return string.charAt(i + 1) === "q" && string.charAt(i + 2) === "r" && string.charAt(i + 3) === "t";
+};
+
+var parser = function parser(string, mapEvents) {
+    var valueList = new ValueList(new Value(""));
+
+    for (var i = 0; i < string.length; i++) {
+        var char = string.charAt(i);
+
+        switch (char) {
+            case " ":
+                break;
+            case "/":
+                i++;
+                break;
+            case ")":
+            case ",":
+            case "]":
+                valueList.nextValue();
+                break;
+            case "[":
+                valueList.addValue(new Fraction());
+                break;
+            case "^":
+                valueList.addValue(new Exponent());
+                i++;
+                break;
+            case "s":
+                if (isSqrt(string, i)) {
+                    valueList.addValue(new Root());
+                    i += 4;
+                    break;
+                }
+
+                valueList.addValue(mapEvents.get(char)());
+                break;
+            case ".":
+                char = ",";
+                valueList.addValue(mapEvents.get(char)());
+                break;
+            default:
+                valueList.addValue(mapEvents.get(char)());
+                break;
+        }
+    }
+
+    return valueList;
+};
+
+var styles$2 = function styles$$1() {
+    return {
+        root: {
+            position: "relative",
+            zIndex: "1"
+        },
+        item: {
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "1px"
+        },
+        responseBtn: {
+            position: "absolute",
+            backgroundColor: red[600],
+            left: "10px",
+            marginTop: "-20px",
+            zIndex: "2",
+
+            "&:hover": {
+                backgroundColor: red[900]
+            }
+        },
+        container: {
+            backgroundColor: green["A200"],
+            zIndex: "1"
+        }
+    };
+};
+
+var mathJaxConfig = {
+    tex2jax: {
+        inlineMath: []
+    },
+    showMathMenu: false,
+    showMathMenuMSIE: false,
+    "fast-preview": {
+        disabled: true
+    },
+    showProcessingMessages: false,
+    styles: {
+        "#MathJax_Message": { display: "none" },
+        "#MathJax_MSIE_Frame": { display: "none" }
+    }
+};
+
+var Component = function (_ReactComponet) {
+    inherits(Component, _ReactComponet);
+
+    function Component(props) {
+        classCallCheck(this, Component);
+
+        var _this = possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, props));
+
+        _this.state = {
+            valueList: null,
+            showKeyboard: false,
+            correct: undefined
+        };
+
+        _this.clickBuntton = _this.clickBuntton.bind(_this);
+        _this.handleKeyUp = _this.handleKeyUp.bind(_this);
+        _this.handleKeyClear = _this.handleKeyClear.bind(_this);
+        _this.handleKeyRemove = _this.handleKeyRemove.bind(_this);
+        _this.handleToggleResponses = _this.handleToggleResponses.bind(_this);
+
+        _this.props.mapKeys.setCallback(_this.clickBuntton);
+        _this.props.mapKeys.setMap();
+        _this.props.mapEvents.setMap();
+        init(_this.props.contextConfig);
+        return _this;
+    }
+
+    createClass(Component, [{
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            var _props = this.props,
+                current = _props.current,
+                mapEvents = _props.mapEvents;
+
+
+            if (current) {
+                var valueList = parser(current.value, mapEvents);
+                valueList.unfocus();
+
+                this.setState({
+                    valueList: valueList,
+                    correct: current.correct
+                });
+            }
+        }
+    }, {
+        key: "clickBuntton",
+        value: function clickBuntton(btn) {
+            var mapEvents = this.props.mapEvents;
+            var valueList = this.state.valueList;
+
+            var nextValue = mapEvents.get(btn)();
+
+            if (!valueList) {
+                valueList = new ValueList(nextValue);
+            } else {
+                valueList.addValue(nextValue);
+            }
+
+            this.setState({
+                valueList: valueList,
+                correct: undefined
+            });
+        }
+    }, {
+        key: "handleKeyUp",
+        value: function handleKeyUp(_ref) {
+            var keyCode = _ref.keyCode;
+            var valueList = this.state.valueList;
+
+
+            if (keyCode == LEFT) {
+                valueList.prevValue();
+            } else if (keyCode == RIGHT) {
+                valueList.nextValue();
+            } else {
+                return;
+            }
+
+            this.setState({
+                valueList: valueList,
+                correct: undefined
+            });
+        }
+    }, {
+        key: "handleKeyClear",
+        value: function handleKeyClear() {
+            var valueList = this.state.valueList;
+
+
+            if (valueList) {
+                valueList = new ValueList(new Value(""));
+                this.setState({
+                    valueList: valueList,
+                    correct: undefined
+                });
+            }
+        }
+    }, {
+        key: "handleKeyRemove",
+        value: function handleKeyRemove() {
+            var valueList = this.state.valueList;
+
+
+            if (valueList) {
+                valueList.remove();
+                this.setState({
+                    valueList: valueList,
+                    correct: undefined
+                });
+            }
+        }
+    }, {
+        key: "handleToggleResponses",
+        value: function handleToggleResponses() {
+            var showKeyboard = this.state.showKeyboard;
+
+
+            showKeyboard = !showKeyboard;
+
+            this.setState({ showKeyboard: showKeyboard });
+        }
+    }, {
+        key: "hasResponses",
+        value: function hasResponses() {
+            var responses = this.props.responses;
+
+
+            return responses && responses.length > 0;
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props2 = this.props,
+                keyboard = _props2.keyboard,
+                mapKeys = _props2.mapKeys,
+                classes = _props2.classes,
+                responses = _props2.responses;
+            var _state = this.state,
+                valueList = _state.valueList,
+                showKeyboard = _state.showKeyboard,
+                correct = _state.correct;
+
+
+            var btnResponses = "";
+            var responsesComp = "";
+
+            if (this.hasResponses()) {
+                btnResponses = React__default.createElement(
+                    Fab,
+                    {
+                        onClick: this.handleToggleResponses,
+                        color: "primary",
+                        size: "small",
+                        className: classes.responseBtn
+                    },
+                    showKeyboard ? React__default.createElement(CloseIcon, null) : responses.length
+                );
+
+                var response = Object.assign({}, responses[0]);
+                delete response.id;
+                delete response.tex;
+                var header = Object.keys(response);
+
+                responsesComp = React__default.createElement(
+                    Collapse,
+                    {
+                        "in": showKeyboard,
+                        timeout: "auto",
+                        unmountOnExit: true
+                    },
+                    React__default.createElement(
+                        Table,
+                        { className: classes.table, size: "small" },
+                        React__default.createElement(
+                            TableHead,
+                            null,
+                            React__default.createElement(
+                                TableRow,
+                                null,
+                                React__default.createElement(
+                                    TableCell,
+                                    { align: "center" },
+                                    "Resposta"
+                                ),
+                                header.map(function (value) {
+                                    return React__default.createElement(
+                                        TableCell,
+                                        { align: "center" },
+                                        value
+                                    );
+                                })
+                            )
+                        ),
+                        React__default.createElement(
+                            TableBody,
+                            null,
+                            responses.map(function (response) {
+                                return React__default.createElement(
+                                    TableRow,
+                                    { key: response.id },
+                                    React__default.createElement(
+                                        TableCell,
+                                        { align: "center" },
+                                        React__default.createElement(MathJax.Node, { formula: response.tex })
+                                    ),
+                                    header.map(function (value) {
+                                        return React__default.createElement(
+                                            TableCell,
+                                            { align: "center" },
+                                            response[value]
+                                        );
+                                    })
+                                );
+                            })
+                        )
+                    )
+                );
+            }
+
+            return React__default.createElement(
+                Paper,
+                { onKeyUp: this.handleKeyUp, className: classes.root },
+                React__default.createElement(
+                    MathJax.Provider,
+                    { options: mathJaxConfig },
+                    React__default.createElement(Screen$1, {
+                        screenValue: valueList,
+                        onKeyUp: this.handleKeyUp,
+                        onClear: this.handleKeyClear,
+                        onRemove: this.handleKeyRemove,
+                        correct: correct
+                    }),
+                    btnResponses,
+                    responsesComp,
+                    React__default.createElement(
+                        Grid,
+                        {
+                            container: true,
+                            className: classes.container,
+                            spacing: 0
+                        },
+                        keyboard.map(function (row) {
+                            return row.map(function (btn) {
+                                return React__default.createElement(
+                                    Grid,
+                                    { key: btn, item: true, xs: Math.ceil(12 / row.length) },
+                                    mapKeys.get(btn)
+                                );
+                            });
+                        })
+                    )
+                )
+            );
+        }
+    }]);
+    return Component;
+}(React.Component);
+
+Component.propTypes = {
+    keyboard: PropTypes.array.isRequired,
+    mapKeys: PropTypes.object.isRequired,
+    mapEvents: PropTypes.object.isRequired,
+    contextConfig: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired,
+    responses: PropTypes.array,
+    current: PropTypes.object
+};
+
+
+var Component$1 = styles.withStyles(styles$2)(Component);
+
+var Component$2 = function (_ReactComponent) {
+    inherits(Component, _ReactComponent);
+
+    function Component(props) {
+        classCallCheck(this, Component);
+
+        var _this = possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, props));
+
+        _this.handleClick = _this.handleClick.bind(_this);
+        return _this;
+    }
+
+    createClass(Component, [{
+        key: "handleClick",
+        value: function handleClick() {
+            var _props = this.props,
+                onClick = _props.onClick,
+                value = _props.value;
+
+            onClick(value);
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _props2 = this.props,
+                text = _props2.text,
+                classes = _props2.classes;
+
+
+            return React__default.createElement(
+                Button,
+                { className: classes.button, onClick: this.handleClick },
+                React__default.createElement(MathJax.Node, { formula: text })
+            );
+        }
+    }]);
+    return Component;
+}(React.Component);
+
+Component$2.propTypes = {
+    text: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+    value: PropTypes.string.isRequired,
+    classes: PropTypes.object.isRequired
+};
+
+var styles$3 = function styles$$1() {
+    return {
+        button: {
+            margin: 0,
+            width: "100%",
+            height: "68px"
+        },
+        input: {
+            display: "none"
+        }
+    };
+};
+
+var Key = styles.withStyles(styles$3)(Component$2);
+
+var MapKeys = function () {
+    function MapKeys() {
+        classCallCheck(this, MapKeys);
+
+        this.map = new Map();
+    }
+
+    createClass(MapKeys, [{
+        key: "setCallback",
+        value: function setCallback(callback) {
+            this.callback = callback;
+        }
+    }, {
+        key: "get",
+        value: function get$$1(key) {
+            return this.map.get(key);
+        }
+    }, {
+        key: "set",
+        value: function set$$1(key, val) {
+            return this.map.set(key, val);
+        }
+    }, {
+        key: "getComponent",
+        value: function getComponent(text, value) {
+            return React__default.createElement(Key, { key: text + value, text: text, value: value, onClick: this.callback });
+        }
+    }, {
+        key: "setMap",
+        value: function setMap() {
+            this.setNumbersButtons();
+            this.set("=", this.getComponent("=", "="));
+            this.set(",", this.getComponent(",", ","));
+            this.set("+", this.getComponent("+", "+"));
+            this.set("-", this.getComponent("-", "-"));
+            this.set("*", this.getComponent("*", "*"));
+            this.set("/", this.getComponent("\\frac{x}{y}", "/"));
+            this.set("(", this.getComponent("(", "("));
+            this.set(")", this.getComponent(")", ")"));
+            this.set("^", this.getComponent("x^y", "^"));
+            this.set("sqrt", this.getComponent("\\sqrt[y]{x}", "sqrt"));
+        }
+    }, {
+        key: "setNumbersButtons",
+        value: function setNumbersButtons() {
+            for (var index = 0; index <= 9; index++) {
+                this.set(index.toString(), this.getComponent(index.toString(), index.toString()));
+            }
+        }
+    }]);
+    return MapKeys;
+}();
+
+var defaultMapKeys = new MapKeys();
+
+var Dot = function (_Value) {
+    inherits(Dot, _Value);
+
+    function Dot(prevValue) {
+        classCallCheck(this, Dot);
+        return possibleConstructorReturn(this, (Dot.__proto__ || Object.getPrototypeOf(Dot)).call(this, ".", prevValue));
+    }
+
+    createClass(Dot, [{
+        key: "valueTeX",
+        value: function valueTeX() {
+            if (this.cursor) {
+                return ",\\mid";
+            }
+
+            return ",";
+        }
+    }]);
+    return Dot;
+}(Value);
+
+var Operator = function (_Value) {
+    inherits(Operator, _Value);
+
+    function Operator() {
+        classCallCheck(this, Operator);
+        return possibleConstructorReturn(this, (Operator.__proto__ || Object.getPrototypeOf(Operator)).apply(this, arguments));
+    }
+
+    createClass(Operator, [{
+        key: "value",
+        value: function value() {
+            return " " + this.operator;
+        }
+    }, {
+        key: "getValue",
+        value: function getValue() {
+            if (!this.prevValue) {
+                return this.value() + " ";
+            }
+
+            return this.prevValue.getValue() + this.value() + " ";
+        }
+    }, {
+        key: "getTeX",
+        value: function getTeX() {
+            if (!this.prevValue) {
+                return this.valueTeX() + " ";
+            }
+
+            return this.prevValue.getTeX() + this.valueTeX() + " ";
+        }
+    }]);
+    return Operator;
 }(Value);
 
 var MapEvents = function () {

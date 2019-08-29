@@ -11,10 +11,11 @@ import Component from "../Component";
 import { MapKeys } from "../MapKeys";
 import Value from "../../Value/Value";
 import { LEFT } from "../../keyConsts";
+import Screen from "../../Screen/Screen";
 
 describe("<Keyboard />", () => {
     let wrapper = null;
-    const component = <Keyboard />;
+    let component = <Keyboard />;
 
     beforeEach(() => {
         wrapper = mount(component);
@@ -64,6 +65,54 @@ describe("<Keyboard />", () => {
 
             expect(mapKeys).to.be.an.instanceof(MapKeys);
         });
+
+        it("renders the last response", () => {
+            wrapper = mount(<Keyboard current={{
+                value: "2 + 2",
+                correct: true,
+            }} />);
+
+            let valueList = wrapper.find(Screen).props().screenValue;
+
+            expect(valueList.last().getValue()).to.be.eql("2 + 2");
+            expect(valueList.value.cursor).to.be.false;
+        });
+
+        it("render the button with amount responses", () => {
+            wrapper = mount(<Keyboard responses={[{
+                id: "2",
+                value: "3 - 1",
+                tex: "3 - 1",
+            },{
+                id: "3",
+                value: "3 - 1",
+                tex: "3 - 1",
+            }
+            ]} />);
+
+            let btn = wrapper.find("button").first();
+            expect(btn.text()).to.be.eql("2");
+        });
+
+        it("returns four keys columns from default keyboard", () => {
+            expect(defaultKeyboard).to.be.ofSize(5);
+        });
+
+        it("returns first column from default keyboard", () => {
+            expect(defaultKeyboard[0]).to.be.equalTo(["1", "2", "3", "+"]);
+        });
+
+        it("returns second column from default keyboard", () => {
+            expect(defaultKeyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
+        });
+
+        it("returns third column from default keyboard", () => {
+            expect(defaultKeyboard[2]).to.be.equalTo(["7", "8", "9", "*"]);
+        });
+
+        it("returns fourth column from default keyboard", () => {
+            expect(defaultKeyboard[3]).to.be.equalTo([",", "0", "=", "/"]);
+        });
     });
 
     context("when click a button", () => {
@@ -96,37 +145,17 @@ describe("<Keyboard />", () => {
             expect(valueList.value.cursor).to.be.true;
             expect(valueList.value.nextValue.cursor).to.be.false;
         });
-    });
 
-    it("clear the values", () => {
-        wrapper.find(Key).at(0).find("button").simulate("click");
-        wrapper.find(Key).at(1).find("button").simulate("click");
-        wrapper.find("#clear").simulate("click");
+        it("clear the values", () => {
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            wrapper.find(Key).at(1).find("button").simulate("click");
+            wrapper.find("#clear").simulate("click");
 
-        let valueList = wrapper.find(Component).children().state("valueList");
-        let value = new Value("");
-        value.toggleCursor();
+            let valueList = wrapper.find(Component).children().state("valueList");
+            let value = new Value("");
+            value.toggleCursor();
 
-        expect(valueList.last()).to.deep.equal(value);
-    });
-
-    it("returns four keys columns from default keyboard", () => {
-        expect(defaultKeyboard).to.be.ofSize(5);
-    });
-
-    it("returns first column from default keyboard", () => {
-        expect(defaultKeyboard[0]).to.be.equalTo(["1", "2", "3", "+"]);
-    });
-
-    it("returns second column from default keyboard", () => {
-        expect(defaultKeyboard[1]).to.be.equalTo(["4", "5", "6", "-"]);
-    });
-
-    it("returns third column from default keyboard", () => {
-        expect(defaultKeyboard[2]).to.be.equalTo(["7", "8", "9", "*"]);
-    });
-
-    it("returns fourth column from default keyboard", () => {
-        expect(defaultKeyboard[3]).to.be.equalTo([",", "0", "=", "/"]);
+            expect(valueList.last()).to.deep.equal(value);
+        });
     });
 });
