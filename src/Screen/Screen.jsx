@@ -1,5 +1,7 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
+import SendIcon from "@material-ui/icons/Send";
+import orange from "@material-ui/core/colors/orange";
 import PropTypes from "prop-types";
 import Math from "./Math";
 import { Backspace } from "@material-ui/icons";
@@ -19,8 +21,23 @@ const styles = () => ({
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
+        zIndex: "1",
+        marginBottom: "10px",
+    },
+    send: {
+        position: "absolute",
+        bottom: "-10px",
+        zIndex: "2",
+        color: orange[800],
+        background: "white",
+        padding: "0 10px",
+        cursor: "pointer",
+    },
+    sendIcon: {
+        marginBottom: "-5px"
     },
     status: {
+        zIndex: "2",
         top: "-12px",
         left: "20px",
         padding: "0 10px",
@@ -41,6 +58,7 @@ class Screen extends React.Component {
         onRemove: PropTypes.func,
         onClear: PropTypes.func,
         correct: PropTypes.bool,
+        onSubmit: PropTypes.func,
     };
 
     renderValue() {
@@ -107,7 +125,23 @@ class Screen extends React.Component {
             onKeyUp,
             onClear,
             onRemove,
+            onSubmit,
+            screenValue,
+            correct,
         } = this.props;
+
+        let submit = "";
+
+        if (onSubmit && typeof correct === "undefined") {
+            submit = (
+                <div
+                    className={classes.send}
+                    onClick={() => onSubmit(screenValue.last().getValue())}
+                >
+                    ENVIAR <SendIcon fontSize="small" className={classes.sendIcon}/>
+                </div>
+            );
+        }
 
         return (
             <Grid container onKeyUp={onKeyUp} className={classes.root} spacing={0}>
@@ -135,6 +169,7 @@ class Screen extends React.Component {
                 >
                     {this.getCorrectText()}
                     {this.renderValue()}
+                    {submit}
                 </Grid>
             </Grid>
         );
