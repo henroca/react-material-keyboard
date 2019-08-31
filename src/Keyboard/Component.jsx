@@ -13,6 +13,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Divider from "@material-ui/core/Divider";
 import MathJax from "react-mathjax";
 import Screen from "../Screen";
 import ValueList from "../Value/ValueList";
@@ -42,6 +43,9 @@ const styles = () => ({
         "&:hover": {
             backgroundColor: red[900],
         },
+    },
+    table: {
+        marginTop: "25px",
     },
     container: {
         backgroundColor: green["A200"],
@@ -74,6 +78,7 @@ class Component extends ReactComponet {
         classes: PropTypes.object.isRequired,
         responses: PropTypes.array,
         current: PropTypes.object,
+        onSubmit: PropTypes.func,
     };
 
     constructor(props) {
@@ -189,6 +194,7 @@ class Component extends ReactComponet {
             mapKeys,
             classes,
             responses,
+            onSubmit,
         } = this.props;
 
         let {
@@ -219,11 +225,13 @@ class Component extends ReactComponet {
 
             responsesComp = (
                 <Collapse
+                    className={classes.table}
                     in={showKeyboard}
                     timeout="auto"
                     unmountOnExit
                 >
-                    <Table className={classes.table} size="small">
+                    <Divider />
+                    <Table size="small">
                         <TableHead>
                             <TableRow>
                                 <TableCell align="center">Resposta</TableCell>
@@ -267,6 +275,7 @@ class Component extends ReactComponet {
                         onKeyUp={this.handleKeyUp}
                         onClear={this.handleKeyClear}
                         onRemove={this.handleKeyRemove}
+                        onSubmit={onSubmit}
                         correct={correct}
                     />
                     {btnResponses}

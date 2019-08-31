@@ -9,6 +9,8 @@ var React__default = _interopDefault(React);
 var PropTypes = _interopDefault(require('prop-types'));
 var MathJax = _interopDefault(require('react-mathjax'));
 var Grid = _interopDefault(require('@material-ui/core/Grid'));
+var SendIcon = _interopDefault(require('@material-ui/icons/Send'));
+var orange = _interopDefault(require('@material-ui/core/colors/orange'));
 var icons = require('@material-ui/icons');
 var styles = require('@material-ui/core/styles');
 var green = _interopDefault(require('@material-ui/core/colors/green'));
@@ -16,14 +18,13 @@ var red = _interopDefault(require('@material-ui/core/colors/red'));
 var Paper = _interopDefault(require('@material-ui/core/Paper'));
 var Fab = _interopDefault(require('@material-ui/core/Fab'));
 var Collapse = _interopDefault(require('@material-ui/core/Collapse'));
-require('@material-ui/core/List');
-require('@material-ui/core/ListItem');
 var CloseIcon = _interopDefault(require('@material-ui/icons/Close'));
 var Table = _interopDefault(require('@material-ui/core/Table'));
 var TableBody = _interopDefault(require('@material-ui/core/TableBody'));
 var TableCell = _interopDefault(require('@material-ui/core/TableCell'));
 var TableHead = _interopDefault(require('@material-ui/core/TableHead'));
 var TableRow = _interopDefault(require('@material-ui/core/TableRow'));
+var Divider = _interopDefault(require('@material-ui/core/Divider'));
 var Button = _interopDefault(require('@material-ui/core/Button'));
 
 var classCallCheck = function (instance, Constructor) {
@@ -286,9 +287,24 @@ var styles$1 = function styles$$1() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            position: "relative"
+            position: "relative",
+            zIndex: "1",
+            marginBottom: "10px"
+        },
+        send: {
+            position: "absolute",
+            bottom: "-10px",
+            zIndex: "2",
+            color: orange[800],
+            background: "white",
+            padding: "0 10px",
+            cursor: "pointer"
+        },
+        sendIcon: {
+            marginBottom: "-5px"
         },
         status: {
+            zIndex: "2",
             top: "-12px",
             left: "20px",
             padding: "0 10px",
@@ -387,8 +403,27 @@ var Screen = function (_React$Component) {
                 classes = _props2.classes,
                 onKeyUp = _props2.onKeyUp,
                 onClear = _props2.onClear,
-                onRemove = _props2.onRemove;
+                onRemove = _props2.onRemove,
+                onSubmit = _props2.onSubmit,
+                screenValue = _props2.screenValue,
+                correct = _props2.correct;
 
+
+            var submit = "";
+
+            if (onSubmit && typeof correct === "undefined") {
+                submit = React__default.createElement(
+                    "div",
+                    {
+                        className: classes.send,
+                        onClick: function onClick() {
+                            return onSubmit(screenValue.last().getValue());
+                        }
+                    },
+                    "ENVIAR ",
+                    React__default.createElement(SendIcon, { fontSize: "small", className: classes.sendIcon })
+                );
+            }
 
             return React__default.createElement(
                 Grid,
@@ -424,7 +459,8 @@ var Screen = function (_React$Component) {
                         style: this.getCorrectBorder()
                     },
                     this.getCorrectText(),
-                    this.renderValue()
+                    this.renderValue(),
+                    submit
                 )
             );
         }
@@ -1425,6 +1461,9 @@ var styles$2 = function styles$$1() {
                 backgroundColor: red[900]
             }
         },
+        table: {
+            marginTop: "25px"
+        },
         container: {
             backgroundColor: green["A200"],
             zIndex: "1"
@@ -1585,7 +1624,8 @@ var Component = function (_ReactComponet) {
                 keyboard = _props2.keyboard,
                 mapKeys = _props2.mapKeys,
                 classes = _props2.classes,
-                responses = _props2.responses;
+                responses = _props2.responses,
+                onSubmit = _props2.onSubmit;
             var _state = this.state,
                 valueList = _state.valueList,
                 showKeyboard = _state.showKeyboard,
@@ -1615,13 +1655,15 @@ var Component = function (_ReactComponet) {
                 responsesComp = React__default.createElement(
                     Collapse,
                     {
+                        className: classes.table,
                         "in": showKeyboard,
                         timeout: "auto",
                         unmountOnExit: true
                     },
+                    React__default.createElement(Divider, null),
                     React__default.createElement(
                         Table,
-                        { className: classes.table, size: "small" },
+                        { size: "small" },
                         React__default.createElement(
                             TableHead,
                             null,
@@ -1633,10 +1675,13 @@ var Component = function (_ReactComponet) {
                                     { align: "center" },
                                     "Resposta"
                                 ),
-                                header.map(function (value) {
+                                header.map(function (value, index) {
                                     return React__default.createElement(
                                         TableCell,
-                                        { align: "center" },
+                                        {
+                                            key: value + index,
+                                            align: "center"
+                                        },
                                         value
                                     );
                                 })
@@ -1654,10 +1699,13 @@ var Component = function (_ReactComponet) {
                                         { align: "center" },
                                         React__default.createElement(MathJax.Node, { formula: response.tex })
                                     ),
-                                    header.map(function (value) {
+                                    header.map(function (value, index) {
                                         return React__default.createElement(
                                             TableCell,
-                                            { align: "center" },
+                                            {
+                                                key: value + index,
+                                                align: "center"
+                                            },
                                             response[value]
                                         );
                                     })
@@ -1679,6 +1727,7 @@ var Component = function (_ReactComponet) {
                         onKeyUp: this.handleKeyUp,
                         onClear: this.handleKeyClear,
                         onRemove: this.handleKeyRemove,
+                        onSubmit: onSubmit,
                         correct: correct
                     }),
                     btnResponses,
@@ -1714,7 +1763,8 @@ Component.propTypes = {
     contextConfig: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
     responses: PropTypes.array,
-    current: PropTypes.object
+    current: PropTypes.object,
+    onSubmit: PropTypes.func
 };
 
 

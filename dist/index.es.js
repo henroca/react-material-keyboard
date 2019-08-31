@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MathJax from 'react-mathjax';
 import Grid from '@material-ui/core/Grid';
+import SendIcon from '@material-ui/icons/Send';
+import orange from '@material-ui/core/colors/orange';
 import { Backspace } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/green';
@@ -9,14 +11,13 @@ import red from '@material-ui/core/colors/red';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
 import Collapse from '@material-ui/core/Collapse';
-import '@material-ui/core/List';
-import '@material-ui/core/ListItem';
 import CloseIcon from '@material-ui/icons/Close';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 
 var classCallCheck = function (instance, Constructor) {
@@ -279,9 +280,24 @@ var styles = function styles() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            position: "relative"
+            position: "relative",
+            zIndex: "1",
+            marginBottom: "10px"
+        },
+        send: {
+            position: "absolute",
+            bottom: "-10px",
+            zIndex: "2",
+            color: orange[800],
+            background: "white",
+            padding: "0 10px",
+            cursor: "pointer"
+        },
+        sendIcon: {
+            marginBottom: "-5px"
         },
         status: {
+            zIndex: "2",
             top: "-12px",
             left: "20px",
             padding: "0 10px",
@@ -380,8 +396,27 @@ var Screen = function (_React$Component) {
                 classes = _props2.classes,
                 onKeyUp = _props2.onKeyUp,
                 onClear = _props2.onClear,
-                onRemove = _props2.onRemove;
+                onRemove = _props2.onRemove,
+                onSubmit = _props2.onSubmit,
+                screenValue = _props2.screenValue,
+                correct = _props2.correct;
 
+
+            var submit = "";
+
+            if (onSubmit && typeof correct === "undefined") {
+                submit = React.createElement(
+                    "div",
+                    {
+                        className: classes.send,
+                        onClick: function onClick() {
+                            return onSubmit(screenValue.last().getValue());
+                        }
+                    },
+                    "ENVIAR ",
+                    React.createElement(SendIcon, { fontSize: "small", className: classes.sendIcon })
+                );
+            }
 
             return React.createElement(
                 Grid,
@@ -417,7 +452,8 @@ var Screen = function (_React$Component) {
                         style: this.getCorrectBorder()
                     },
                     this.getCorrectText(),
-                    this.renderValue()
+                    this.renderValue(),
+                    submit
                 )
             );
         }
@@ -1418,6 +1454,9 @@ var styles$1 = function styles() {
                 backgroundColor: red[900]
             }
         },
+        table: {
+            marginTop: "25px"
+        },
         container: {
             backgroundColor: green["A200"],
             zIndex: "1"
@@ -1578,7 +1617,8 @@ var Component$1 = function (_ReactComponet) {
                 keyboard = _props2.keyboard,
                 mapKeys = _props2.mapKeys,
                 classes = _props2.classes,
-                responses = _props2.responses;
+                responses = _props2.responses,
+                onSubmit = _props2.onSubmit;
             var _state = this.state,
                 valueList = _state.valueList,
                 showKeyboard = _state.showKeyboard,
@@ -1608,13 +1648,15 @@ var Component$1 = function (_ReactComponet) {
                 responsesComp = React.createElement(
                     Collapse,
                     {
+                        className: classes.table,
                         "in": showKeyboard,
                         timeout: "auto",
                         unmountOnExit: true
                     },
+                    React.createElement(Divider, null),
                     React.createElement(
                         Table,
-                        { className: classes.table, size: "small" },
+                        { size: "small" },
                         React.createElement(
                             TableHead,
                             null,
@@ -1626,10 +1668,13 @@ var Component$1 = function (_ReactComponet) {
                                     { align: "center" },
                                     "Resposta"
                                 ),
-                                header.map(function (value) {
+                                header.map(function (value, index) {
                                     return React.createElement(
                                         TableCell,
-                                        { align: "center" },
+                                        {
+                                            key: value + index,
+                                            align: "center"
+                                        },
                                         value
                                     );
                                 })
@@ -1647,10 +1692,13 @@ var Component$1 = function (_ReactComponet) {
                                         { align: "center" },
                                         React.createElement(MathJax.Node, { formula: response.tex })
                                     ),
-                                    header.map(function (value) {
+                                    header.map(function (value, index) {
                                         return React.createElement(
                                             TableCell,
-                                            { align: "center" },
+                                            {
+                                                key: value + index,
+                                                align: "center"
+                                            },
                                             response[value]
                                         );
                                     })
@@ -1672,6 +1720,7 @@ var Component$1 = function (_ReactComponet) {
                         onKeyUp: this.handleKeyUp,
                         onClear: this.handleKeyClear,
                         onRemove: this.handleKeyRemove,
+                        onSubmit: onSubmit,
                         correct: correct
                     }),
                     btnResponses,
@@ -1707,7 +1756,8 @@ Component$1.propTypes = {
     contextConfig: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
     responses: PropTypes.array,
-    current: PropTypes.object
+    current: PropTypes.object,
+    onSubmit: PropTypes.func
 };
 
 
