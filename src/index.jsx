@@ -1,1 +1,10 @@
 export { default as Keyboard } from "./Keyboard";
+export { default as mapEvents } from "./Keyboard/MapEvents";
+export { default as mapKeys } from "./Keyboard/MapKeys";
+export { defaultKeyboard } from "./Keyboard/keyboards";
+export { default as ontextConfig } from "./Keyboard/contextConfig";
+export { appConfig } from "./Keyboard/appContext";
+export { default as Key } from "./Key";
+export { default as Value } from "./Value/Value";
+export { MapEvents } from "./Keyboard/MapEvents";
+export { MapKeys } from "./Keyboard/MapKeys";

@@ -474,17 +474,18 @@ Screen.propTypes = {
     onKeyUp: PropTypes.func,
     onRemove: PropTypes.func,
     onClear: PropTypes.func,
-    correct: PropTypes.bool
+    correct: PropTypes.bool,
+    onSubmit: PropTypes.func
 };
 
 
 var Screen$1 = styles.withStyles(styles$1)(Screen);
 
-var appConfig = {};
+exports.appConfig = {};
 
 function init(config) {
-    appConfig = config;
-    Object.freeze(appConfig);
+    exports.appConfig = config;
+    Object.freeze(exports.appConfig);
 }
 
 var ValueContext = function () {
@@ -539,7 +540,7 @@ var ValueContext = function () {
 }();
 
 var contextFactory = (function (value) {
-    var context = appConfig[value.getContext()];
+    var context = exports.appConfig[value.getContext()];
     var strategy = new context(value);
 
     return new ValueContext(strategy);
@@ -2950,4 +2951,12 @@ var withKeyboard = (function () {
 var Keyboard = withKeyboard()(Component$1);
 
 exports.Keyboard = Keyboard;
+exports.mapEvents = defaultMapEvents;
+exports.mapKeys = defaultMapKeys;
+exports.defaultKeyboard = defaultKeyboard;
+exports.ontextConfig = contextConfig;
+exports.Key = Key;
+exports.Value = Value;
+exports.MapEvents = MapEvents;
+exports.MapKeys = MapKeys;
 //# sourceMappingURL=index.js.map

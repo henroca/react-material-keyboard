@@ -467,7 +467,8 @@ Screen.propTypes = {
     onKeyUp: PropTypes.func,
     onRemove: PropTypes.func,
     onClear: PropTypes.func,
-    correct: PropTypes.bool
+    correct: PropTypes.bool,
+    onSubmit: PropTypes.func
 };
 
 
@@ -2942,5 +2943,5 @@ var withKeyboard = (function () {
 
 var Keyboard = withKeyboard()(Component$2);
 
-export { Keyboard };
+export { Keyboard, defaultMapEvents as mapEvents, defaultMapKeys as mapKeys, defaultKeyboard, contextConfig as ontextConfig, appConfig, Key, Value, MapEvents, MapKeys };
 //# sourceMappingURL=index.es.js.map

@@ -5,7 +5,7 @@ import Operator from "../Value/Operator";
 import Exponent from "../Value/Exponent";
 import Root from "../Value/Root";
 
-class MapEvents {
+export class MapEvents {
     constructor() {
         this.map = new Map();
     }
