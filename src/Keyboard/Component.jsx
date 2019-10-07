@@ -79,6 +79,7 @@ class Component extends ReactComponet {
         responses: PropTypes.array,
         current: PropTypes.object,
         onSubmit: PropTypes.func,
+        onChange: PropTypes.func,
     };
 
     constructor(props) {
@@ -127,6 +128,8 @@ class Component extends ReactComponet {
             valueList.addValue(nextValue);
         }
 
+        this.handleOnChange(valueList);
+
         this.setState({
             valueList,
             correct: undefined,
@@ -155,6 +158,9 @@ class Component extends ReactComponet {
 
         if (valueList) {
             valueList = new ValueList(new Value(""));
+
+            this.handleOnChange(valueList);
+
             this.setState({
                 valueList,
                 correct: undefined,
@@ -167,11 +173,28 @@ class Component extends ReactComponet {
 
         if (valueList) {
             valueList.remove();
+
+            this.handleOnChange(valueList);
+
             this.setState({
                 valueList,
                 correct: undefined,
             });
         }
+    }
+
+    handleOnChange (valueList) {
+        let { onChange } = this.props;
+
+        if (onChange) {
+            valueList.unfocus();
+            onChange({
+                value: valueList.last().getValue(),
+                value_tex: valueList.last().getTeX(),
+            });
+        }
+
+        valueList.focus();
     }
 
     handleToggleResponses() {

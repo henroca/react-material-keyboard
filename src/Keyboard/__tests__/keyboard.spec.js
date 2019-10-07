@@ -3,6 +3,7 @@ import context from "jest-plugin-context";
 import { mount } from "enzyme";
 import { expect } from "chai";
 import Grid from "@material-ui/core/Grid";
+import sinon from "sinon";
 import Key from "../../Key";
 
 import { defaultKeyboard } from "../keyboards";
@@ -123,6 +124,23 @@ describe("<Keyboard />", () => {
             value.toggleCursor();
 
             expect(valueList.value).to.deep.equal(value);
+        });
+
+        it("handle on change value", () => {
+            let spy = sinon.spy();
+            wrapper = mount(<Keyboard onChange={spy} />);
+            wrapper.find(Key).at(0).find("button").simulate("click");
+            wrapper.find(Key).at(0).find("button").simulate("click");
+
+            expect(spy.withArgs({
+                value: "1",
+                value_tex: "1",
+            }).calledOnce).to.true;
+
+            expect(spy.withArgs({
+                value: "11",
+                value_tex: "11",
+            }).calledOnce).to.true;
         });
 
         it("change the cursor", () => {

@@ -119,6 +119,13 @@ class Screen extends React.Component {
         };
     }
 
+    getResponse (screenValue) {
+        return {
+            value: screenValue.last().getValue(),
+            value_tex: screenValue.last().getTeX(),
+        };
+    }
+
     render() {
         let {
             classes,
@@ -136,7 +143,7 @@ class Screen extends React.Component {
             submit = (
                 <div
                     className={classes.send}
-                    onClick={() => onSubmit(screenValue.last().getValue())}
+                    onClick={() => onSubmit(this.getResponse(screenValue))}
                 >
                     ENVIAR <SendIcon fontSize="small" className={classes.sendIcon}/>
                 </div>
