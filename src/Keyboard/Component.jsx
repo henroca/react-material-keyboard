@@ -187,14 +187,16 @@ class Component extends ReactComponet {
         let { onChange } = this.props;
 
         if (onChange) {
-            valueList.unfocus();
+            let value = valueList.last().getValue();
+            let value_tex = valueList.last()
+                .getTeX()
+                .replace("\\mid", "");
+
             onChange({
-                value: valueList.last().getValue(),
-                value_tex: valueList.last().getTeX(),
+                value,
+                value_tex,
             });
         }
-
-        valueList.focus();
     }
 
     handleToggleResponses() {

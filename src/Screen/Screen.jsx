@@ -122,7 +122,9 @@ class Screen extends React.Component {
     getResponse (screenValue) {
         return {
             value: screenValue.last().getValue(),
-            value_tex: screenValue.last().getTeX(),
+            value_tex: screenValue.last()
+                .getTeX()
+                .replace("\\mid", ""),
         };
     }
 
