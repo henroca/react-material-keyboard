@@ -19,9 +19,19 @@ export class MapKeys {
     }
 
     getComponent(text, value) {
+        return { text, value };
+    }
+
+    getValueComp(text, value) {
         return (
             <Key key={text + value} text={text} value={value} onClick={this.callback} />
         );
+    }
+
+    init() {
+        this.map.forEach(({ text, value }, key) => {
+            this.set(key, this.getValueComp(text, value));
+        });
     }
 
     setMap() {

@@ -390,8 +390,18 @@ var Screen = function (_React$Component) {
             };
         }
     }, {
+        key: "getResponse",
+        value: function getResponse(screenValue) {
+            return {
+                value: screenValue.last().getValue(),
+                value_tex: screenValue.last().getTeX().replace("\\mid", "")
+            };
+        }
+    }, {
         key: "render",
         value: function render() {
+            var _this2 = this;
+
             var _props2 = this.props,
                 classes = _props2.classes,
                 onKeyUp = _props2.onKeyUp,
@@ -410,7 +420,7 @@ var Screen = function (_React$Component) {
                     {
                         className: classes.send,
                         onClick: function onClick() {
-                            return onSubmit(screenValue.last().getValue());
+                            return onSubmit(_this2.getResponse(screenValue));
                         }
                     },
                     "ENVIAR ",
@@ -1540,6 +1550,8 @@ var Component$1 = function (_ReactComponet) {
                 valueList.addValue(nextValue);
             }
 
+            this.handleOnChange(valueList);
+
             this.setState({
                 valueList: valueList,
                 correct: undefined
@@ -1573,6 +1585,9 @@ var Component$1 = function (_ReactComponet) {
 
             if (valueList) {
                 valueList = new ValueList(new Value(""));
+
+                this.handleOnChange(valueList);
+
                 this.setState({
                     valueList: valueList,
                     correct: undefined
@@ -1587,9 +1602,28 @@ var Component$1 = function (_ReactComponet) {
 
             if (valueList) {
                 valueList.remove();
+
+                this.handleOnChange(valueList);
+
                 this.setState({
                     valueList: valueList,
                     correct: undefined
+                });
+            }
+        }
+    }, {
+        key: "handleOnChange",
+        value: function handleOnChange(valueList) {
+            var onChange = this.props.onChange;
+
+
+            if (onChange) {
+                var value = valueList.last().getValue();
+                var value_tex = valueList.last().getTeX().replace("\\mid", "");
+
+                onChange({
+                    value: value,
+                    value_tex: value_tex
                 });
             }
         }
@@ -1758,7 +1792,8 @@ Component$1.propTypes = {
     classes: PropTypes.object.isRequired,
     responses: PropTypes.array,
     current: PropTypes.object,
-    onSubmit: PropTypes.func
+    onSubmit: PropTypes.func,
+    onChange: PropTypes.func
 };
 
 

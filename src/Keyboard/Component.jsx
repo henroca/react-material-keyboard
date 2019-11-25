@@ -99,6 +99,7 @@ class Component extends ReactComponet {
 
         this.props.mapKeys.setCallback(this.clickBuntton);
         this.props.mapKeys.setMap();
+        this.props.mapKeys.init();
         this.props.mapEvents.setMap();
         init(this.props.contextConfig);
     }
