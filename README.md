@@ -7,27 +7,40 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a52e61e0c3a5b9764de8/maintainability)](https://codeclimate.com/github/henroca/react-material-keyboard/maintainability)
 
 
-## Install
+## Instalar
 
 ```bash
 npm install --save react-material-keyboard
 ```
 
-## Usage
+## Uso
 
 ```jsx
 import React, { Component } from 'react'
 
-import MyComponent from 'app'
+import { Keyboard } from 'react-material-keyboard'
 
 class Example extends Component {
   render () {
     return (
-      <MyComponent />
+      <Keyboard />
     )
   }
 }
 ```
+## Contribuir
+
+Clonar o repositório e usar o `Docker` e `Docker Compose`:
+
+`docker-compose up -d`
+
+rodar os testes
+
+`docker-compose run react_material_keyboard yarn test`
+
+compilar os arquivos
+
+`docker-compose run react_material_keyboard yarn build`
 
 ## License
 
